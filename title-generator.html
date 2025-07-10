@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OZON标题生成工具</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+            display: flex;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: white;
+            color: #333;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            z-index: 100;
+            overflow-y: auto;
+            border-right: 1px solid #e0e0e0;
+        }
+        .sidebar-header {
+            padding: 15px;
+            background-color: #1565C0;
+            text-align: left;
+            font-weight: bold;
+            font-size: 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+        .sidebar-menu-item {
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            color: #666;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+        .sidebar-menu-item:hover {
+            background-color: rgba(0,0,0,0.05);
+            color: #1565C0;
+        }
+        .sidebar-menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            color: #999;
+        }
+        .sidebar-menu-item:hover i {
+            color: #1565C0;
+        }
+        .sidebar-breadcrumb {
+            padding: 10px 15px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            background-color: #1976D2;
+            margin-bottom: 5px;
+        }
+        .sidebar-breadcrumb a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+        }
+        .sidebar-breadcrumb a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        .sidebar-breadcrumb .separator {
+            margin: 0 8px;
+            color: rgba(255,255,255,0.5);
+        }
+        .sidebar-breadcrumb .current {
+            color: white;
+            font-weight: 500;
+        }
+        .main-content {
+            flex: 1;
+            margin-left: 200px;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .header {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 22px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #444;
+            font-size: 15px;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        input[type="text"]:focus, textarea:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.2);
+            outline: none;
+        }
+        .feature-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .feature-input {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .add-btn, .remove-btn {
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+        }
+        .add-btn:hover, .remove-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+        }
+        .add-btn {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+        }
+        .remove-btn {
+            background: linear-gradient(135deg, #f44336, #c62828);
+        }
+        .btn {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #f44336, #c62828);
+        }
+        .btn-view {
+            background: linear-gradient(135deg, #2196F3, #1565C0);
+        }
+        .result-area {
+            margin-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 25px;
+        }
+        .ai-prompt {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            min-height: 100px;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .button-group {
+            display: flex;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            height: 40px;
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #777;
+            font-size: 14px;
+        }
+        .customer-service {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .customer-service:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+        }
+        .customer-service i {
+            font-size: 28px;
+        }
+        
+        /* Toast提示样式 */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 1100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        @media (max-width: 600px) {
+            .button-group {
+                flex-direction: column;
+            }
+            .btn {
+                margin-bottom: 12px;
+            }
+            .customer-service {
+                width: 50px;
+                height: 50px;
+                bottom: 20px;
+                right: 20px;
+            }
+            .customer-service i {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span>OZON标题生成</span>
+            <i class="fas fa-bars" style="margin-left: auto;"></i>
+        </div>
+        <div class="sidebar-menu">
+            <a href="index.html" class="sidebar-menu-item"><i class="fas fa-th-large"></i> Dashboard</a>
+            <div class="sidebar-breadcrumb">
+                <a href="index.html">首页</a>
+                <span class="separator">></span>
+                <a href="ai-tools.html">AI工具</a>
+                <span class="separator">></span>
+                <span class="current">AI标题-简介-关键词</span>
+            </div>
+            <a href="index.html" class="sidebar-menu-item"><i class="fas fa-home"></i> 首页</a>
+            <a href="tools.html" class="sidebar-menu-item"><i class="fas fa-tools"></i> 实用工具</a>
+            <a href="ai-tools.html" class="sidebar-menu-item"><i class="fas fa-robot"></i> AI工具</a>
+            <a href="data-analysis.html" class="sidebar-menu-item"><i class="fas fa-chart-line"></i> 数据分析</a>
+            <a href="settings.html" class="sidebar-menu-item"><i class="fas fa-cog"></i> 设置</a>
+        </div>
+    </div>
+    
+    <div class="main-content">
+    <div class="container">
+        
+        <div class="header">
+            <img src="logo.png" alt="AI工具" class="logo">
+            <h1>AI智能生成: 标题、简介、关键词、标签</h1>
+        </div>
+        
+        <div class="form-group">
+            <label for="productName">* 中文名称</label>
+            <input type="text" id="productName" placeholder="请输入产品中文名称">
+        </div>
+        
+        <div class="form-group">
+            <label for="competitorLink">竞品链接</label>
+            <input type="text" id="competitorLink" placeholder="请复制OZON上同类产品的链接（非必填）">
+        </div>
+        
+        <div class="form-group">
+            <label>商品特征</label>
+            <div id="features">
+                <div class="feature-container">
+                    <input type="text" class="feature-input" placeholder="请输入商品特征描述（中文）：如"可折叠"、"轻便"">
+                    <button class="add-btn" onclick="addFeature()">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn" onclick="generatePrompt()">生成【标题、简介、关键词、标签】AI提问词</button>
+            <button class="btn btn-secondary" onclick="clearForm()">清空</button>
+            <button class="btn btn-view" onclick="showDemo()">查看视频演示</button>
+        </div>
+        
+        <div class="result-area" id="resultArea" style="display: none;">
+            <h3>AI提问词</h3>
+            <div class="ai-prompt" id="aiPrompt"></div>
+            
+            <div class="button-group">
+                <button class="btn" onclick="copyPrompt()">复制AI提问词</button>
+                <button class="btn btn-view" onclick="goToDeepseek()">前往Deepseek</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            © 2025 Made By Nicole. 
+        </div>
+    </div>
+    </div>
+    
+    <div class="customer-service" onclick="showCustomerService()">
+        <i class="fas fa-headset"></i>
+    </div>
+    
+    <div id="toast" class="toast"></div>
+
+    <script>
+        function addFeature() {
+            const featuresDiv = document.getElementById('features');
+            const newFeature = document.createElement('div');
+            newFeature.className = 'feature-container';
+            newFeature.innerHTML = `
+                <input type="text" class="feature-input" placeholder="请输入商品特征描述（中文）：如"可折叠"、"轻便"">
+                <button class="remove-btn" onclick="removeFeature(this)">-</button>
+                <button class="add-btn" onclick="addFeature()">+</button>
+            `;
+            featuresDiv.appendChild(newFeature);
+        }
+        
+        function removeFeature(button) {
+            const container = button.parentElement;
+            container.remove();
+        }
+
+        function generatePrompt() {
+            const productName = document.getElementById('productName').value.trim();
+            if (!productName) {
+                alert('请输入产品中文名称');
+                return;
+            }
+
+            const competitorLink = document.getElementById('competitorLink').value.trim();
+            
+            // 获取所有特征
+            const featureInputs = document.querySelectorAll('.feature-input');
+            const features = [];
+            featureInputs.forEach(input => {
+                const value = input.value.trim();
+                if (value) {
+                    features.push(value);
+                }
+            });
+
+            // 生成AI提问词
+            let prompt = `我是做俄罗斯OZON电商平台的跨境卖家，OZON是货架电商平台，我正在OZON平台上架一款商品，它的中文名称是："${productName}"`;
+            
+            if (competitorLink) {
+                prompt += `，这款商品在OZON平台上有一个竞品的链接是"${competitorLink}"`;
+            }
+            
+            if (features.length > 0) {
+                prompt += `，这款商品有以下特征:`;
+                features.forEach((feature, index) => {
+                    if (index > 0) {
+                        prompt += `、`;
+                    }
+                    prompt += `"${feature}"`;
+                });
+            }
+            
+            prompt += `、请结合商品的中文名称，商品的特征`;
+            
+            if (competitorLink) {
+                prompt += `以及竞品链接，并解析链接中的俄文标题以及"Описание"属性中的俄文商品描述`;
+            }
+            
+            prompt += `生成新的产品标题（产品标题是俄文，并且用文本编辑器的方式展示，由一个核心词加一个长尾词组成就可以）、新的产品描述（产品描述是俄文，并且用文本编辑器的方式展示，产品描述不要出现具体的尺寸信息，产品的俄文描述的长句子中必须包含标点符号，不少于300字）、新的产品关键词(产品关键词用文本编辑器的方式展示，并且数量不少于20个，关键词之间用;隔开)，新的主题标签（主题标签是俄文，并且用文本编辑器的方式展示，主题标签类似社交媒体中的话题标签，商品的主题标签可以是商品所代表的风格、主义、流行趋势、生活方式、或者使用人群的日常社交活动等。主题标签不要出现任何品牌名称，主题标签要避免使用任何可能涉及政策、军事、违禁品的词汇。主题标签必须以#号开头，并且只包含字母、数字和下划线。主题标签的最大长度为28个字符，数量30个左右，相邻的主题标签之间用空格分隔），要求以俄文形式，并且符合俄罗斯人的口语习惯，并分别以文本编辑器的展示方式，文本编辑器中是相关的俄文内容，文本编辑器下方要有对应的的中文对照翻译（中文对照翻译不要展示在文本编辑器中）`;
+
+            // 显示结果区域
+            document.getElementById('aiPrompt').textContent = prompt;
+            document.getElementById('resultArea').style.display = 'block';
+        }
+
+        function showToast(message, duration = 2000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+        
+        function copyPrompt() {
+            const promptText = document.getElementById('aiPrompt').textContent;
+            navigator.clipboard.writeText(promptText)
+                .then(() => showToast('✅ AI提问词已复制到剪贴板'))
+                .catch(err => showToast('❌ 复制失败: ' + err));
+        }
+
+        function goToDeepseek() {
+            window.open('https://chat.deepseek.com/', '_blank');
+        }
+        
+        function showDemo() {
+            alert('视频演示功能正在开发中');
+        }
+
+        function showCustomerService() {
+            alert('联系我们：\n邮箱：zouqifeng@jiawae-commerce.com\n工作时间：周一至周五 9:00-18:00');
+        }
+
+        function clearForm() {
+            document.getElementById('productName').value = '';
+            document.getElementById('competitorLink').value = '';
+            
+            // 清除特征，只保留一个空输入框
+            const featuresDiv = document.getElementById('features');
+            featuresDiv.innerHTML = `
+                <div class="feature-container">
+                    <input type="text" class="feature-input" placeholder="请输入商品特征描述（中文）：如"可折叠"、"轻便"">
+                    <button class="add-btn" onclick="addFeature()">+</button>
+                </div>
+            `;
+            
+            // 隐藏结果区域
+            document.getElementById('resultArea').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
