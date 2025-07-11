@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OZON工具平台</title>
+    <title>OZON工具盒子</title>
+    
+    <!-- 网站图标 -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <meta name="theme-color" content="#2196F3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
@@ -22,12 +29,16 @@
             color: #333;
             height: 100vh;
             position: fixed;
-            left: 0;
+            left: -200px;
             top: 0;
             box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            z-index: 100;
+            z-index: 1000;
             overflow-y: auto;
             border-right: 1px solid #e0e0e0;
+            transition: left 0.3s ease;
+        }
+        .sidebar.open {
+            left: 0;
         }
         .sidebar-header {
             padding: 15px;
@@ -39,6 +50,117 @@
             display: flex;
             align-items: center;
             color: white;
+            justify-content: space-between;
+        }
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #1565C0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 999;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .top-bar-logo {
+            width: 32px;
+            height: 32px;
+            background-image: url('favicon.svg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .top-bar-title {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .search-container {
+            position: relative;
+            display: none;
+        }
+        .search-container.active {
+            display: block;
+        }
+        .search-input {
+            padding: 8px 35px 8px 12px;
+            border: none;
+            border-radius: 20px;
+            width: 250px;
+            font-size: 14px;
+            outline: none;
+        }
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1001;
+            display: none;
+        }
+        .search-results.show {
+            display: block;
+        }
+        .search-result-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.2s;
+        }
+        .search-result-item:hover {
+            background-color: #f5f5f5;
+        }
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        .search-result-icon {
+            color: #1565C0;
+            width: 20px;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        .overlay.show {
+            display: block;
         }
         .sidebar-menu {
             padding: 15px 0;
@@ -67,7 +189,8 @@
         }
         .main-content {
             flex: 1;
-            margin-left: 200px;
+            margin-left: 0;
+            margin-top: 60px;
             padding: 20px;
         }
         .container {
@@ -217,6 +340,175 @@
         .toast.show {
             opacity: 1;
         }
+        
+        /* 更新提示弹窗样式 */
+        .update-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .update-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .update-modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        .update-modal.show .update-modal-content {
+            transform: scale(1);
+        }
+        .update-modal-header {
+            background: linear-gradient(135deg, #2196F3, #1565C0);
+            color: white;
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            text-align: center;
+            position: relative;
+        }
+        .update-modal-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .update-modal-header .version {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        .update-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        .update-modal-close:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .update-modal-body {
+            padding: 25px;
+        }
+        .update-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .update-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .update-item-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .update-item-type {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .update-item-type.new {
+            background-color: #E8F5E8;
+            color: #2E7D32;
+        }
+        .update-item-type.improve {
+            background-color: #E3F2FD;
+            color: #1565C0;
+        }
+        .update-item-type.fix {
+            background-color: #FFF3E0;
+            color: #F57C00;
+        }
+        .update-item-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .update-modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+        .update-modal-btn {
+            background: linear-gradient(135deg, #2196F3, #1565C0);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .update-modal-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+        
+        /* 通知图标样式 */
+        .notification-btn {
+            background: none;
+            border: none;
+            color: #333;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            position: relative;
+            margin-left: 15px;
+        }
+        .notification-btn:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            color: #2196F3;
+        }
+        .notification-btn .notification-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background-color: #f44336;
+            color: white;
+            border-radius: 50%;
+            width: 8px;
+            height: 8px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         @media (max-width: 600px) {
             .tools-grid {
                 grid-template-columns: 1fr;
@@ -234,18 +526,45 @@
     </style>
 </head>
 <body>
-    <div class="sidebar">
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+    
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <div class="top-bar-logo"></div>
+            <button class="menu-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <span class="top-bar-title">OZON工具平台</span>
+            <button class="notification-btn" onclick="showUpdateModal()" title="查看更新通知">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge" id="notificationBadge" style="display: none;"></span>
+            </button>
+        </div>
+        
+        <div class="search-container" id="searchContainer">
+            <input type="text" class="search-input" id="searchInput" placeholder="搜索功能..." oninput="performSearch()">
+            <i class="fas fa-search search-icon"></i>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+        
+        <button class="menu-toggle" onclick="toggleSearch()">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+    
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <span>OZON工具平台</span>
-            <i class="fas fa-bars" style="margin-left: auto;"></i>
+            <span>导航菜单</span>
+            <button class="menu-toggle" onclick="closeSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
         <div class="sidebar-menu">
-            <a href="index.html" class="sidebar-menu-item"><i class="fas fa-th-large"></i> Dashboard</a>
-            <a href="index.html" class="sidebar-menu-item"><i class="fas fa-home"></i> 首页</a>
-            <a href="tools.html" class="sidebar-menu-item"><i class="fas fa-tools"></i> 实用工具</a>
-            <a href="ai-tools.html" class="sidebar-menu-item"><i class="fas fa-robot"></i> AI工具</a>
-            <a href="data-analysis.html" class="sidebar-menu-item"><i class="fas fa-chart-line"></i> 数据分析</a>
-            <a href="settings.html" class="sidebar-menu-item"><i class="fas fa-cog"></i> 设置</a>
+            <a href="index.html" class="sidebar-menu-item" data-keywords="首页 主页 home"><i class="fas fa-home"></i> 首页</a>
+            <a href="tools.html" class="sidebar-menu-item" data-keywords="实用工具 工具 tools 物流 计算器"><i class="fas fa-tools"></i> 实用工具</a>
+            <a href="ai-tools.html" class="sidebar-menu-item" data-keywords="AI工具 人工智能 ai 标题生成 翻译 图片生成"><i class="fas fa-robot"></i> AI工具</a>
+            <a href="data-analysis.html" class="sidebar-menu-item" data-keywords="数据分析 分析 excel 数据 统计"><i class="fas fa-chart-line"></i> 数据分析</a>
+            <a href="settings.html" class="sidebar-menu-item" data-keywords="设置 配置 settings"><i class="fas fa-cog"></i> 设置</a>
         </div>
     </div>
     
@@ -304,8 +623,82 @@
     </div>
     
     <div id="toast" class="toast"></div>
+    
+    <!-- 更新提示弹窗 -->
+    <div class="update-modal" id="updateModal">
+        <div class="update-modal-content">
+            <div class="update-modal-header">
+                <button class="update-modal-close" onclick="closeUpdateModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h2>🎉 平台更新</h2>
+                <div class="version">版本 v2.1.0</div>
+            </div>
+            <div class="update-modal-body">
+                <div class="update-item">
+                     <div class="update-item">
+                    <div class="update-item-title">
+                        <span class="update-item-type new">新增</span>
+                        数据分析工具
+                    </div>
+                    <div class="update-item-description">
+                       
+                        Excel数据分析器筛选商品，更快速的筛选出高利润商品。
+                    </div>
+                    <div class="update-item-title">
+                        <span class="update-item-type new">新增</span>
+                        智能搜索功能
+                    </div>
+                    <div class="update-item-description">
+                        新增了强大的搜索功能，支持按功能名称和关键词快速查找工具，提升使用效率。
+                    </div>
+                </div>
+                <div class="update-item">
+                    <div class="update-item-title">
+                        <span class="update-item-type improve">优化</span>
+                        界面交互体验
+                    </div>
+                    <div class="update-item-description">
+                        优化了侧边栏交互，支持点击展开/收起，添加了遮罩层和键盘快捷键支持。
+                    </div>
+                </div>
+                <div class="update-item">
+                    <div class="update-item-title">
+                        <span class="update-item-type new">新增</span>
+                        品牌Logo显示
+                    </div>
+                    <div class="update-item-description">
+                        在顶部导航栏添加了OZON工具平台的专属Logo，提升品牌识别度。
+                    </div>
+                </div>
+               
+                </div>
+                <div class="update-item">
+                    <div class="update-item-title">
+                        <span class="update-item-type new">新增</span>
+                        图片放大功能
+                    </div>
+                    <div class="update-item-description">
+                        为产品图片添加了点击放大功能，支持模态框查看大图，提升用户体验。
+                    </div>
+                </div>
+            </div>
+            <div class="update-modal-footer">
+                <button class="update-modal-btn" onclick="closeUpdateModal()">我知道了</button>
+            </div>
+        </div>
+    </div>
 
     <script>
+        // 菜单数据
+        const menuItems = [
+            { name: '首页', url: 'index.html', icon: 'fas fa-home', keywords: '首页 主页 home' },
+            { name: '实用工具', url: 'tools.html', icon: 'fas fa-tools', keywords: '实用工具 工具 tools 物流 计算器' },
+            { name: 'AI工具', url: 'ai-tools.html', icon: 'fas fa-robot', keywords: 'AI工具 人工智能 ai 标题生成 翻译 图片生成' },
+            { name: '数据分析', url: 'data-analysis.html', icon: 'fas fa-chart-line', keywords: '数据分析 分析 excel 数据 统计' },
+            { name: '设置', url: 'settings.html', icon: 'fas fa-cog', keywords: '设置 配置 settings' }
+        ];
+        
         function showToast(message, duration = 2000) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -319,6 +712,152 @@
         function showCustomerService() {
             showToast('联系我们：邮箱：zouqifeng@jiawae-commerce.com\n工作时间：周一至周五 9:00-18:00');
         }
+        
+        // 更新提示弹窗功能
+        function showUpdateModal() {
+            const modal = document.getElementById('updateModal');
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeUpdateModal() {
+            const modal = document.getElementById('updateModal');
+            const notificationBadge = document.getElementById('notificationBadge');
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+            
+            // 记录用户已查看更新提示
+            localStorage.setItem('lastViewedUpdate', '2.1.0');
+            
+            // 隐藏通知徽章
+            notificationBadge.style.display = 'none';
+        }
+        
+        function checkForUpdates() {
+            const currentVersion = '2.1.0';
+            const lastViewedVersion = localStorage.getItem('lastViewedUpdate');
+            const notificationBadge = document.getElementById('notificationBadge');
+            
+            // 如果是新用户或版本更新，显示更新提示和通知徽章
+            if (!lastViewedVersion || lastViewedVersion !== currentVersion) {
+                // 显示通知徽章
+                notificationBadge.style.display = 'flex';
+                
+                setTimeout(() => {
+                    showUpdateModal();
+                }, 1000); // 延迟1秒显示，让页面完全加载
+            } else {
+                // 隐藏通知徽章
+                notificationBadge.style.display = 'none';
+            }
+        }
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+        
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        }
+        
+        function toggleSearch() {
+            const searchContainer = document.getElementById('searchContainer');
+            const searchInput = document.getElementById('searchInput');
+            
+            searchContainer.classList.toggle('active');
+            
+            if (searchContainer.classList.contains('active')) {
+                setTimeout(() => {
+                    searchInput.focus();
+                }, 100);
+            } else {
+                hideSearchResults();
+            }
+        }
+        
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+            const query = searchInput.value.toLowerCase().trim();
+            
+            if (query === '') {
+                hideSearchResults();
+                return;
+            }
+            
+            const results = menuItems.filter(item => 
+                item.name.toLowerCase().includes(query) || 
+                item.keywords.toLowerCase().includes(query)
+            );
+            
+            if (results.length > 0) {
+                searchResults.innerHTML = results.map(item => 
+                    `<div class="search-result-item" onclick="navigateToPage('${item.url}')">
+                        <i class="${item.icon} search-result-icon"></i>
+                        <span>${item.name}</span>
+                    </div>`
+                ).join('');
+                searchResults.classList.add('show');
+            } else {
+                searchResults.innerHTML = '<div class="search-result-item">未找到相关功能</div>';
+                searchResults.classList.add('show');
+            }
+        }
+        
+        function hideSearchResults() {
+            const searchResults = document.getElementById('searchResults');
+            searchResults.classList.remove('show');
+        }
+        
+        function navigateToPage(url) {
+            window.location.href = url;
+        }
+        
+        // 点击页面其他地方隐藏搜索结果
+        document.addEventListener('click', function(e) {
+            const searchContainer = document.getElementById('searchContainer');
+            if (!searchContainer.contains(e.target)) {
+                hideSearchResults();
+            }
+        });
+        
+        // ESC键关闭侧边栏和搜索
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                // 优先关闭更新弹窗
+                const updateModal = document.getElementById('updateModal');
+                if (updateModal.classList.contains('show')) {
+                    closeUpdateModal();
+                    return;
+                }
+                
+                closeSidebar();
+                const searchContainer = document.getElementById('searchContainer');
+                if (searchContainer.classList.contains('active')) {
+                    toggleSearch();
+                }
+            }
+        });
+        
+        // 页面加载完成后检查更新
+        document.addEventListener('DOMContentLoaded', function() {
+            checkForUpdates();
+        });
+        
+        // 点击弹窗背景关闭
+        document.getElementById('updateModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeUpdateModal();
+            }
+        });
     </script>
 </body>
 </html>
