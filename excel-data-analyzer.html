@@ -792,6 +792,15 @@
                             <span class="quick-filter-unit">→</span>
                             <input type="date" class="quick-filter-input" id="quickDateEnd" style="width: 120px;">
                         </div>
+                        
+                        <div class="quick-filter-group">
+                            <span class="quick-filter-label">品牌筛选:</span>
+                            <select class="quick-filter-input" id="quickBrandFilter" style="width: 160px;">
+                                <option value="">全部品牌</option>
+                                <option value="без_бренда">без бренда</option>
+                                <option value="非без_бренда">非без бренда</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="quick-filter-actions">
@@ -1560,6 +1569,37 @@
                 });
             }
             
+            // 品牌筛选
+            const brandFilter = document.getElementById('quickBrandFilter').value;
+            if (brandFilter) {
+                filtered = filtered.filter(row => {
+                    const brandFields = ['品牌', '商标', 'brand', 'Brand', '品牌名称', '商品品牌'];
+                    const brandValue = findMatchingField(row, brandFields);
+                    const brandStr = String(brandValue || '').trim();
+                    
+                    if (brandFilter === 'без_бренда') {
+                        // 筛选无品牌商品：品牌字段为空、"без бренда"或类似值
+                        return !brandStr || 
+                               brandStr.toLowerCase() === 'без бренда' ||
+                               brandStr.toLowerCase() === 'без бренда' ||
+                               brandStr.toLowerCase() === 'no brand' ||
+                               brandStr.toLowerCase() === 'none' ||
+                               brandStr === '-' ||
+                               brandStr === 'n/a';
+                    } else if (brandFilter === '非без_бренда') {
+                        // 筛选有品牌商品：品牌字段不为空且不是"без бренда"
+                        return brandStr && 
+                               brandStr.toLowerCase() !== 'без бренда' &&
+                               brandStr.toLowerCase() !== 'без бренда' &&
+                               brandStr.toLowerCase() !== 'no brand' &&
+                               brandStr.toLowerCase() !== 'none' &&
+                               brandStr !== '-' &&
+                               brandStr !== 'n/a';
+                    }
+                    return true;
+                });
+            }
+            
             filteredData = filtered;
             currentSort = { column: null, direction: 'asc' }; // 重置排序
             displayResults();
@@ -1583,6 +1623,7 @@
             document.getElementById('quickWeightMax').value = '';
             document.getElementById('quickDateStart').value = '';
             document.getElementById('quickDateEnd').value = '';
+            document.getElementById('quickBrandFilter').value = '';
             
             filteredData = [...originalData];
             currentSort = { column: null, direction: 'asc' }; // 重置排序
