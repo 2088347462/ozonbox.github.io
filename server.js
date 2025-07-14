@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 8080;
+const PORT = 8081;
 
 // MIME类型映射
 const mimeTypes = {
@@ -14,7 +14,8 @@ const mimeTypes = {
     '.jpeg': 'image/jpeg',
     '.gif': 'image/gif',
     '.svg': 'image/svg+xml',
-    '.ico': 'image/x-icon'
+    '.ico': 'image/x-icon',
+    '.zip': 'application/zip'
 };
 
 const server = http.createServer((req, res) => {

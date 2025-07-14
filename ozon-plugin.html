@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OZON后台数据分析插件 - OZON工具盒子</title>
+    
+    <!-- 网站图标 -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <meta name="theme-color" content="#2196F3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #1565C0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 999;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .top-bar-logo {
+            width: 32px;
+            height: 32px;
+            background-image: url('favicon.svg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .top-bar-title {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .main-content {
+            margin-top: 60px;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .content-layout {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .plugin-downloads {
+            flex: 2;
+        }
+        
+        .contact-sidebar {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .plugin-header {
+            background: linear-gradient(135deg, #2196F3, #1565C0);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(33, 150, 243, 0.3);
+        }
+        
+        .plugin-header h1 {
+            margin: 0 0 15px 0;
+            font-size: 36px;
+            font-weight: 700;
+        }
+        
+        .plugin-header p {
+            margin: 0;
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .plugin-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .info-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .info-card h3 {
+            margin: 0 0 20px 0;
+            color: #1565C0;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-list i {
+            color: #4CAF50;
+            width: 20px;
+        }
+        
+        .download-section {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .download-section h3 {
+            margin: 0 0 30px 0;
+            color: #1565C0;
+            font-size: 28px;
+        }
+        
+        .versions-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .version-card {
+            flex: 1;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .trial-version {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+        }
+        
+        .premium-version {
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+        }
+        
+        .version-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .version-description {
+            margin-bottom: 25px;
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px 30px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .download-btn i {
+            font-size: 20px;
+        }
+        
+        .premium-price {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        .premium-price .original {
+            text-decoration: line-through;
+            font-size: 18px;
+            opacity: 0.7;
+            margin-right: 10px;
+        }
+        
+        .code-input-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .code-input {
+            width: 100%;
+            max-width: 250px;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .premium-download-btn {
+            background: white;
+            color: #FF6B35;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .premium-download-btn:hover {
+            background: #f0f0f0;
+        }
+        
+        .premium-download-btn:disabled {
+            background: #ccc;
+            color: #666;
+            cursor: not-allowed;
+        }
+        
+        .error-message {
+            color: #ffcccb;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .versions-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+        
+        .installation-guide {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .installation-guide h3 {
+            margin: 0 0 20px 0;
+            color: #1565C0;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .step-number {
+            background: #2196F3;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .step-content h4 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        
+        .step-content p {
+            margin: 0;
+            color: #666;
+        }
+        
+        .contact-info {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            position: sticky;
+            top: 80px;
+        }
+        
+        .contact-info h3 {
+            margin: 0 0 15px 0;
+            font-size: 24px;
+        }
+        
+        .contact-info p {
+            margin: 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .wechat-contact {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .qr-code-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .qr-code-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background: white;
+            padding: 10px;
+        }
+        
+        .qr-code-text {
+            text-align: center;
+            color: white;
+        }
+        
+        .qr-code-text h5 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+        }
+        
+        .qr-code-text p {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 768px) {
+            .plugin-info {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .plugin-header {
+                padding: 30px 20px;
+            }
+            
+            .plugin-header h1 {
+                font-size: 28px;
+            }
+            
+            .main-content {
+                padding: 20px 15px;
+            }
+            
+            .content-layout {
+                flex-direction: column;
+            }
+            
+            .contact-info {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <div class="top-bar-logo"></div>
+            <div class="top-bar-title">OZON工具盒子</div>
+        </div>
+        <button class="back-btn" onclick="window.location.href='index.html'">
+            <i class="fas fa-arrow-left"></i> 返回首页
+        </button>
+    </div>
+    
+    <div class="main-content">
+        <div class="plugin-header">
+            <h1><i class="fas fa-puzzle-piece"></i> OZON后台数据分析插件</h1>
+            <p>本插件是一款用于OZON 卖家后台-分析图表 功能数据可视化的开源插件工具</p>
+        </div>
+        
+        <div class="plugin-info">
+            <div class="info-card">
+                <h3><i class="fas fa-star"></i> 核心功能</h3>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> 实时数据监控与分析</li>
+                    <li><i class="fas fa-check"></i> 销售趋势可视化展示</li>
+                    <li><i class="fas fa-check"></i> 商品表现深度分析</li>
+                    <li><i class="fas fa-check"></i> 竞争对手数据追踪</li>
+                
+                </ul>
+            </div>
+            
+            <div class="info-card">
+                <h3><i class="fas fa-cog"></i> 技术特点</h3>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> 轻量级浏览器插件</li>
+                    <li><i class="fas fa-check"></i> 无需额外软件安装</li>
+                    <li><i class="fas fa-check"></i> 数据安全加密传输</li>
+                    <li><i class="fas fa-check"></i> 支持多浏览器兼容</li>
+                    <li><i class="fas fa-check"></i> 自动更新功能</li>
+                    <li><i class="fas fa-check"></i> 24/7技术支持</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="content-layout">
+            <div class="plugin-downloads">
+                <div class="download-section">
+                    <h3><i class="fas fa-download"></i> 立即下载体验</h3>
+                    
+                    <div class="versions-container">
+                        <div class="version-card trial-version">
+                            <h4 class="version-title"><i class="fas fa-gift"></i> 30天免费试用</h4>
+                            <p class="version-description">完整功能体验，无任何限制，让您充分了解插件的强大功能</p>
+                            <a href="http://localhost:8081/ozon-sales-assistant-30day-trial.zip" class="download-btn" download>
+                                <i class="fas fa-download"></i>
+                                下载试用版
+                            </a>
+                        </div>
+                        
+                        <div class="version-card premium-version">
+                            <h4 class="version-title"><i class="fas fa-crown"></i> 永久付费版</h4>
+                            <p class="version-description">一次购买，终身使用，享受所有功能和持续更新</p>
+                            <div class="premium-price">
+                                <span class="original">¥99.9</span>
+                                <span>限时特惠 ¥29.9</span>
+                            </div>
+                            <div class="code-input-section">
+                                <p>请输入提取码下载永久版：</p>
+                                <input type="text" class="code-input" id="extractCode" placeholder="请输入提取码">
+                                <br>
+                                <button class="premium-download-btn" onclick="validateAndDownload()">验证并下载</button>
+                                <div class="error-message" id="errorMessage" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="installation-guide">
+                    <h3><i class="fas fa-book"></i> 安装指南</h3>
+                    
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>下载插件文件</h4>
+                            <p>点击上方下载按钮，获取插件安装包</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>解压文件</h4>
+                            <p>将下载的zip文件解压到任意文件夹</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>打开浏览器扩展管理</h4>
+                            <p>在Chrome浏览器中输入 chrome://extensions/ 或通过菜单进入扩展程序管理页面</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>启用开发者模式</h4>
+                            <p>在扩展程序页面右上角开启"开发者模式"开关</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>加载插件</h4>
+                            <p>点击"加载已解压的扩展程序"，选择解压后的插件文件夹</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>开始使用</h4>
+                            <p>访问OZON后台，插件将自动激活并开始工作</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="contact-sidebar">
+                <div class="contact-info">
+                    <h3><i class="fas fa-headset"></i> 技术支持</h3>
+                    <p>如果您在使用过程中遇到任何问题，请随时联系我们的技术支持团队</p>
+                    <div class="wechat-contact">
+                        <i class="fab fa-weixin"></i> 微信：ZQF13532538910
+                    </div>
+                    <div class="qr-code-section">
+                        <img src="buy.jpg" alt="联系二维码" class="qr-code-image">
+                        <div class="qr-code-text">
+                            <h5>扫码联系客服</h5>
+                            <p>获取技术支持与购买咨询</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function validateAndDownload() {
+            const extractCode = document.getElementById('extractCode').value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+            const downloadBtn = document.querySelector('.premium-download-btn');
+            
+            // 清除之前的错误信息
+            errorMessage.style.display = 'none';
+            
+            // 验证提取码
+            if (extractCode === 'ozon-sales-assistant by nicole') {
+                // 提取码正确，开始下载
+                downloadBtn.textContent = '下载中...';
+                downloadBtn.disabled = true;
+                
+                // 创建下载链接
+                const link = document.createElement('a');
+                link.href = 'http://localhost:8081/ozon-sales-assistant-by-nicole-permanent.zip';
+                link.download = 'ozon-sales-assistant-by-nicole-permanent.zip';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // 重置按钮状态
+                setTimeout(() => {
+                    downloadBtn.textContent = '验证并下载';
+                    downloadBtn.disabled = false;
+                    document.getElementById('extractCode').value = '';
+                }, 2000);
+                
+            } else {
+                // 提取码错误
+                errorMessage.textContent = '提取码错误，请检查后重新输入';
+                errorMessage.style.display = 'block';
+                
+                // 添加输入框错误样式
+                const codeInput = document.getElementById('extractCode');
+                codeInput.style.borderColor = '#ff4444';
+                codeInput.style.backgroundColor = '#ffe6e6';
+                
+                // 3秒后清除错误样式
+                setTimeout(() => {
+                    codeInput.style.borderColor = '';
+                    codeInput.style.backgroundColor = '';
+                }, 3000);
+            }
+        }
+        
+        // 回车键触发验证
+        document.getElementById('extractCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                validateAndDownload();
+            }
+        });
+    </script>
+</body>
+</html>

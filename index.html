@@ -288,6 +288,9 @@
         .tool-card-header.data + .tool-card-footer .tool-card-btn:hover {
             background-color: #6A1B9A;
         }
+        .tool-card-btn[style*="#FF9800"]:hover {
+            background-color: #F57C00 !important;
+        }
         .footer {
             text-align: center;
             margin-top: 40px;
@@ -610,6 +613,20 @@
                         <a href="data-analysis.html" class="tool-card-btn">查看工具</a>
                     </div>
                 </div>
+                
+                <div class="tool-card">
+                    <div class="tool-card-header" style="background: linear-gradient(135deg, #FF9800, #F57C00);">
+                        <h3 class="tool-card-title">OZON后台数据分析插件</h3>
+                    </div>
+                    <div class="tool-card-body">
+                        <p class="tool-card-description">专业的浏览器插件，实时监控OZON后台数据，提供深度分析报告。30天免费试用！</p>
+                    </div>
+                    <div class="tool-card-footer">
+                        <a href="ozon-plugin.html" class="tool-card-btn" style="background-color: #FF9800;">立即下载</a>
+                    </div>
+                </div>
+                
+
             </div>
             
             <div class="footer">
@@ -632,64 +649,66 @@
                     <i class="fas fa-times"></i>
                 </button>
                 <h2>🎉 平台更新</h2>
-                <div class="version">版本 v2.1.0</div>
+                <div class="version">版本 v2.2.0</div>
             </div>
             <div class="update-modal-body">
                 <div class="update-item">
-                     <div class="update-item">
                     <div class="update-item-title">
-                        <span class="update-item-type new">新增</span>
-                        数据分析工具
+                        <span class="update-item-type fix">修复</span>
+                        OZON插件下载问题
                     </div>
                     <div class="update-item-description">
-                       
-                        Excel数据分析器筛选商品，更快速的筛选出高利润商品。
-                    </div>
-                    <div class="update-item-title">
-                        <span class="update-item-type new">新增</span>
-                        智能搜索功能
-                    </div>
-                    <div class="update-item-description">
-                        新增了强大的搜索功能，支持按功能名称和关键词快速查找工具，提升使用效率。
+                        🔧 修复了永久版本插件无法下载的问题，优化服务器配置，添加zip文件MIME类型支持，确保下载功能正常工作。
                     </div>
                 </div>
+                
                 <div class="update-item">
                     <div class="update-item-title">
                         <span class="update-item-type improve">优化</span>
-                        界面交互体验
+                        插件页面布局
                     </div>
                     <div class="update-item-description">
-                        优化了侧边栏交互，支持点击展开/收起，添加了遮罩层和键盘快捷键支持。
-                    </div>
-                </div>
-                <div class="update-item">
-                    <div class="update-item-title">
-                        <span class="update-item-type new">新增</span>
-                        品牌Logo显示
-                    </div>
-                    <div class="update-item-description">
-                        在顶部导航栏添加了ozon工具盒子的专属Logo，提升品牌识别度。
-                    </div>
-                </div>
-               
-                </div>
-                <div class="update-item">
-                    <div class="update-item-title">
-                        <span class="update-item-type new">新增</span>
-                        Excel品牌筛选功能
-                    </div>
-                    <div class="update-item-description">
-                        在Excel数据分析器中新增品牌筛选选项，支持筛选"без бренда"（无品牌）和"非без бренда"（有品牌）商品，提升数据分析效率。
+                        🎨 重新设计插件下载页面，试用版和永久版并排显示，添加醒目的更新通知，提升用户体验和视觉效果。
                     </div>
                 </div>
                 
                 <div class="update-item">
                     <div class="update-item-title">
                         <span class="update-item-type new">新增</span>
-                        图片放大功能
+                        永久版本文件打包
                     </div>
                     <div class="update-item-description">
-                        为产品图片添加了点击放大功能，支持模态框查看大图，提升用户体验。
+                        📦 将永久版本源文件夹重新打包为标准zip格式，解决文件名空格问题，确保下载的是完整功能版本。
+                    </div>
+                </div>
+                
+                <div class="update-item">
+                    <div class="update-item-title">
+                        <span class="update-item-type improve">优化</span>
+                        文件服务器配置
+                    </div>
+                    <div class="update-item-description">
+                        ⚙️ 升级文件服务器，更改端口配置，添加完整URL路径支持，提高文件下载的稳定性和可靠性。
+                    </div>
+                </div>
+                
+                <div class="update-item">
+                    <div class="update-item-title">
+                        <span class="update-item-type new">新增</span>
+                        Excel数据分析器
+                    </div>
+                    <div class="update-item-description">
+                        📊 Excel数据分析器筛选商品，更快速的筛选出高利润商品，支持品牌筛选功能。
+                    </div>
+                </div>
+                
+                <div class="update-item">
+                    <div class="update-item-title">
+                        <span class="update-item-type new">新增</span>
+                        智能搜索功能
+                    </div>
+                    <div class="update-item-description">
+                        🔍 新增了强大的搜索功能，支持按功能名称和关键词快速查找工具，提升使用效率。
                     </div>
                 </div>
             </div>
@@ -706,6 +725,7 @@
             { name: '实用工具', url: 'tools.html', icon: 'fas fa-tools', keywords: '实用工具 工具 tools 物流 计算器' },
             { name: 'AI工具', url: 'ai-tools.html', icon: 'fas fa-robot', keywords: 'AI工具 人工智能 ai 标题生成 翻译 图片生成' },
             { name: '数据分析', url: 'data-analysis.html', icon: 'fas fa-chart-line', keywords: '数据分析 分析 excel 数据 统计' },
+            { name: 'OZON后台数据分析插件', url: 'ozon-plugin.html', icon: 'fas fa-puzzle-piece', keywords: 'OZON插件 后台数据 分析插件 浏览器插件 数据监控 试用 下载' },
             { name: '设置', url: 'settings.html', icon: 'fas fa-cog', keywords: '设置 配置 settings' }
         ];
         
@@ -737,14 +757,14 @@
             document.body.style.overflow = 'auto';
             
             // 记录用户已查看更新提示
-            localStorage.setItem('lastViewedUpdate', '2.1.0');
+            localStorage.setItem('lastViewedUpdate', '2.2.0');
             
             // 隐藏通知徽章
             notificationBadge.style.display = 'none';
         }
         
         function checkForUpdates() {
-            const currentVersion = '2.1.0';
+            const currentVersion = '2.2.0';
             const lastViewedVersion = localStorage.getItem('lastViewedUpdate');
             const notificationBadge = document.getElementById('notificationBadge');
             

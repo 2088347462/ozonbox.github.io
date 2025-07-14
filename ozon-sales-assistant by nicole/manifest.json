@@ -1,0 +1,37 @@
+{
+  "update_url": "https://clients2.google.com/service/update2/crx",
+  "manifest_version": 3,
+  "name": "__MSG_main_name__",
+  "description": "__MSG_main_desc__",
+  "version": "1.0.0",
+  "default_locale": "zh_CN",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
+  "host_permissions": ["*://*/*"],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://seller.ozon.ru/*"
+      ],
+      "css": [
+        "plugins/bootstrap/css/bootstrap.min.css"
+      ],
+      "js": [
+        "plugins/jquery/jquery.min.js",
+        "plugins/bootstrap/js/bootstrap.min.js",
+        "content/backend/ozon.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
+    }
+  ],
+  "web_accessible_resources": [{
+    "resources": ["img/*", "assets/*", "plugins/*", "i18n/*", "js/*"],
+    "matches": ["*://*/*"]
+  }],
+  "icons": {
+    "16": "plugin/icons/icon16.svg"
+  }
+}
