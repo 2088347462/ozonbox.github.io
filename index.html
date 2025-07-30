@@ -649,9 +649,19 @@
                     <i class="fas fa-times"></i>
                 </button>
                 <h2>🎉 平台更新</h2>
-                <div class="version">版本 v2.3.0</div>
+                <div class="version">版本 v2.3.1</div>
             </div>
             <div class="update-modal-body">
+                <div class="update-item">
+                    <div class="update-item-title">
+                        <span class="update-item-type improve">优化</span>
+                        标题生成工具界面精简
+                    </div>
+                    <div class="update-item-description">
+                        ✨ 移除了"填充示例特征"和"模拟卖点分析"功能，界面更加简洁专注。专注于核心的AI提问词生成和产品分析功能，建议配置DeepSeek API密钥以获得最佳效果。
+                    </div>
+                </div>
+                
                 <div class="update-item">
                      <div class="update-item-description">
                          <span class="update-item-type fix"> 🤖 支持DeepSeek AI模型，用户需要配置DeepSeek API密钥来使用AI智能生成: 标题、简介、关键词、标签中的竞品分析功能</span>
@@ -769,14 +779,14 @@
             document.body.style.overflow = 'auto';
             
             // 记录用户已查看更新提示
-            localStorage.setItem('lastViewedUpdate', '2.3.0');
+            localStorage.setItem('lastViewedUpdate', '2.3.1');
             
             // 隐藏通知徽章
             notificationBadge.style.display = 'none';
         }
         
         function checkForUpdates() {
-            const currentVersion = '2.3.0';
+            const currentVersion = '2.3.1';
             const lastViewedVersion = localStorage.getItem('lastViewedUpdate');
             const notificationBadge = document.getElementById('notificationBadge');
             
