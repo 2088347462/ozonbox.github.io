@@ -673,6 +673,36 @@
             </div>
         </div>
         
+        <!-- 场景图生成功能 -->
+        <div class="form-group" style="background: #f0f8ff; padding: 15px; border-radius: 8px; border-left: 4px solid #4169e1;">
+            <h3 style="margin: 0 0 15px 0; color: #4169e1; display: flex; align-items: center; gap: 8px;">
+                <span>🎨</span>
+                <span>场景图提示词生成</span>
+                <span style="background: rgba(65, 105, 225, 0.1); padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: normal;">新功能</span>
+            </h3>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="season" style="display: block; margin-bottom: 5px; font-weight: bold;">穿着/使用季节：</label>
+                <select id="season" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: white;">
+                    <option value="通用">通用</option>
+                    <option value="春季">春季</option>
+                    <option value="夏季">夏季</option>
+                    <option value="秋季">秋季</option>
+                    <option value="冬季">冬季</option>
+                </select>
+            </div>
+            
+            <div style="font-size: 12px; color: #666; line-height: 1.4; margin-bottom: 15px;">
+                <p style="margin: 5px 0;">💡 <strong>功能说明：</strong></p>
+                <p style="margin: 5px 0;">• 基于产品名称、特征和季节生成专业的场景图提示词</p>
+                <p style="margin: 5px 0;">• 符合俄罗斯审美和现实特征的场景设计</p>
+                <p style="margin: 5px 0;">• 突出产品的核心特征（如防水、易清洁等）</p>
+                <p style="margin: 5px 0;">• 生成的是提示词，不直接生成图片</p>
+            </div>
+            
+            <button class="btn" onclick="generateScenePrompt()" style="background: linear-gradient(135deg, #4169e1, #6a5acd); margin-right: 10px;">🎨 生成场景图提示词</button>
+        </div>
+        
         <div class="button-group">
             <button class="btn" onclick="generatePrompt()">生成【标题、简介、关键词、标签】AI提问词</button>
             <button class="btn btn-secondary" onclick="clearForm()">清空</button>
@@ -686,6 +716,58 @@
             <div class="button-group">
                 <button class="btn" onclick="copyPrompt()">复制AI提问词</button>
                 <button class="btn btn-view" onclick="goToDeepseek()">前往Deepseek</button>
+            </div>
+        </div>
+        
+        <!-- 场景图提示词结果区域 -->
+        <div class="result-area" id="sceneResultArea" style="display: none;">
+            <h3 style="color: #4169e1; display: flex; align-items: center; gap: 8px;">
+                <span>🎨</span>
+                <span>场景图提示词</span>
+            </h3>
+            <div class="ai-prompt" id="scenePrompt" style="background: linear-gradient(135deg, #f0f8ff, #e6f3ff); border-left: 4px solid #4169e1;"></div>
+            
+            <div class="button-group">
+                <button class="btn" onclick="copyScenePrompt()" style="background: linear-gradient(135deg, #4169e1, #6a5acd);">复制场景图提示词</button>
+                <button class="btn btn-view" onclick="goToDouBao()">前往豆包</button>
+            </div>
+            
+            <!-- 商品图使用教程 -->
+            <div class="tutorial-section" style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #f8f9ff, #e8f0ff); border-radius: 12px; border-left: 4px solid #4169e1;">
+                <h4 style="color: #4169e1; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                    <span>📚</span>
+                    <span>商品图生成使用教程</span>
+                </h4>
+                
+                <div class="tutorial-steps" style="line-height: 1.8; color: #333;">
+                    <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                        <strong style="color: #4169e1;">第一步：</strong> 使用上方功能生成场景提示词，复制生成的提示词内容
+                    </div>
+                    
+                    <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                        <strong style="color: #4169e1;">第二步：</strong> 新开页面选择"图像生成"功能
+                    </div>
+                    
+                    <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                        <strong style="color: #4169e1;">第三步：</strong> 选择参考图（建议上传多张产品图片，越多效果越好）
+                    </div>
+                    
+                    <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                        <strong style="color: #4169e1;">第四步：</strong> 选择比例设置为 <code style="background: #e8f0ff; padding: 2px 6px; border-radius: 4px; color: #4169e1;">1:1</code>（方形比例）
+                    </div>
+                    
+                    <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                        <strong style="color: #4169e1;">第五步：</strong> 选择风格为 <code style="background: #e8f0ff; padding: 2px 6px; border-radius: 4px; color: #4169e1;">人像写真</code>（当前测试推荐）
+                    </div>
+                    
+                    <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                        <strong style="color: #4169e1;">第六步：</strong> 在提示词末尾加上"生成背景，并将产品融入"
+                    </div>
+                    
+                    <div class="step-item" style="padding: 10px; background: rgba(65, 105, 225, 0.1); border-radius: 8px; border: 1px dashed #4169e1;">
+                        <strong style="color: #4169e1;">💡 提示：</strong> 完成以上步骤后点击生成，即可获得专业的商品场景图
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -807,7 +889,7 @@
                 `- 格式：用文本编辑器方式展示俄文关键词\n` +
                 `- 下方提供中文翻译对照\n\n` +
                 `**4. 主题标签（俄文）**\n` +
-                `- 数量：25-35个标签\n` +
+                `- 数量：25-28个标签\n` +
                 `- 格式：每个标签以#开头，只包含字母、数字、下划线\n` +
                 `- 长度：每个标签最大28个字符\n` +
                 `- 内容：涵盖风格、生活方式、使用场景、流行趋势等\n` +
@@ -1521,7 +1603,9 @@
                 document.getElementById('competitorLink'),
                 document.getElementById('features'),
                 document.getElementById('resultArea'),
-                document.getElementById('competitorAnalysis')
+                document.getElementById('competitorAnalysis'),
+                document.getElementById('sceneResultArea'),
+                document.getElementById('season')
             ];
             
             // 为每个元素添加淡出动画
@@ -1534,6 +1618,11 @@
                     setTimeout(() => {
                         if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                             element.value = '';
+                        } else if (element.tagName === 'SELECT') {
+                            // 重置选择框到默认值
+                            if (element.id === 'season') {
+                                element.value = '通用';
+                            }
                         } else if (element.id === 'features') {
                             // 清除特征，只保留一个空输入框
                             element.innerHTML = `
@@ -1546,6 +1635,13 @@
                             element.style.display = 'none';
                             if (element.id === 'competitorAnalysis') {
                                 element.classList.remove('show');
+                            }
+                            // 清空场景图结果内容
+                            if (element.id === 'sceneResultArea') {
+                                const scenePromptDiv = document.getElementById('scenePrompt');
+                                if (scenePromptDiv) {
+                                    scenePromptDiv.textContent = '';
+                                }
                             }
                         }
                         
@@ -1661,6 +1757,73 @@
             };
             
             updateProgress();
+        }
+        
+        // 场景图提示词生成函数
+        function generateScenePrompt() {
+            const productName = document.getElementById('productName').value.trim();
+            const season = document.getElementById('season').value;
+            
+            if (!productName) {
+                showToast('❌ 请先输入产品中文名称');
+                return;
+            }
+            
+            // 获取所有特征
+            const featureInputs = document.querySelectorAll('.feature-input');
+            const features = [];
+            featureInputs.forEach(input => {
+                const value = input.value.trim();
+                if (value) {
+                    features.push(value);
+                }
+            });
+            
+            // 构建场景图提示词
+            let scenePrompt = `产品为${productName}，${productName}的特征为`;
+            
+            if (features.length > 0) {
+                scenePrompt += features.join('，') + '，';
+            } else {
+                scenePrompt += '高品质，实用，';
+            }
+            
+            scenePrompt += `比例「1:1」帮我生成产品背景图提示词（高级！）`;
+            
+            if (season !== '通用') {
+                scenePrompt += `穿着季节为：${season}`;
+            } else {
+                scenePrompt += `适用于各种场合`;
+            }
+            
+            scenePrompt += `（不要生成图片，仅需要提示词，场景要有意境，符合俄罗斯审美，符合现实特征）`;
+            
+            if (features.length > 0) {
+                scenePrompt += ` 请突出${features.join('，')}的特征`;
+            }
+            
+            // 显示结果
+            const sceneResultArea = document.getElementById('sceneResultArea');
+            const scenePromptDiv = document.getElementById('scenePrompt');
+            
+            scenePromptDiv.textContent = scenePrompt;
+            sceneResultArea.style.display = 'block';
+            sceneResultArea.classList.add('fade-in');
+            
+            showToast('🎨 场景图提示词生成完成！');
+        }
+        
+        // 复制场景图提示词
+        function copyScenePrompt() {
+            const promptText = document.getElementById('scenePrompt').textContent;
+            navigator.clipboard.writeText(promptText)
+                .then(() => showToast('✅ 场景图提示词已复制到剪贴板'))
+                .catch(err => showToast('❌ 复制失败: ' + err));
+        }
+        
+        // 跳转到豆包
+        function goToDouBao() {
+            window.open('https://www.doubao.com/', '_blank');
         }
         
         // AI模型选择处理函数
