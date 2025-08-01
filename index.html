@@ -6,10 +6,10 @@
     <title>OZON工具盒子</title>
     
     <!-- 网站图标 -->
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon.svg">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon.svg">
-    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.svg">
+    <link rel="apple-touch-icon" href="images/favicon.svg">
     <meta name="theme-color" content="#2196F3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -82,7 +82,7 @@
         .top-bar-logo {
             width: 32px;
             height: 32px;
-            background-image: url('favicon.svg');
+            background-image: url('images/favicon.svg');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -564,10 +564,11 @@
         </div>
         <div class="sidebar-menu">
             <a href="index.html" class="sidebar-menu-item" data-keywords="首页 主页 home"><i class="fas fa-home"></i> 首页</a>
-            <a href="tools.html" class="sidebar-menu-item" data-keywords="实用工具 工具 tools 物流 计算器"><i class="fas fa-tools"></i> 实用工具</a>
-            <a href="ai-tools.html" class="sidebar-menu-item" data-keywords="AI工具 人工智能 ai 标题生成 翻译 图片生成"><i class="fas fa-robot"></i> AI工具</a>
-            <a href="data-analysis.html" class="sidebar-menu-item" data-keywords="数据分析 分析 excel 数据 统计"><i class="fas fa-chart-line"></i> 数据分析</a>
-            <a href="settings.html" class="sidebar-menu-item" data-keywords="设置 配置 settings"><i class="fas fa-cog"></i> 设置</a>
+            <a href="pages/tools.html" class="sidebar-menu-item" data-keywords="实用工具 工具 tools 物流 计算器"><i class="fas fa-tools"></i> 实用工具</a>
+            <a href="pages/ai-tools.html" class="sidebar-menu-item" data-keywords="AI工具 人工智能 ai 标题生成 翻译 图片生成"><i class="fas fa-robot"></i> AI工具</a>
+            <a href="pages/data-analysis.html" class="sidebar-menu-item" data-keywords="数据分析 分析 excel 数据 统计"><i class="fas fa-chart-line"></i> 数据分析</a>
+            <a href="pages/ozon-plugin.html" class="sidebar-menu-item" data-keywords="OZON插件 插件 plugin 浏览器扩展"><i class="fas fa-puzzle-piece"></i> OZON插件</a>
+            <a href="pages/settings.html" class="sidebar-menu-item" data-keywords="设置 配置 settings"><i class="fas fa-cog"></i> 设置</a>
         </div>
     </div>
     
@@ -586,7 +587,7 @@
                         <p class="tool-card-description">提供各种实用工具，帮助您更高效地管理OZON店铺。</p>
                     </div>
                     <div class="tool-card-footer">
-                        <a href="tools.html" class="tool-card-btn">查看工具</a>
+                        <a href="pages/tools.html" class="tool-card-btn">查看工具</a>
                     </div>
                 </div>
                 
@@ -598,7 +599,7 @@
                         <p class="tool-card-description">利用人工智能技术，自动生成高质量的商品标题、描述和关键词。</p>
                     </div>
                     <div class="tool-card-footer">
-                        <a href="ai-tools.html" class="tool-card-btn">查看工具</a>
+                        <a href="pages/ai-tools.html" class="tool-card-btn">查看工具</a>
                     </div>
                 </div>
                 
@@ -610,7 +611,7 @@
                         <p class="tool-card-description">分析店铺数据，获取有价值的洞察，优化您的销售策略。</p>
                     </div>
                     <div class="tool-card-footer">
-                        <a href="data-analysis.html" class="tool-card-btn">查看工具</a>
+                        <a href="pages/data-analysis.html" class="tool-card-btn">查看工具</a>
                     </div>
                 </div>
                 
@@ -622,7 +623,7 @@
                         <p class="tool-card-description">专业的浏览器插件，实时监控OZON后台数据，提供深度分析报告。30天免费试用！</p>
                     </div>
                     <div class="tool-card-footer">
-                        <a href="ozon-plugin.html" class="tool-card-btn" style="background-color: #FF9800;">立即下载</a>
+                        <a href="pages/ozon-plugin.html" class="tool-card-btn" style="background-color: #FF9800;">立即下载</a>
                     </div>
                 </div>
                 
@@ -744,11 +745,11 @@
         // 菜单数据
         const menuItems = [
             { name: '首页', url: 'index.html', icon: 'fas fa-home', keywords: '首页 主页 home' },
-            { name: '实用工具', url: 'tools.html', icon: 'fas fa-tools', keywords: '实用工具 工具 tools 物流 计算器' },
-            { name: 'AI工具', url: 'ai-tools.html', icon: 'fas fa-robot', keywords: 'AI工具 人工智能 ai 标题生成 翻译 图片生成' },
-            { name: '数据分析', url: 'data-analysis.html', icon: 'fas fa-chart-line', keywords: '数据分析 分析 excel 数据 统计' },
-            { name: 'OZON后台数据分析插件', url: 'ozon-plugin.html', icon: 'fas fa-puzzle-piece', keywords: 'OZON插件 后台数据 分析插件 浏览器插件 数据监控 试用 下载' },
-            { name: '设置', url: 'settings.html', icon: 'fas fa-cog', keywords: '设置 配置 settings' }
+            { name: '实用工具', url: 'pages/tools.html', icon: 'fas fa-tools', keywords: '实用工具 工具 tools 物流 计算器' },
+            { name: 'AI工具', url: 'pages/ai-tools.html', icon: 'fas fa-robot', keywords: 'AI工具 人工智能 ai 标题生成 翻译 图片生成' },
+            { name: '数据分析', url: 'pages/data-analysis.html', icon: 'fas fa-chart-line', keywords: '数据分析 分析 excel 数据 统计' },
+            { name: 'OZON后台数据分析插件', url: 'pages/ozon-plugin.html', icon: 'fas fa-puzzle-piece', keywords: 'OZON插件 后台数据 分析插件 浏览器插件 数据监控 试用 下载' },
+            { name: '设置', url: 'pages/settings.html', icon: 'fas fa-cog', keywords: '设置 配置 settings' }
         ];
         
         function showToast(message, duration = 2000) {

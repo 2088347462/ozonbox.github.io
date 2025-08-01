@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI商品图生成 - ozon工具盒子</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: white;
+            color: #333;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            z-index: 100;
+            overflow-y: auto;
+            border-right: 1px solid #e0e0e0;
+        }
+        .sidebar-header {
+            padding: 15px;
+            background-color: #1565C0;
+            text-align: left;
+            font-weight: bold;
+            font-size: 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+        .sidebar-menu-item {
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            color: #666;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+        .sidebar-menu-item:hover {
+            background-color: rgba(0,0,0,0.05);
+            color: #1565C0;
+        }
+        .sidebar-menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            color: #999;
+        }
+        .sidebar-menu-item:hover i {
+            color: #1565C0;
+        }
+        .sidebar-breadcrumb {
+            padding: 10px 15px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            background-color: #1976D2;
+            margin-bottom: 5px;
+        }
+        .sidebar-breadcrumb a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+        }
+        .sidebar-breadcrumb a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        .sidebar-breadcrumb .separator {
+            margin: 0 8px;
+            color: rgba(255,255,255,0.5);
+        }
+        .sidebar-breadcrumb .current {
+            color: white;
+            font-weight: 500;
+        }
+        .main-content {
+            flex: 1;
+            margin-left: 200px;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: 700;
+        }
+        .header p {
+            margin: 10px 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px;
+        }
+        .form-section {
+            margin-bottom: 30px;
+        }
+        .form-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .category-item {
+            padding: 10px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: #f8f9fa;
+        }
+        .category-item:hover {
+            border-color: #667eea;
+            background-color: #f0f2ff;
+        }
+        .category-item.selected {
+            border-color: #667eea;
+            background-color: #667eea;
+            color: white;
+        }
+        .style-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .upload-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .upload-section:hover {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #f0f2ff, #e8ebff);
+        }
+        .upload-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .upload-text {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .upload-hint {
+            font-size: 14px;
+            color: #777;
+        }
+        .file-input {
+            display: none;
+        }
+        .preview-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e1e5e9;
+            display: none;
+        }
+        .uploaded-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .uploaded-image {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .uploaded-image img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .uploaded-image .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255,0,0,0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .generation-mode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .mode-item {
+            padding: 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: #f8f9fa;
+        }
+        .mode-item:hover {
+            border-color: #667eea;
+            background-color: #f0f2ff;
+            transform: translateY(-2px);
+        }
+        .mode-item.selected {
+            border-color: #667eea;
+            background-color: #667eea;
+            color: white;
+        }
+        .mode-item i {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        .mode-item.selected i {
+            color: white;
+        }
+        .mode-item h4 {
+            margin: 10px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .mode-item p {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .style-item {
+            padding: 8px 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: #f8f9fa;
+            font-size: 13px;
+        }
+        .style-item:hover {
+            border-color: #764ba2;
+            background-color: #f5f0ff;
+        }
+        .style-item.selected {
+            border-color: #764ba2;
+            background-color: #764ba2;
+            color: white;
+        }
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .result-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e1e5e9;
+            display: none;
+        }
+        .result-image {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        .result-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #5a6fd8;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .image-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        .tips {
+            background-color: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        .tips h4 {
+            margin: 0 0 10px;
+            color: #667eea;
+            font-size: 16px;
+        }
+        .tips ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .tips li {
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .category-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+            .result-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span>ozon工具盒子</span>
+            <i class="fas fa-bars" style="margin-left: auto;"></i>
+        </div>
+        <div class="sidebar-menu">
+            <a href="index.html" class="sidebar-menu-item"><i class="fas fa-th-large"></i> Dashboard</a>
+            <div class="sidebar-breadcrumb">
+                <a href="../index.html">首页</a>
+                <span class="separator">></span>
+                <a href="ai-tools.html">AI工具</a>
+                <span class="separator">></span>
+                <span class="current">AI商品图生成</span>
+            </div>
+            <a href="../index.html" class="sidebar-menu-item"><i class="fas fa-home"></i> 首页</a>
+            <a href="tools.html" class="sidebar-menu-item"><i class="fas fa-tools"></i> 实用工具</a>
+            <a href="ai-tools.html" class="sidebar-menu-item"><i class="fas fa-robot"></i> AI工具</a>
+            <a href="data-analysis.html" class="sidebar-menu-item"><i class="fas fa-chart-line"></i> 数据分析</a>
+            <a href="ozon-plugin.html" class="sidebar-menu-item"><i class="fas fa-puzzle-piece"></i> OZON插件</a>
+            <a href="settings.html" class="sidebar-menu-item"><i class="fas fa-cog"></i> 设置</a>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <h1><i class="fas fa-camera"></i> AI商品图生成</h1>
+                <p>专为OZON俄罗斯电商平台定制，生成符合俄罗斯顾客喜好的高质量商品图片</p>
+            </div>
+            
+            <div class="content">
+                <div class="tips">
+                    <h4><i class="fas fa-lightbulb"></i> 图片到图片生成使用指南</h4>
+                    <ul>
+                        <li><strong>图片到图片生成：</strong>基于您上传的商品图片进行AI变体生成，保持商品特征</li>
+                        <li><strong>支持格式：</strong>JPG、PNG、WebP等常见图片格式</li>
+                        <li><strong>图片质量：</strong>建议上传清晰、光线良好、背景简洁的商品图片</li>
+                        <li><strong>批量处理：</strong>可同时上传多张图片，系统会为每张图片生成指定数量的变体</li>
+                        <li><strong>智能优化：</strong>选择合适的生成模式、商品类别和风格可获得更相关的结果</li>
+                        <li><strong>速度优化：</strong>采用并行生成技术，大幅提升生成速度</li>
+                        <li><strong>OZON标准：</strong>生成的图片符合OZON平台的展示标准和俄罗斯用户偏好</li>
+                    </ul>
+                </div>
+                
+                <div class="form-section">
+                    <h3><i class="fas fa-upload"></i> 上传商品图片</h3>
+                    <div class="upload-section" onclick="document.getElementById('fileInput').click()">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="upload-text">点击上传商品图片（支持批量）</div>
+                        <div class="upload-hint">支持 JPG、PNG、WebP 格式，建议尺寸 800x800 以上，可同时选择多张图片</div>
+                        <input type="file" id="fileInput" class="file-input" accept="image/*" multiple onchange="handleFileUpload(event)">
+                    </div>
+                    
+                    <!-- 图片预览区域 -->
+                    <div class="preview-section" id="previewSection">
+                        <h4><i class="fas fa-images"></i> 已上传图片 (<span id="imageCount">0</span>张)</h4>
+                        <div class="uploaded-images" id="uploadedImages"></div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3><i class="fas fa-edit"></i> 商品信息（可选）</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productName">商品名称</label>
+                            <input type="text" id="productName" class="form-control" placeholder="例如：无线蓝牙耳机（留空将自动识别）">
+                        </div>
+                        <div class="form-group">
+                            <label for="productBrand">品牌名称</label>
+                            <input type="text" id="productBrand" class="form-control" placeholder="例如：Apple, Samsung（留空将自动识别）">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="productDescription">商品描述</label>
+                        <textarea id="productDescription" class="form-control" placeholder="详细描述商品的特点、功能、材质等信息...（留空将基于图片自动生成）"></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3><i class="fas fa-tags"></i> 商品类别</h3>
+                    <div class="category-grid">
+                        <div class="category-item" data-category="electronics">电子产品</div>
+                        <div class="category-item" data-category="fashion">服装鞋包</div>
+                        <div class="category-item" data-category="home">家居用品</div>
+                        <div class="category-item" data-category="beauty">美容护肤</div>
+                        <div class="category-item" data-category="sports">运动户外</div>
+                        <div class="category-item" data-category="baby">母婴用品</div>
+                        <div class="category-item" data-category="pet">宠物用品</div>
+                        <div class="category-item" data-category="books">图书文具</div>
+                        <div class="category-item" data-category="food">食品饮料</div>
+                        <div class="category-item" data-category="auto">汽车用品</div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3><i class="fas fa-magic"></i> AI生成模式</h3>
+                    <div class="generation-mode-grid">
+                        <div class="mode-item" data-mode="scene-expansion">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                            <h4>应用场景拓展</h4>
+                            <p>基于原图生成不同使用场景的商品图</p>
+                        </div>
+                        <div class="mode-item" data-mode="style-variants">
+                            <i class="fas fa-palette"></i>
+                            <h4>风格变体生成</h4>
+                            <p>保持商品不变，生成不同风格的展示图</p>
+                        </div>
+                        <div class="mode-item" data-mode="background-change">
+                            <i class="fas fa-image"></i>
+                            <h4>背景替换优化</h4>
+                            <p>替换背景，优化商品展示效果</p>
+                        </div>
+                        <div class="mode-item" data-mode="angle-variants">
+                            <i class="fas fa-sync-alt"></i>
+                            <h4>角度变体生成</h4>
+                            <p>生成不同角度和视角的商品图</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3><i class="fas fa-palette"></i> 图片风格</h3>
+                    <div class="style-grid">
+                        <div class="style-item" data-style="professional">专业商务</div>
+                        <div class="style-item" data-style="lifestyle">生活场景</div>
+                        <div class="style-item" data-style="minimalist">简约风格</div>
+                        <div class="style-item" data-style="luxury">高端奢华</div>
+                        <div class="style-item" data-style="casual">休闲自然</div>
+                        <div class="style-item" data-style="tech">科技感</div>
+                        <div class="style-item" data-style="vintage">复古风</div>
+                        <div class="style-item" data-style="modern">现代时尚</div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3><i class="fas fa-cogs"></i> 生成设置</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="imageSize">图片尺寸</label>
+                            <select id="imageSize" class="form-control">
+                                <option value="1200x1200">1200x1200 (推荐)</option>
+                                <option value="1000x1000">1000x1000</option>
+                                <option value="800x800">800x800</option>
+                                <option value="1024x768">1024x768 (横版)</option>
+                                <option value="768x1024">768x1024 (竖版)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="generateCount">生成数量</label>
+                            <select id="generateCount" class="form-control">
+                                <option value="1">1张</option>
+                                <option value="2">2张</option>
+                                <option value="3">3张</option>
+                                <option value="4">4张</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="generate-btn" onclick="generateProductImage()">
+                    <i class="fas fa-magic"></i> 生成AI商品图片变体
+                </button>
+                
+                <div class="loading" id="loading">
+                    <div class="loading-spinner"></div>
+                    <p>正在为您生成符合OZON标准的商品图片...</p>
+                </div>
+                
+                <div class="result-section" id="resultSection">
+                    <h3><i class="fas fa-image"></i> 生成结果</h3>
+                    <div id="imageResults"></div>
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="generate-btn" onclick="generateAnother()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fas fa-redo"></i> 重新生成
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="toast" class="toast"></div>
+
+    <script>
+        let selectedCategory = '';
+        let selectedStyle = '';
+        let selectedMode = '';
+        let uploadedImages = [];
+        
+        // 类别选择
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.category-item').forEach(i => i.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedCategory = this.dataset.category;
+            });
+        });
+        
+        // 风格选择
+        document.querySelectorAll('.style-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.style-item').forEach(i => i.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedStyle = this.dataset.style;
+            });
+        });
+        
+        // 生成模式选择
+        document.querySelectorAll('.mode-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.mode-item').forEach(i => i.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedMode = this.dataset.mode;
+            });
+        });
+        
+        // 处理文件上传
+        function handleFileUpload(event) {
+            const files = Array.from(event.target.files);
+            
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imageData = {
+                            file: file,
+                            url: e.target.result,
+                            name: file.name
+                        };
+                        uploadedImages.push(imageData);
+                        updateImagePreview();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        // 更新图片预览
+        function updateImagePreview() {
+            const previewSection = document.getElementById('previewSection');
+            const uploadedImagesContainer = document.getElementById('uploadedImages');
+            const imageCount = document.getElementById('imageCount');
+            
+            if (uploadedImages.length > 0) {
+                previewSection.style.display = 'block';
+                imageCount.textContent = uploadedImages.length;
+                
+                uploadedImagesContainer.innerHTML = uploadedImages.map((image, index) => `
+                    <div class="uploaded-image">
+                        <img src="${image.url}" alt="${image.name}">
+                        <button class="remove-btn" onclick="removeImage(${index})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `).join('');
+            } else {
+                previewSection.style.display = 'none';
+            }
+        }
+        
+        // 移除图片
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            updateImagePreview();
+        }
+        
+        // 显示提示信息
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+        
+        // 生成商品图片
+        async function generateProductImage() {
+            // 验证上传的图片
+            if (uploadedImages.length === 0) {
+                showToast('请先上传商品图片');
+                return;
+            }
+            
+            if (!selectedMode) {
+                showToast('请选择AI生成模式');
+                return;
+            }
+            
+            if (!selectedCategory) {
+                showToast('请选择商品类别');
+                return;
+            }
+            
+            if (!selectedStyle) {
+                showToast('请选择图片风格');
+                return;
+            }
+            
+            const productName = document.getElementById('productName').value.trim();
+            const productBrand = document.getElementById('productBrand').value.trim();
+            const productDescription = document.getElementById('productDescription').value.trim();
+            const imageSize = document.getElementById('imageSize').value;
+            const imageCount = parseInt(document.getElementById('generateCount').value);
+            
+            // 显示加载状态
+            document.querySelector('.generate-btn').disabled = true;
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultSection').style.display = 'none';
+            
+            try {
+                // 基于上传图片和选择的模式生成新图片
+                const generatedImages = [];
+                
+                for (const uploadedImage of uploadedImages) {
+                    // 为每张上传的图片生成指定数量的变体
+                    const variants = await generateImageVariants(
+                        uploadedImage, 
+                        selectedMode, 
+                        selectedCategory, 
+                        selectedStyle, 
+                        productName, 
+                        productBrand, 
+                        productDescription, 
+                        imageSize, 
+                        imageCount
+                    );
+                    generatedImages.push(...variants);
+                }
+                
+                // 显示结果
+                displayResults(generatedImages, productName || '商品');
+                
+                showToast('AI商品图片生成成功！');
+            } catch (error) {
+                console.error('生成失败:', error);
+                showToast('生成失败，请重试');
+            } finally {
+                document.querySelector('.generate-btn').disabled = false;
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+        
+        // 基于上传图片生成变体
+        async function generateImageVariants(uploadedImage, mode, category, style, productName, productBrand, productDescription, imageSize, count) {
+            const variants = [];
+            const [width, height] = imageSize.split('x').map(Number);
+            
+            // 根据生成模式构建不同的提示词
+            const modePrompts = {
+                'scene-expansion': '在真实使用场景中展示商品，保持商品主体特征和细节',
+                'style-variants': '保持商品形状和特征，改变拍摄风格和视觉效果',
+                'background-change': '移除原背景，替换为纯白专业背景，保持商品完整',
+                'angle-variants': '从不同角度展示相同商品，保持商品识别度'
+            };
+            
+            const basePrompt = buildOzonPrompt(productName, productBrand, productDescription, category, style);
+            const modePrompt = modePrompts[mode] || '';
+            const fullPrompt = `${modePrompt}, ${basePrompt}, maintain original product features and details`;
+            
+            // 获取上传图片的URL
+            const uploadedImageUrl = uploadedImage.url || uploadedImage.src;
+            
+            // 并行生成多个变体以提高速度
+            const promises = [];
+            for (let i = 0; i < count; i++) {
+                const promise = (async (index) => {
+                    try {
+                        // 减少延迟，提高生成速度
+                        await new Promise(resolve => setTimeout(resolve, index * 200));
+                        
+                        const imageUrl = await callImageToImageAPI(uploadedImageUrl, fullPrompt, width, height, index, mode);
+                        return {
+                            url: imageUrl,
+                            prompt: fullPrompt,
+                            size: imageSize,
+                            index: index + 1,
+                            mode: mode,
+                            sourceImage: uploadedImage.name,
+                            isImageToImage: true
+                        };
+                    } catch (error) {
+                        console.error(`变体${index + 1}生成失败:`, error);
+                        const fallbackUrl = generateOzonFallbackImage(fullPrompt, width, height, index);
+                        return {
+                            url: fallbackUrl,
+                            prompt: fullPrompt,
+                            size: imageSize,
+                            index: index + 1,
+                            mode: mode,
+                            sourceImage: uploadedImage.name,
+                            isFallback: true
+                        };
+                    }
+                })(i);
+                promises.push(promise);
+            }
+            
+            // 等待所有变体生成完成
+            const results = await Promise.all(promises);
+            variants.push(...results);
+            
+            return variants;
+        }
+        
+        // 构建OZON优化的提示词
+        function buildOzonPrompt(name, brand, description, category, style) {
+            const categoryPrompts = {
+                electronics: '高科技电子产品，现代感强',
+                fashion: '时尚服装配饰，质感优良',
+                home: '实用家居用品，温馨舒适',
+                beauty: '美容护肤产品，精致优雅',
+                sports: '运动户外装备，活力动感',
+                baby: '母婴用品，安全温馨',
+                pet: '宠物用品，可爱实用',
+                books: '图书文具，知识文化',
+                food: '食品饮料，新鲜美味',
+                auto: '汽车用品，专业可靠'
+            };
+            
+            const stylePrompts = {
+                professional: '专业商务风格，简洁大方',
+                lifestyle: '生活场景展示，自然真实',
+                minimalist: '极简主义风格，干净利落',
+                luxury: '高端奢华质感，精致典雅',
+                casual: '休闲自然风格，轻松舒适',
+                tech: '科技感十足，未来感强',
+                vintage: '复古怀旧风格，经典永恒',
+                modern: '现代时尚风格，潮流前沿'
+            };
+            
+            let prompt = `Professional product photography of ${name || 'product'}`;
+            
+            if (brand) {
+                prompt += ` by ${brand}`;
+            }
+            
+            if (description) {
+                prompt += `, ${description}`;
+            }
+            
+            if (categoryPrompts[category]) {
+                prompt += `, ${categoryPrompts[category]}`;
+            }
+            
+            if (stylePrompts[style]) {
+                prompt += `, ${stylePrompts[style]}`;
+            }
+            
+            // OZON平台优化
+            prompt += ', pure white background, centered composition, high quality, professional lighting, OZON marketplace style, Russian e-commerce standard';
+            
+            return prompt;
+        }
+        
+        // 调用图片到图片生成API
+        async function callImageToImageAPI(uploadedImageUrl, prompt, width, height, index, mode) {
+            const ozonPrompt = `${prompt}, professional product photo, white background, high quality, detailed, 4k resolution`;
+            
+            // 支持图片到图片生成的API列表
+            const apis = [
+                {
+                    name: 'Pollinations AI (图片到图片)',
+                    url: `https://image.pollinations.ai/prompt/${encodeURIComponent(ozonPrompt)}?width=${width}&height=${height}&nologo=true&enhance=true&model=flux&seed=${Date.now() + index}&image=${encodeURIComponent(uploadedImageUrl)}`
+                },
+                {
+                    name: 'Pollinations AI (风格迁移)',
+                    url: `https://image.pollinations.ai/prompt/${encodeURIComponent(ozonPrompt + ', style transfer, maintain product shape')}?width=${width}&height=${height}&nologo=true&model=flux&seed=${Date.now() + index + 500}&image=${encodeURIComponent(uploadedImageUrl)}`
+                },
+                {
+                    name: 'Pollinations AI (背景替换)',
+                    url: `https://image.pollinations.ai/prompt/${encodeURIComponent('remove background, ' + ozonPrompt)}?width=${width}&height=${height}&nologo=true&enhance=true&seed=${Date.now() + index + 1000}&image=${encodeURIComponent(uploadedImageUrl)}`
+                }
+            ];
+            
+            // 根据生成模式选择最适合的API
+            let selectedApis = apis;
+            if (mode === 'background-change') {
+                selectedApis = [apis[2], apis[0]]; // 优先使用背景替换API
+            } else if (mode === 'style-variants') {
+                selectedApis = [apis[1], apis[0]]; // 优先使用风格迁移API
+            }
+            
+            for (const api of selectedApis) {
+                try {
+                    console.log(`尝试使用 ${api.name} 生成图片...`);
+                    const response = await fetch(api.url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'image/*'
+                        }
+                    });
+                    if (response.ok) {
+                        return api.url;
+                    }
+                } catch (error) {
+                    console.error(`${api.name} 调用失败:`, error);
+                }
+            }
+            
+            throw new Error('所有图片到图片生成API调用失败');
+        }
+        
+        // OZON风格备用图片生成
+        function generateOzonFallbackImage(prompt, width, height, index) {
+            const keywords = extractKeywords(prompt);
+            const services = [
+                {
+                    name: 'Unsplash Source (OZON风格)',
+                    url: `https://source.unsplash.com/${width}x${height}/?${encodeURIComponent(keywords + ' product white background')}`
+                },
+                {
+                    name: 'Lorem Picsum (商品风格)',
+                    url: `https://picsum.photos/${width}/${height}?random=${Date.now() + index}`
+                },
+                {
+                    name: 'Placeholder (OZON定制)',
+                    url: `https://via.placeholder.com/${width}x${height}/ffffff/333333?text=${encodeURIComponent('OZON+Product')}`
+                }
+            ];
+            
+            return services[index % services.length].url;
+        }
+        
+        // 提取关键词
+        function extractKeywords(prompt) {
+            const keywords = prompt.toLowerCase()
+                .replace(/[^a-zA-Z0-9\s]/g, ' ')
+                .split(' ')
+                .filter(word => word.length > 2)
+                .slice(0, 3)
+                .join(' ');
+            return keywords || 'product';
+        }
+        
+        // 显示生成结果
+        function displayResults(images, productName) {
+            const resultsContainer = document.getElementById('imageResults');
+            resultsContainer.innerHTML = '';
+            
+            // 按源图片分组显示
+            const groupedImages = {};
+            images.forEach(image => {
+                if (!groupedImages[image.sourceImage]) {
+                    groupedImages[image.sourceImage] = [];
+                }
+                groupedImages[image.sourceImage].push(image);
+            });
+            
+            Object.keys(groupedImages).forEach(sourceImage => {
+                const groupContainer = document.createElement('div');
+                groupContainer.style.marginBottom = '40px';
+                groupContainer.style.border = '2px solid #e1e5e9';
+                groupContainer.style.borderRadius = '15px';
+                groupContainer.style.padding = '20px';
+                
+                const groupHeader = document.createElement('h4');
+                groupHeader.innerHTML = `<i class="fas fa-image"></i> 基于 "${sourceImage}" 生成的变体`;
+                groupHeader.style.color = '#667eea';
+                groupHeader.style.marginBottom = '20px';
+                groupContainer.appendChild(groupHeader);
+                
+                groupedImages[sourceImage].forEach((image, index) => {
+                    const imageContainer = document.createElement('div');
+                    imageContainer.style.marginBottom = '30px';
+                    imageContainer.style.textAlign = 'center';
+                    
+                    const modeNames = {
+                        'scene-expansion': '应用场景拓展',
+                        'style-variants': '风格变体生成',
+                        'background-change': '背景替换优化',
+                        'angle-variants': '角度变体生成'
+                    };
+                    
+                    const generationMethod = image.isImageToImage ? 
+                        '<span style="color: #2196f3;"><i class="fas fa-magic"></i> 图片到图片生成</span>' : 
+                        (image.isFallback ? '<span style="color: #ff9800;"><i class="fas fa-exclamation-triangle"></i> 备用方案</span>' : 
+                        '<span style="color: #4caf50;"><i class="fas fa-robot"></i> AI文本生成</span>');
+                    
+                    imageContainer.innerHTML = `
+                        <div class="image-info">
+                            <strong>变体 ${image.index}</strong> - ${image.size} - ${modeNames[image.mode] || image.mode}<br>
+                            ${generationMethod}
+                        </div>
+                        <img src="${image.url}" alt="${productName} - 变体${image.index}" class="result-image" id="image${index}" 
+                             style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                        <div class="result-actions">
+                            <button class="action-btn btn-primary" onclick="downloadImage('${image.url}', '${productName}_${sourceImage}_变体${image.index}')">
+                                <i class="fas fa-download"></i> 下载图片
+                            </button>
+                            <button class="action-btn btn-success" onclick="downloadHighRes('${image.url}', '${productName}_${sourceImage}_变体${image.index}')">
+                                <i class="fas fa-download"></i> 下载高清版
+                            </button>
+                            <button class="action-btn btn-secondary" onclick="shareImage('${image.url}')">
+                                <i class="fas fa-share"></i> 分享图片
+                            </button>
+                            <button class="action-btn btn-primary" onclick="copyImageUrl('${image.url}')">
+                                <i class="fas fa-copy"></i> 复制链接
+                            </button>
+                        </div>
+                    `;
+                    
+                    groupContainer.appendChild(imageContainer);
+                });
+                
+                resultsContainer.appendChild(groupContainer);
+            });
+            
+            document.getElementById('resultSection').style.display = 'block';
+        }
+        
+        // 下载图片
+        async function downloadImage(imageUrl, filename) {
+            try {
+                const response = await fetch(imageUrl);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${filename}.jpg`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                showToast('图片下载成功！');
+            } catch (error) {
+                console.error('下载失败:', error);
+                showToast('下载失败，请重试');
+            }
+        }
+        
+        // 下载高清版
+        async function downloadHighRes(imageUrl, filename) {
+            try {
+                // 尝试获取更高分辨率的版本
+                let highResUrl = imageUrl;
+                if (imageUrl.includes('pollinations.ai')) {
+                    highResUrl = imageUrl.replace(/width=\d+/, 'width=2048').replace(/height=\d+/, 'height=2048');
+                } else if (imageUrl.includes('unsplash.com')) {
+                    highResUrl = imageUrl.replace(/\d+x\d+/, '2048x2048');
+                }
+                
+                await downloadImage(highResUrl, filename + '_HD');
+            } catch (error) {
+                console.error('高清下载失败:', error);
+                await downloadImage(imageUrl, filename);
+            }
+        }
+        
+        // 分享图片
+        async function shareImage(imageUrl) {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'OZON商品图片',
+                        text: '查看这张AI生成的商品图片',
+                        url: imageUrl
+                    });
+                    showToast('分享成功！');
+                } catch (error) {
+                    console.error('分享失败:', error);
+                    copyImageUrl(imageUrl);
+                }
+            } else {
+                copyImageUrl(imageUrl);
+            }
+        }
+        
+        // 复制图片链接
+        function copyImageUrl(imageUrl) {
+            navigator.clipboard.writeText(imageUrl).then(() => {
+                showToast('图片链接已复制到剪贴板！');
+            }).catch(error => {
+                console.error('复制失败:', error);
+                showToast('复制失败，请手动复制链接');
+            });
+        }
+        
+        // 生成另一张图片
+        function generateAnother() {
+            document.getElementById('resultSection').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 默认选择电子产品类别、专业风格和应用场景拓展模式
+            document.querySelector('[data-category="electronics"]').click();
+            document.querySelector('[data-style="professional"]').click();
+            document.querySelector('[data-mode="scene-expansion"]').click();
+            
+            showToast('欢迎使用基于图片的AI商品图生成工具！上传您的商品图片开始生成变体。', 3000);
+        });
+    </script>
+</body>
+</html>
