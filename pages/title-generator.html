@@ -700,7 +700,10 @@
                 <p style="margin: 5px 0;">• 生成的是提示词，不直接生成图片</p>
             </div>
             
-            <button class="btn" onclick="generateScenePrompt()" style="background: linear-gradient(135deg, #4169e1, #6a5acd); margin-right: 10px;">🎨 生成场景图提示词</button>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="btn" onclick="generateScenePrompt()" style="background: linear-gradient(135deg, #4169e1, #6a5acd);">🎨 生成场景图提示词</button>
+                <button class="btn" onclick="openTutorialVideo()" style="background: linear-gradient(135deg, #ff6b6b, #ee5a52); color: white; font-size: 14px;">📹 使用教程</button>
+            </div>
         </div>
         
         <div class="button-group">
@@ -951,6 +954,134 @@
             navigator.clipboard.writeText(promptText)
                 .then(() => showToast('✅ AI提问词已复制到剪贴板'))
                 .catch(err => showToast('❌ 复制失败: ' + err));
+        }
+
+        function openTutorialVideo() {
+            // 创建模态弹窗
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            // 创建视频容器
+            const videoContainer = document.createElement('div');
+            videoContainer.style.cssText = `
+                position: relative;
+                max-width: 90%;
+                max-height: 90%;
+                background: white;
+                border-radius: 12px;
+                padding: 20px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                animation: slideIn 0.3s ease;
+            `;
+            
+            // 创建关闭按钮
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '✕';
+            closeBtn.style.cssText = `
+                position: absolute;
+                top: 10px;
+                right: 15px;
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: #666;
+                z-index: 1;
+            `;
+            
+            // 创建标题
+            const title = document.createElement('h3');
+            title.textContent = 'AI背景图提示词使用教程';
+            title.style.cssText = `
+                margin: 0 0 15px 0;
+                color: #333;
+                text-align: center;
+                font-size: 18px;
+            `;
+            
+            // 创建视频元素
+            const video = document.createElement('video');
+            video.src = '../videos/sp.mp4';
+            video.controls = true;
+            video.style.cssText = `
+                width: 100%;
+                max-width: 800px;
+                height: auto;
+                border-radius: 8px;
+            `;
+            
+            // 创建提示信息
+            const tip = document.createElement('p');
+            tip.textContent = '💡 提示：点击背景或按ESC键可关闭视频';
+            tip.style.cssText = `
+                margin: 15px 0 0 0;
+                text-align: center;
+                color: #666;
+                font-size: 14px;
+            `;
+            
+            // 组装元素
+            videoContainer.appendChild(closeBtn);
+            videoContainer.appendChild(title);
+            videoContainer.appendChild(video);
+            videoContainer.appendChild(tip);
+            modal.appendChild(videoContainer);
+            
+            // 添加样式
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes slideIn {
+                    from { transform: scale(0.8) translateY(-20px); opacity: 0; }
+                    to { transform: scale(1) translateY(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // 关闭函数
+            const closeModal = () => {
+                modal.style.animation = 'fadeIn 0.3s ease reverse';
+                setTimeout(() => {
+                    document.body.removeChild(modal);
+                    document.head.removeChild(style);
+                }, 300);
+            };
+            
+            // 绑定事件
+            closeBtn.onclick = closeModal;
+            modal.onclick = (e) => {
+                if (e.target === modal) closeModal();
+            };
+            
+            // ESC键关闭
+            const handleEsc = (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    document.removeEventListener('keydown', handleEsc);
+                }
+            };
+            document.addEventListener('keydown', handleEsc);
+            
+            // 添加到页面
+            document.body.appendChild(modal);
+            
+            // 显示成功提示
+            showToast('📹 视频教程已打开');
         }
 
         function goToDeepseek() {
