@@ -1,18 +1,18 @@
 {
   "main_name": {
-    "message": "OZON销售助手"
+    "message": "Ozon销售助手 by Nicole"
   },
   "main_desc": {
-    "message": "专业的OZON卖家后台数据分析插件"
+    "message": "通过修改Cookie获取Ozon店铺销售数据。"
   },
   "main_tooltips": {
-    "message": "OZON销售助手"
+    "message": "Ozon销售助手"
   },
   "main_nav_bar_url": {
     "message": "https://seller.ozon.ru/app/analytics"
   },
   "main_header_logo": {
-    "message": "OZON销售助手"
+    "message": "Ozon销售助手"
   },
   "main_product_search": {
     "message": "产品搜索"
@@ -30,7 +30,7 @@
     "message": "密码"
   },
   "sign_in_form_title": {
-    "message": "登录OZON"
+    "message": "登录Ozon"
   },
   "sign_in_form_btn_forget_password": {
     "message": "忘记密码？"

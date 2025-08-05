@@ -1,0 +1,41 @@
+{
+  "main_name": {
+    "message": "Помощник продаж Ozon от Nicole"
+  },
+  "main_desc": {
+    "message": "Получение данных о продажах магазина Ozon путем изменения файлов cookie."
+  },
+  "main_tooltips": {
+    "message": "Помощник продаж Ozon"
+  },
+  "main_nav_bar_url": {
+    "message": "https://seller.ozon.ru/app/analytics"
+  },
+  "main_header_logo": {
+    "message": "Помощник продаж Ozon"
+  },
+  "main_product_search": {
+    "message": "Поиск товаров"
+  },
+  "main_website": {
+    "message": "https://seller.ozon.ru"
+  },
+  "sign_in_btn_text": {
+    "message": "Войти"
+  },
+  "username_placeholder": {
+    "message": "Имя пользователя"
+  },
+  "password_placeholder": {
+    "message": "Пароль"
+  },
+  "sign_in_form_title": {
+    "message": "Войти в Ozon"
+  },
+  "sign_in_form_btn_forget_password": {
+    "message": "Забыли пароль?"
+  },
+  "sign_in_form_login_btn_text": {
+    "message": "Войти"
+  }
+}

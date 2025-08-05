@@ -1,0 +1,41 @@
+{
+  "main_name": {
+    "message": "Ozon Sales Assistant"
+  },
+  "main_desc": {
+    "message": "Professional Ozon seller backend data analysis plugin"
+  },
+  "main_tooltips": {
+    "message": "Ozon Sales Assistant"
+  },
+  "main_nav_bar_url": {
+    "message": "https://seller.ozon.ru/app/analytics"
+  },
+  "main_header_logo": {
+    "message": "Ozon Sales Assistant"
+  },
+  "main_product_search": {
+    "message": "Product Search"
+  },
+  "main_website": {
+    "message": "https://seller.ozon.ru"
+  },
+  "sign_in_btn_text": {
+    "message": "Sign In"
+  },
+  "username_placeholder": {
+    "message": "Username"
+  },
+  "password_placeholder": {
+    "message": "Password"
+  },
+  "sign_in_form_title": {
+    "message": "Sign In to Ozon"
+  },
+  "sign_in_form_btn_forget_password": {
+    "message": "Forgot Password?"
+  },
+  "sign_in_form_login_btn_text": {
+    "message": "Login"
+  }
+}
