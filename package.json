@@ -1,0 +1,16 @@
+{
+  "name": "ozpl",
+  "version": "1.0.0",
+  "description": "一个专为OZON俄罗斯电商平台卖家打造的综合性工具集合，提供AI智能工具、数据分析、实用工具和专业插件，帮助卖家提升运营效率和销售业绩。",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer-core": "^22.15.0"
+  }
+}
