@@ -692,6 +692,51 @@
                 </select>
             </div>
             
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">图片数量：</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="imageCount" value="2" style="margin-right: 5px;"> 2张
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="imageCount" value="4" checked style="margin-right: 5px;"> 4张
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="imageCount" value="6" style="margin-right: 5px;"> 6张
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="imageCount" value="8" style="margin-right: 5px;"> 8张
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="imageCount" value="10" style="margin-right: 5px;"> 10张
+                    </label>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">图片背景含有中文：</label>
+                <div style="display: flex; gap: 15px;">
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="hasChineseText" value="yes" checked style="margin-right: 5px;"> 是
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="hasChineseText" value="no" style="margin-right: 5px;"> 否
+                    </label>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">尺寸比例：</label>
+                <div style="display: flex; gap: 15px;">
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="aspectRatio" value="3:4" checked style="margin-right: 5px;"> 3:4
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="aspectRatio" value="1:1" style="margin-right: 5px;"> 1:1
+                    </label>
+                </div>
+            </div>
+            
             <div style="font-size: 12px; color: #666; line-height: 1.4; margin-bottom: 15px;">
                 <p style="margin: 5px 0;">💡 <strong>功能说明：</strong></p>
                 <p style="margin: 5px 0;">• 基于产品名称、特征和季节生成专业的场景图提示词</p>
@@ -700,9 +745,25 @@
                 <p style="margin: 5px 0;">• 生成的是提示词，不直接生成图片</p>
             </div>
             
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <button class="btn" onclick="generateScenePrompt()" style="background: linear-gradient(135deg, #4169e1, #6a5acd);">🎨 生成场景图提示词</button>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <button class="btn" onclick="generateScenePrompt()" style="background: linear-gradient(135deg, #4169e1, #6a5acd);">🎨 生成场景词</button>
+                <button class="btn" onclick="generateFinalPrompt()" style="background: linear-gradient(135deg, #28a745, #20c997);">✅ 确定</button>
                 <button class="btn" onclick="openTutorialVideo()" style="background: linear-gradient(135deg, #ff6b6b, #ee5a52); color: white; font-size: 14px;">📹 使用教程</button>
+            </div>
+            
+            <!-- 场景词生成加载动画容器 -->
+            <div id="sceneLoadingContainer" class="loading-container" style="display: none;">
+                <div class="loading-spinner"></div>
+                <div class="loading-text" id="sceneLoadingText">🎨 正在生成场景词...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="sceneProgressFill" style="width: 0%;"></div>
+                </div>
+                <div class="progress-steps">
+                    <span class="step" id="sceneStep1">分析产品</span>
+                    <span class="step" id="sceneStep2">调用AI</span>
+                    <span class="step" id="sceneStep3">生成场景词</span>
+                    <span class="step" id="sceneStep4">完成</span>
+                </div>
             </div>
         </div>
         
@@ -886,7 +947,7 @@
                 `- 格式：用文本编辑器方式展示俄文描述\n` +
                 `- 下方提供中文翻译对照\n\n` +
                 `**3. 产品关键词（俄文）**\n` +
-                `- 数量：20-30个关键词\n` +
+                `- 数量：20-28个关键词\n` +
                 `- 分隔：关键词之间用分号(;)分隔\n` +
                 `- 内容：包含产品类别、功能、材质、适用人群等\n` +
                 `- 格式：用文本编辑器方式展示俄文关键词\n` +
@@ -1865,6 +1926,37 @@
             loadingContainer.classList.remove('fade-in');
         }
         
+        // 场景词生成加载动画控制函数
+        function showSceneLoadingAnimation() {
+            const loadingContainer = document.getElementById('sceneLoadingContainer');
+            const loadingText = document.getElementById('sceneLoadingText');
+            const progressFill = document.getElementById('sceneProgressFill');
+            
+            // 设置加载文本
+            loadingText.textContent = '🎨 正在生成场景词...';
+            
+            // 显示加载容器
+            loadingContainer.style.display = 'block';
+            loadingContainer.classList.add('fade-in');
+            
+            // 重置进度条
+            progressFill.style.width = '0%';
+            
+            // 重置步骤状态
+            document.querySelectorAll('#sceneLoadingContainer .step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // 模拟场景词生成进度更新
+            simulateSceneProgress();
+        }
+        
+        function hideSceneLoadingAnimation() {
+            const loadingContainer = document.getElementById('sceneLoadingContainer');
+            loadingContainer.style.display = 'none';
+            loadingContainer.classList.remove('fade-in');
+        }
+        
         function simulateProgress() {
             const steps = ['step1', 'step2', 'step3', 'step4'];
             const progressFill = document.getElementById('progressFill');
@@ -1890,58 +1982,217 @@
             updateProgress();
         }
         
+        // 场景词生成进度模拟函数
+        function simulateSceneProgress() {
+            const steps = ['sceneStep1', 'sceneStep2', 'sceneStep3', 'sceneStep4'];
+            const progressFill = document.getElementById('sceneProgressFill');
+            let currentStep = 0;
+            
+            const updateProgress = () => {
+                if (currentStep < steps.length) {
+                    // 激活当前步骤
+                    document.getElementById(steps[currentStep]).classList.add('active');
+                    
+                    // 更新进度条
+                    const progress = ((currentStep + 1) / steps.length) * 100;
+                    progressFill.style.width = progress + '%';
+                    
+                    currentStep++;
+                    
+                    // 随机延迟，模拟真实的处理时间
+                    const delay = Math.random() * 600 + 300; // 300-900ms
+                    setTimeout(updateProgress, delay);
+                }
+            };
+            
+            updateProgress();
+        }
+        
         // 场景图提示词生成函数
-        function generateScenePrompt() {
+        async function generateScenePrompt() {
             const productName = document.getElementById('productName').value.trim();
-            const season = document.getElementById('season').value;
             
             if (!productName) {
                 showToast('❌ 请先输入产品中文名称');
                 return;
             }
             
-            // 获取所有特征
-            const featureInputs = document.querySelectorAll('.feature-input');
-            const features = [];
-            featureInputs.forEach(input => {
+            // 获取用户选择的图片数量
+            const imageCountRadio = document.querySelector('input[name="imageCount"]:checked');
+            const imageCount = imageCountRadio ? imageCountRadio.value : '4';
+            
+            try {
+                // 显示场景词生成加载动画
+                showSceneLoadingAnimation();
+                
+                // 调用DeepSeek API生成场景词
+                const sceneWords = await callDeepSeekForSceneWords(productName, imageCount);
+                
+                // 隐藏场景词生成加载动画
+                hideSceneLoadingAnimation();
+                
+                // 将生成的场景词填入到场景描述输入框中
+                fillSceneWords(sceneWords);
+                
+                showToast('✅ 场景词生成完成！请选择背景和尺寸选项后点击"确定"生成最终提示词');
+                
+            } catch (error) {
+                hideSceneLoadingAnimation();
+                console.error('场景词生成失败:', error);
+                showToast('❌ 场景词生成失败: ' + error.message);
+            }
+        }
+        
+        // 调用DeepSeek API生成场景词
+        async function callDeepSeekForSceneWords(productName, imageCount) {
+            const API_KEY = document.getElementById('deepseekApiKey')?.value?.trim() || '';
+            
+            if (!API_KEY || API_KEY === 'sk-your-deepseek-api-key') {
+                throw new Error('请先在页面顶部设置您的DeepSeek API密钥');
+            }
+            
+            const API_URL = 'https://api.deepseek.com/v1/chat/completions';
+            
+            const prompt = `我是一名跨境电商美工，现在需要为我的产品确定背景，产品为${productName}，我想让你帮我生成${imageCount}个场景词（不要提示词，仅场景词）`;
+            
+            const requestBody = {
+                model: "deepseek-chat",
+                messages: [
+                    {
+                        role: "system",
+                        content: "你是一个专业的电商美工助手，擅长为产品生成合适的场景词。请只返回场景词，每个场景词用逗号分隔，不要其他解释。"
+                    },
+                    {
+                        role: "user",
+                        content: prompt
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 500
+            };
+            
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${API_KEY}`
+                },
+                body: JSON.stringify(requestBody)
+            });
+            
+            if (!response.ok) {
+                if (response.status === 402) {
+                    throw new Error('账户余额不足，请前往DeepSeek平台充值');
+                } else if (response.status === 401) {
+                    throw new Error('API密钥无效，请检查密钥是否正确');
+                } else {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+            }
+            
+            const data = await response.json();
+            const aiResponse = data.choices[0].message.content;
+            
+            return aiResponse.trim();
+        }
+        
+        // 将生成的场景词填入到输入框中
+        function fillSceneWords(sceneWords) {
+            // 清空现有的场景输入框
+            const existingInputs = document.querySelectorAll('.scene-input');
+            existingInputs.forEach(input => input.parentElement.remove());
+            
+            // 解析场景词（按逗号分隔）
+            const scenes = sceneWords.split(/[，,]/).map(s => s.trim()).filter(s => s);
+            
+            // 创建场景输入框容器
+            const sceneContainer = document.getElementById('sceneContainer') || createSceneContainer();
+            
+            // 为每个场景词创建输入框
+            scenes.forEach((scene, index) => {
+                const sceneDiv = document.createElement('div');
+                sceneDiv.className = 'feature-container';
+                sceneDiv.innerHTML = `
+                    <input type="text" class="feature-input scene-input" placeholder="场景描述词${index + 1}" value="${scene}">
+                    <button class="remove-btn" onclick="removeSceneInput(this)">-</button>
+                `;
+                sceneContainer.appendChild(sceneDiv);
+            });
+            
+            // 显示场景容器
+            sceneContainer.style.display = 'block';
+        }
+        
+        // 创建场景输入容器
+        function createSceneContainer() {
+            const container = document.createElement('div');
+            container.id = 'sceneContainer';
+            container.style.marginBottom = '15px';
+            container.innerHTML = `
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">场景描述词：</label>
+            `;
+            
+            // 插入到图片数量选择之后
+            const imageCountDiv = document.querySelector('input[name="imageCount"]').closest('div').parentElement;
+            imageCountDiv.parentElement.insertBefore(container, imageCountDiv.nextSibling);
+            
+            return container;
+        }
+        
+        // 移除场景输入框
+        function removeSceneInput(button) {
+            button.parentElement.remove();
+        }
+        
+        // 生成最终AI提示词
+        function generateFinalPrompt() {
+            const productName = document.getElementById('productName').value.trim();
+            
+            if (!productName) {
+                showToast('❌ 请先输入产品中文名称');
+                return;
+            }
+            
+            // 获取场景词
+            const sceneInputs = document.querySelectorAll('.scene-input');
+            const scenes = [];
+            sceneInputs.forEach(input => {
                 const value = input.value.trim();
                 if (value) {
-                    features.push(value);
+                    scenes.push(value);
                 }
             });
             
-            // 构建场景图提示词
-            let scenePrompt = `产品为${productName}，${productName}的特征为`;
-            
-            if (features.length > 0) {
-                scenePrompt += features.join('，') + '，';
-            } else {
-                scenePrompt += '高品质，实用，';
+            if (scenes.length === 0) {
+                showToast('❌ 请先生成场景词');
+                return;
             }
             
-            scenePrompt += `比例「1:1」帮我生成产品背景图提示词（高级！）`;
+            // 获取用户选择
+            const hasChineseText = document.querySelector('input[name="hasChineseText"]:checked')?.value === 'yes';
+            const aspectRatio = document.querySelector('input[name="aspectRatio"]:checked')?.value || '3:4';
+            const imageCount = document.querySelector('input[name="imageCount"]:checked')?.value || '4';
             
-            if (season !== '通用') {
-                scenePrompt += `穿着季节为：${season}`;
+            // 构建最终提示词
+            let finalPrompt;
+            
+            if (hasChineseText) {
+                // 图片中有中文的情况
+                finalPrompt = `我是跨境电商平台负责修图的美工，请帮我清除图片背景中的中文，并替换图片主体"${productName}"之外的背景，保持产品主体不变，背景中要体现"${scenes.join('、')}"等场景元素，请生成${imageCount}张新的产品图，图片的尺寸比例为[${aspectRatio}]。`;
             } else {
-                scenePrompt += `适用于各种场合`;
-            }
-            
-            scenePrompt += `（不要生成图片，仅需要提示词，场景要有意境，符合俄罗斯审美，符合现实特征）`;
-            
-            if (features.length > 0) {
-                scenePrompt += ` 请突出${features.join('，')}的特征`;
+                // 图片中没有中文的情况
+                finalPrompt = `我是跨境电商平台负责修图的美工，请帮我为产品"${productName}"设计背景，保持产品主体不变，背景中要体现"${scenes.join('、')}"等场景元素，请生成${imageCount}张新的产品图，图片的尺寸比例为[${aspectRatio}]。`;
             }
             
             // 显示结果
             const sceneResultArea = document.getElementById('sceneResultArea');
             const scenePromptDiv = document.getElementById('scenePrompt');
             
-            scenePromptDiv.textContent = scenePrompt;
+            scenePromptDiv.textContent = finalPrompt;
             sceneResultArea.style.display = 'block';
             sceneResultArea.classList.add('fade-in');
             
-            showToast('🎨 场景图提示词生成完成！');
+            showToast('🎨 AI提示词生成完成！');
         }
         
         // 复制场景图提示词
