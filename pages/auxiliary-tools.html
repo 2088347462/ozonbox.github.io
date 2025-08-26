@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>辅助工具 - OZON销售助手</title>
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            will-change: transform;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            box-shadow: 0 4px 15px rgba(255,255,255,0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .tool-category {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            will-change: transform;
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #4f46e5;
+        }
+
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .tool-item {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            will-change: transform;
+            cursor: pointer;
+        }
+
+        .tool-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border-color: #4f46e5;
+        }
+
+        .tool-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .tool-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .tool-desc {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .tool-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tool-link {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            will-change: transform;
+            cursor: pointer;
+            border: none;
+        }
+
+        .tool-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: white;
+            margin: 2% auto;
+            width: 90%;
+            height: 90%;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            will-change: transform;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+
+        .close:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-iframe {
+            width: 100%;
+            height: calc(100% - 60px);
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .modal-content {
+                width: 95%;
+                height: 85%;
+                margin: 5% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            返回首页
+        </a>
+
+        <div class="header">
+            <h1><i class="fas fa-tools"></i> 辅助工具</h1>
+            <p>专业的OZON销售辅助工具集合</p>
+        </div>
+
+        <div class="tools-grid">
+            <!-- 文字翻译 -->
+            <div class="tool-category">
+                <div class="category-title">
+                    <div class="category-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    文字翻译
+                </div>
+                <div class="tool-item">
+                    <div class="tool-name">俄文与中文在线互译工具</div>
+                    <div class="tool-desc">支持俄文和中文之间的实时翻译</div>
+                    <div class="tool-links">
+                        <button class="tool-link" onclick="openTool('Yandex翻译', 'https://translate.yandex.com/?source_lang=ru&target_lang=zh')">Yandex翻译</button>
+                        <button class="tool-link" onclick="openTool('DeepL翻译', 'https://www.deepl.com/zh/translator#zh/ru/')">DeepL翻译</button>
+                        <button class="tool-link" onclick="openTool('Bing翻译', 'https://cn.bing.com/translator?setlang=zh-cn&from=auto&to=zh-Hans')">Bing翻译</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图片翻译 -->
+            <div class="tool-category">
+                <div class="category-title">
+                    <div class="category-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    图片翻译
+                </div>
+                <div class="tool-item">
+                    <div class="tool-name">将图片中的中文翻译成俄文</div>
+                    <div class="tool-desc">OCR识别图片文字并进行翻译</div>
+                    <div class="tool-links">
+                        <button class="tool-link" onclick="openTool('象寄AI', 'https://www.xiangjifanyi.com/console/workspace')">象寄AI</button>
+                        <button class="tool-link" onclick="openTool('Yandex翻译', 'https://translate.yandex.com/ocr?lang=zh-ru')">Yandex翻译</button>
+                        <button class="tool-link" onclick="openTool('百度翻译', 'https://fanyi.baidu.com/mtpe-individual/transImg#/')">百度翻译</button>
+                        <button class="tool-link" onclick="openTool('谷歌翻译', 'https://translate.google.com/?sl=zh-CN&tl=ru&op=images')">谷歌翻译</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 汇率转换 -->
+            <div class="tool-category">
+                <div class="category-title">
+                    <div class="category-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    汇率转换
+                </div>
+                <div class="tool-item">
+                    <div class="tool-name">多国货币汇率实时换算</div>
+                    <div class="tool-desc">实时查询各国货币汇率并进行换算</div>
+                    <div class="tool-links">
+                        <button class="tool-link" onclick="openTool('XE汇率', 'https://www.xe.com/zh-CN/currencyconverter/convert/?Amount=1&From=RUB&To=CNY')">XE汇率</button>
+                        <button class="tool-link" onclick="openTool('Wise汇率', 'https://wise.com/zh-cn/currency-converter/rub-to-cny-rate')">Wise汇率</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 物流运费查询 -->
+            <div class="tool-category">
+                <div class="category-title">
+                    <div class="category-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    物流运费查询
+                </div>
+                <div class="tool-item">
+                    <div class="tool-name">UNI、GUOO运费</div>
+                    <div class="tool-desc">查询UNI和GUOO物流的运费价格</div>
+                    <div class="tool-links">
+                        <button class="tool-link" onclick="openTool('UNI运费', 'https://docs.qq.com/sheet/DYnhYVFhmenZ3bnJx?tab=000002')">UNI运费</button>
+                        <button class="tool-link" onclick="openTool('GUOO测算表', 'https://docs.qq.com/sheet/DYk53WHdxakVWenZB?tab=000002')">GUOO测算表</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 物流追踪 -->
+            <div class="tool-category">
+                <div class="category-title">
+                    <div class="category-icon">
+                        <i class="fas fa-search-location"></i>
+                    </div>
+                    物流追踪
+                </div>
+                <div class="tool-item">
+                    <div class="tool-name">实时查询国际物流包裹状态</div>
+                    <div class="tool-desc">追踪包裹的实时物流状态</div>
+                    <div class="tool-links">
+                        <button class="tool-link" onclick="openTool('UNI物流', 'https://unitrade.youtrack.info/')">UNI物流</button>
+                        <button class="tool-link" onclick="openTool('17track', 'https://www.17track.net/zh-cn')">17track</button>
+                        <button class="tool-link" onclick="openTool('track123', 'https://www.track123.com/cn/track')">track123</button>
+                        <button class="tool-link" onclick="openTool('track718', 'https://www.track718.com/zh-CN')">track718</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 商品数据分析 -->
+            <div class="tool-category">
+                <div class="category-title">
+                    <div class="category-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    商品数据分析
+                </div>
+                <div class="tool-item">
+                    <div class="tool-name">追踪单品的销量、价格、库存</div>
+                    <div class="tool-desc">专业的商品数据分析工具</div>
+                    <div class="tool-links">
+                        <button class="tool-link" onclick="openTool('毛子ERP', 'https://ozon.maozierp.com/')">毛子ERP</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 商品图制作 -->
+            <div class="tool-category">
+                <div class="category-title">
+                    <div class="category-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    商品图制作
+                </div>
+                <div class="tool-item">
+                    <div class="tool-name">专业的商品图片设计工具</div>
+                    <div class="tool-desc">制作精美的商品展示图片</div>
+                    <div class="tool-links">
+                        <button class="tool-link" onclick="openTool('美图设计室', 'https://www.designkit.com/editor/')">美图设计室</button>
+                        <button class="tool-link" onclick="openTool('讯排设计', 'https://design.palxp.cn/templates')">讯排设计</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图片压缩 -->
+            <div class="tool-category">
+                <div class="category-title">
+                    <div class="category-icon">
+                        <i class="fas fa-compress-alt"></i>
+                    </div>
+                    图片压缩
+                </div>
+                <div class="tool-item">
+                    <div class="tool-name">在保留清晰度的基础上压缩图片大小</div>
+                    <div class="tool-desc">高效的图片压缩工具</div>
+                    <div class="tool-links">
+                        <button class="tool-link" onclick="openTool('ImageCompressor', 'https://imagecompressor.com/zh/')">ImageCompressor</button>
+                        <button class="tool-link" onclick="openTool('TinyPNG', 'https://tinypng.com/')">TinyPNG</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图片修复 -->
+            <div class="tool-category">
+                <div class="category-title">
+                    <div class="category-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    图片修复
+                </div>
+                <div class="tool-item">
+                    <div class="tool-name">模糊变清晰</div>
+                    <div class="tool-desc">AI智能图片修复和增强</div>
+                    <div class="tool-links">
+                        <button class="tool-link" onclick="openTool('ARC实验室', 'https://arc.tencent.com/zh/ai-demos/faceRestoration')">ARC实验室</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 去除背景 -->
+            <div class="tool-category">
+                <div class="category-title">
+                    <div class="category-icon">
+                        <i class="fas fa-cut"></i>
+                    </div>
+                    去除背景
+                </div>
+                <div class="tool-item">
+                    <div class="tool-name">去除图片背景实现一键抠图</div>
+                    <div class="tool-desc">智能背景移除工具</div>
+                    <div class="tool-links">
+                        <button class="tool-link" onclick="openTool('扣扣图', 'https://www.koukoutu.com/removebg')">扣扣图</button>
+                        <button class="tool-link" onclick="openTool('Remove.bg', 'https://www.remove.bg/zh')">Remove.bg</button>
+                        <button class="tool-link" onclick="openTool('BatchTool', 'https://images.batchtool.com/zh?utm_source=ai-bot.cn')">BatchTool</button>
+                        <button class="tool-link" onclick="openTool('Remove.photos', 'https://remove.photos/zh-cn/remove-background')">Remove.photos</button>
+                        <button class="tool-link" onclick="openTool('Erase.bg', 'https://www.erase.bg/zh')">Erase.bg</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框 -->
+    <div id="toolModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">工具</div>
+                <button class="close" onclick="closeTool()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <iframe id="toolFrame" class="modal-iframe" src=""></iframe>
+        </div>
+    </div>
+
+    <script>
+        function openTool(title, url) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('toolFrame').src = url;
+            document.getElementById('toolModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeTool() {
+            document.getElementById('toolModal').style.display = 'none';
+            document.getElementById('toolFrame').src = '';
+            document.body.style.overflow = 'auto';
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('toolModal');
+            if (event.target === modal) {
+                closeTool();
+            }
+        }
+
+        // ESC键关闭模态框
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeTool();
+            }
+        });
+    </script>
+</body>
+</html>

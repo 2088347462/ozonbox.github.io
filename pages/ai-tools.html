@@ -13,51 +13,61 @@
     <meta name="theme-color" content="#2196F3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
         
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f8f9fa;
-            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            color: #2c3e50;
             display: flex;
+            line-height: 1.6;
+            font-weight: 400;
+            letter-spacing: -0.01em;
         }
         .sidebar {
             width: 200px;
-            background-color: white;
+            background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%);
             color: #333;
             height: 100vh;
             position: fixed;
             left: 0;
             top: 0;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
             z-index: 100;
             overflow-y: auto;
-            border-right: 1px solid #e0e0e0;
+            border-right: 1px solid rgba(255,255,255,0.2);
+            will-change: transform;
         }
         .sidebar-header {
             padding: 15px;
-            background-color: #1565C0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             text-align: left;
-            font-weight: bold;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
             font-size: 18px;
+            letter-spacing: -0.01em;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             display: flex;
             align-items: center;
             color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .sidebar-menu {
             padding: 15px 0;
         }
         .sidebar-menu-item {
-            padding: 10px 15px;
+            padding: 12px 15px;
             display: flex;
             align-items: center;
-            color: #666;
+            color: #64748b;
             text-decoration: none;
-            transition: background-color 0.3s;
+            transition: background-color 0.15s ease, color 0.15s ease;
             font-size: 14px;
+            font-weight: 500;
+            letter-spacing: -0.005em;
         }
         .sidebar-menu-item:hover {
             background-color: rgba(0,0,0,0.05);
@@ -105,24 +115,33 @@
             max-width: 900px;
             margin: 20px auto;
             padding: 30px;
-            background-color: white;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             width: 100%;
+            will-change: transform;
         }
         .header {
-            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             color: white;
             padding: 25px;
             text-align: center;
-            border-radius: 8px;
+            border-radius: 16px;
             margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.3);
+            position: relative;
+            overflow: hidden;
         }
+
         .header h1 {
             margin: 0;
-            font-size: 28px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
         }
         .tools-grid {
             display: grid;
@@ -131,34 +150,47 @@
             margin-top: 30px;
         }
         .tool-card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
             overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            will-change: transform;
         }
         .tool-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
         .tool-card-header {
-            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             color: white;
             padding: 15px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
+
         .tool-card-body {
-            padding: 15px;
+            padding: 20px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(248,250,252,0.8) 100%);
         }
         .tool-card-title {
-            font-size: 18px;
-            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
             margin: 0;
+            color: white;
+            letter-spacing: -0.01em;
+            position: relative;
+            z-index: 1;
         }
         .tool-card-description {
-            color: #666;
+            color: #64748b;
             margin-top: 10px;
-            font-size: 14px;
+            font-size: 15px;
+            line-height: 1.5;
+            letter-spacing: -0.005em;
         }
         .tool-card-footer {
             padding: 15px;
@@ -167,24 +199,30 @@
         }
         .tool-card-btn {
             display: inline-block;
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             color: white;
-            padding: 8px 15px;
-            border-radius: 4px;
+            padding: 12px 24px;
+            border-radius: 25px;
             text-decoration: none;
             font-size: 14px;
-            transition: background-color 0.3s;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            will-change: transform;
         }
         .tool-card-btn:hover {
-            background-color: #2E7D32;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
         }
         .footer {
             text-align: center;
             margin-top: 40px;
             padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-            color: #777;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            color: #64748b;
             font-size: 14px;
+            font-weight: 400;
+            letter-spacing: -0.005em;
         }
         .customer-service {
             position: fixed;
@@ -192,7 +230,35 @@
             right: 30px;
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.3);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            z-index: 1000;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            will-change: transform;
+        }
+        .customer-service:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(17, 153, 142, 0.4);
+        }
+        .customer-service i {
+            font-size: 28px;
+        }
+        
+        /* 返回顶部按钮样式 */
+        .back-to-top {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -201,14 +267,22 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
             cursor: pointer;
             transition: all 0.3s ease;
-            z-index: 1000;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
         }
-        .customer-service:hover {
-            transform: scale(1.1);
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .back-to-top:hover {
+            transform: scale(1.1) translateY(-2px);
             box-shadow: 0 6px 15px rgba(0,0,0,0.25);
         }
-        .customer-service i {
-            font-size: 28px;
+        .back-to-top i {
+            font-size: 20px;
         }
         
         /* Toast提示样式 */
@@ -262,9 +336,9 @@
             <a href="../index.html" class="sidebar-menu-item"><i class="fas fa-home"></i> 首页</a>
             <a href="tools.html" class="sidebar-menu-item"><i class="fas fa-tools"></i> 实用工具</a>
             <a href="ai-tools.html" class="sidebar-menu-item"><i class="fas fa-robot"></i> AI工具</a>
-            <a href="data-analysis.html" class="sidebar-menu-item"><i class="fas fa-chart-line"></i> 数据分析</a>
+
             <a href="ozon-plugin.html" class="sidebar-menu-item"><i class="fas fa-puzzle-piece"></i> OZON插件</a>
-            <a href="settings.html" class="sidebar-menu-item"><i class="fas fa-cog"></i> 设置</a>
+
         </div>
     </div>
     
@@ -287,58 +361,7 @@
                     </div>
                 </div>
                 
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <h3 class="tool-card-title">AI图片生成</h3>
-                    </div>
-                    <div class="tool-card-body">
-                        <p class="tool-card-description">根据商品描述自动生成高质量的商品图片，提升商品页面的视觉吸引力。</p>
-                    </div>
-                    <div class="tool-card-footer">
-                        <a href="ai-image-generator.html" class="tool-card-btn">使用工具</a>
-                    </div>
-                </div>
-                
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <h3 class="tool-card-title">AI翻译工具</h3>
-                    </div>
-                    <div class="tool-card-body">
-                        <p class="tool-card-description">智能翻译商品信息，支持多种语言，确保翻译准确自然，符合目标市场语言习惯。</p>
-                    </div>
-                    <div class="tool-card-footer">
-                        <a href="ai-translator.html" class="tool-card-btn">使用工具</a>
-                    </div>
-                </div>
-                
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <h3 class="tool-card-title">AI商品图生成</h3>
-                    </div>
-                    <div class="tool-card-body">
-                        <p class="tool-card-description">专为OZON俄罗斯电商平台定制，生成符合俄罗斯顾客喜好的高质量商品图片，提升转化率。</p>
-                    </div>
-                    <div class="tool-card-footer">
-                        <a href="ai-product-image-generator.html" class="tool-card-btn">使用工具</a>
-                    </div>
-                </div>
-                
 
-                
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <h3 class="tool-card-title">AI产品详情页生成</h3>
-                    </div>
-                    <div class="tool-card-body">
-                        <p class="tool-card-description">上传商品图片，AI智能生成现代化产品详情页，自动添加品牌水印，符合现代审美趋势。</p>
-                    </div>
-                    <div class="tool-card-footer">
-                        <a href="ai-product-detail-generator.html" class="tool-card-btn">使用工具</a>
-                    </div>
-                </div>
-                
-
-                
                 <div class="tool-card">
                     <div class="tool-card-header">
                         <h3 class="tool-card-title">Excel数据分析器</h3>
@@ -362,6 +385,11 @@
         <i class="fas fa-headset"></i>
     </div>
     
+    <!-- 返回顶部按钮 -->
+    <div class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+    </div>
+    
     <div id="toast" class="toast"></div>
 
     <script>
@@ -378,6 +406,24 @@
         function showCustomerService() {
             showToast('联系我们：邮箱：zouqifeng@jiawae-commerce.com\n工作时间：周一至周五 9:00-18:00');
         }
+        
+        // 返回顶部功能
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // 监听滚动事件，控制返回顶部按钮显示
+        window.addEventListener('scroll', function() {
+            const backToTop = document.getElementById('backToTop');
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
     </script>
 </body>
 </html>

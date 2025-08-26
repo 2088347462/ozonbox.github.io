@@ -13,15 +13,18 @@
     <meta name="theme-color" content="#2196F3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
         
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f8f9fa;
-            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            color: #2c3e50;
             line-height: 1.6;
+            font-weight: 400;
+            letter-spacing: -0.01em;
         }
         
         .top-bar {
@@ -30,13 +33,14 @@
             left: 0;
             right: 0;
             height: 60px;
-            background-color: #1565C0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 20px;
             z-index: 999;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
         }
         
         .top-bar-left {
@@ -56,23 +60,27 @@
         
         .top-bar-title {
             color: white;
+            font-family: 'Poppins', sans-serif;
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .back-btn {
             background: rgba(255,255,255,0.2);
             color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
             cursor: pointer;
             font-size: 14px;
-            transition: background-color 0.3s;
+            font-weight: 500;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
         }
-        
         .back-btn:hover {
             background: rgba(255,255,255,0.3);
+            box-shadow: 0 4px 15px rgba(255,255,255,0.2);
         }
         
         .main-content {
@@ -99,25 +107,35 @@
         }
         
         .plugin-header {
-            background: linear-gradient(135deg, #2196F3, #1565C0);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 40px;
             text-align: center;
-            border-radius: 12px;
+            border-radius: 20px;
             margin-bottom: 40px;
-            box-shadow: 0 10px 30px rgba(33, 150, 243, 0.3);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
         }
+
         
         .plugin-header h1 {
             margin: 0 0 15px 0;
+            font-family: 'Poppins', sans-serif;
             font-size: 36px;
             font-weight: 700;
+            letter-spacing: -0.01em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
         }
         
         .plugin-header p {
             margin: 0;
             font-size: 18px;
             opacity: 0.9;
+            position: relative;
+            z-index: 1;
         }
         
         .plugin-info {
@@ -128,16 +146,26 @@
         }
         
         .info-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            will-change: transform;
+        }
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
         
         .info-card h3 {
             margin: 0 0 20px 0;
-            color: #1565C0;
+            color: #667eea;
+            font-family: 'Poppins', sans-serif;
             font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -167,18 +195,22 @@
         }
         
         .download-section {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             text-align: center;
             margin-bottom: 40px;
         }
         
         .download-section h3 {
             margin: 0 0 30px 0;
-            color: #1565C0;
+            color: #667eea;
+            font-family: 'Poppins', sans-serif;
             font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
         }
         
         .versions-container {

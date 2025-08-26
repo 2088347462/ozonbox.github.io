@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片水印工具 - OZON工具盒子</title>
+    <title>网页资源嗅探神器 - OZON工具盒子</title>
     <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -17,7 +17,7 @@
         
         body {
             font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -27,24 +27,12 @@
         
         .container {
             background: rgba(255, 255, 255, 0.95);
-
             border-radius: 20px;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             padding: 40px;
             max-width: 1000px;
             width: 100%;
-            animation: fadeInUp 0.6s ease-out;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            will-change: transform;
         }
         
         .back-btn {
@@ -56,15 +44,21 @@
             border-radius: 50px;
             padding: 12px 20px;
             cursor: pointer;
-            transition: transform 0.2s ease;
-            text-decoration: none;
-            color: #333;
+            font-size: 16px;
             font-weight: 500;
+            color: #1976D2;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+            will-change: transform;
         }
         
         .back-btn:hover {
             background: white;
-            transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
@@ -75,7 +69,7 @@
         
         .header h1 {
             font-size: 2.5rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #2196F3, #1976D2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -94,7 +88,7 @@
         
         .version-badge {
             display: inline-block;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
             padding: 5px 15px;
             border-radius: 20px;
@@ -115,17 +109,19 @@
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
-            transition: transform 0.3s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            will-change: transform;
         }
         
         .feature-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
         
         .feature-icon {
             font-size: 2.5rem;
             margin-bottom: 15px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #2196F3, #1976D2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -144,11 +140,11 @@
         }
         
         .download-section {
-            background: linear-gradient(135deg, #f8f9ff, #e8f0ff);
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
             padding: 30px;
             border-radius: 15px;
             margin-bottom: 30px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #2196F3;
         }
         
         .download-title {
@@ -175,7 +171,7 @@
         }
         
         .info-icon {
-            color: #667eea;
+            color: #2196F3;
             width: 20px;
         }
         
@@ -183,7 +179,7 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #2196F3, #1976D2);
             color: white;
             padding: 15px 30px;
             border: none;
@@ -192,12 +188,13 @@
             font-weight: 500;
             cursor: pointer;
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            will-change: transform;
         }
         
         .download-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 25px rgba(33, 150, 243, 0.3);
         }
         
         .usage-guide {
@@ -238,7 +235,7 @@
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #2196F3, #1976D2);
             color: white;
             width: 30px;
             height: 30px;
@@ -262,10 +259,10 @@
         }
         
         .system-requirements {
-            background: linear-gradient(135deg, #fff5f5, #ffe8e8);
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
             padding: 25px;
             border-radius: 15px;
-            border-left: 4px solid #ff6b6b;
+            border-left: 4px solid #FF9800;
             margin-bottom: 30px;
         }
         
@@ -370,52 +367,20 @@
     <div class="container">
         <div class="header">
             <h1>
-                <i class="fas fa-image"></i>
-                图片水印工具
+                <i class="fas fa-search"></i>
+                网页资源嗅探神器
             </h1>
-            <p>专业的图片水印处理工具，支持文字和图片水印，批量处理功能</p>
-            <span class="version-badge">v1.0.0</span>
+            <p>强大的浏览器插件，智能嗅探网页中的图片、视频等媒体资源</p>
+            <span class="version-badge">浏览器插件版</span>
         </div>
         
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">
-                    <i class="fas fa-images"></i>
+                    <i class="fas fa-search-plus"></i>
                 </div>
-                <div class="feature-title">多格式支持</div>
-                <div class="feature-desc">支持 JPG、PNG、GIF、BMP、WebP 等多种图片格式</div>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-font"></i>
-                </div>
-                <div class="feature-title">文字水印</div>
-                <div class="feature-desc">自定义文字内容、字体、大小、颜色和透明度</div>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-picture-o"></i>
-                </div>
-                <div class="feature-title">图片水印</div>
-                <div class="feature-desc">添加 Logo 或其他图片作为水印，支持透明度调节</div>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-crosshairs"></i>
-                </div>
-                <div class="feature-title">灵活定位</div>
-                <div class="feature-desc">九宫格定位系统，精确控制水印位置</div>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-layer-group"></i>
-                </div>
-                <div class="feature-title">批量处理</div>
-                <div class="feature-desc">一次性处理多张图片，提高工作效率</div>
+                <div class="feature-title">智能嗅探</div>
+                <div class="feature-desc">自动检测网页中的所有图片、视频、音频等媒体资源</div>
             </div>
             
             <div class="feature-card">
@@ -423,48 +388,80 @@
                     <i class="fas fa-eye"></i>
                 </div>
                 <div class="feature-title">实时预览</div>
-                <div class="feature-desc">实时查看水印效果，所见即所得</div>
+                <div class="feature-desc">在下载前预览资源内容，确保下载所需文件</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="feature-title">批量下载</div>
+                <div class="feature-desc">支持选择多个资源进行批量下载，提高效率</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-filter"></i>
+                </div>
+                <div class="feature-title">智能筛选</div>
+                <div class="feature-desc">按文件类型、大小等条件筛选，快速找到目标资源</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="feature-title">高速下载</div>
+                <div class="feature-desc">多线程下载技术，提供更快的下载速度</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="feature-title">安全可靠</div>
+                <div class="feature-desc">绿色安全，无广告无恶意代码，保护用户隐私</div>
             </div>
         </div>
         
         <div class="download-section">
             <div class="download-title">
                 <i class="fas fa-download"></i>
-                下载图片水印工具
+                下载网页资源嗅探神器
             </div>
             
             <div class="download-info">
                 <div class="info-item">
-                    <i class="fas fa-file-archive info-icon"></i>
-                    <span>文件大小：约 120MB</span>
+                    <i class="fas fa-puzzle-piece info-icon"></i>
+                    <span>类型：浏览器插件</span>
                 </div>
                 <div class="info-item">
-                    <i class="fas fa-desktop info-icon"></i>
-                    <span>支持系统：Windows 10/11 (64位)</span>
+                    <i class="fas fa-globe info-icon"></i>
+                    <span>支持：Chrome、Edge、Firefox</span>
                 </div>
                 <div class="info-item">
                     <i class="fas fa-calendar info-icon"></i>
-                    <span>更新时间：2025年8月5日</span>
+                    <span>更新时间：2025年1月</span>
                 </div>
                 <div class="info-item">
                     <i class="fas fa-shield-alt info-icon"></i>
-                    <span>安全无毒：绿色免安装</span>
+                    <span>安全无毒：绿色插件</span>
                 </div>
             </div>
             
-            <a href="https://pan.baidu.com/s/1CvouC6gj4pyEscjRdc-gcA?pwd=7xga" class="download-btn" target="_blank">
+            <a href="https://pan.baidu.com/s/1GEX_p6PtqUOk5xFbHLNUWw?pwd=tada" class="download-btn" target="_blank">
                 <i class="fas fa-cloud-download-alt"></i>
-                百度网盘下载 (提取码: 7xga)
+                百度网盘下载 (提取码: tada)
             </a>
             
-            <div style="margin-top: 15px; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 10px; border-left: 4px solid #667eea;">
-                <div style="color: #667eea; font-weight: 600; margin-bottom: 8px;">
+            <div style="margin-top: 15px; padding: 15px; background: rgba(33, 150, 243, 0.1); border-radius: 10px; border-left: 4px solid #2196F3;">
+                <div style="color: #2196F3; font-weight: 600; margin-bottom: 8px;">
                     <i class="fas fa-info-circle"></i> 下载说明
                 </div>
                 <div style="color: #666; font-size: 0.95rem; line-height: 1.5;">
                     • 点击上方按钮跳转到百度网盘<br>
-                    • 提取码：<strong>7xga</strong><br>
-                    • 文件名：watermark-app-1.0.0-x64.nsis.7z
+                    • 提取码：<strong>tada</strong><br>
+                    • 下载后按照使用指南进行安装
                 </div>
             </div>
         </div>
@@ -472,36 +469,36 @@
         <div class="usage-guide">
             <div class="guide-title">
                 <i class="fas fa-book"></i>
-                使用指南
+                安装使用指南
             </div>
             
             <ol class="steps-list">
                 <li class="step-item">
-                    <div class="step-title">下载并解压</div>
-                    <div class="step-desc">下载压缩包后，解压到任意文件夹</div>
+                    <div class="step-title">下载插件文件</div>
+                    <div class="step-desc">从百度网盘下载插件压缩包并解压到本地文件夹</div>
                 </li>
                 
                 <li class="step-item">
-                    <div class="step-title">选择启动方式</div>
+                    <div class="step-title">打开浏览器扩展页面</div>
                     <div class="step-desc">
-                       
-                        双击 "图片水印工具.exe"
+                        Chrome: 地址栏输入 chrome://extensions/<br>
+                        Edge: 地址栏输入 edge://extensions/
                     </div>
                 </li>
                 
                 <li class="step-item">
-                    <div class="step-title">添加图片</div>
-                    <div class="step-desc">拖拽图片到软件界面，或点击添加按钮选择图片文件</div>
+                    <div class="step-title">开启开发者模式</div>
+                    <div class="step-desc">在扩展页面右上角开启"开发者模式"开关</div>
                 </li>
                 
                 <li class="step-item">
-                    <div class="step-title">设置水印</div>
-                    <div class="step-desc">选择文字水印或图片水印，设置内容、位置、透明度等参数</div>
+                    <div class="step-title">加载插件</div>
+                    <div class="step-desc">点击"加载已解压的扩展程序"，选择解压后的插件文件夹</div>
                 </li>
                 
                 <li class="step-item">
-                    <div class="step-title">预览和导出</div>
-                    <div class="step-desc">实时预览效果，满意后点击导出按钮保存处理后的图片</div>
+                    <div class="step-title">开始使用</div>
+                    <div class="step-desc">访问任意网页，点击浏览器工具栏中的插件图标即可开始嗅探资源</div>
                 </li>
             </ol>
         </div>
@@ -514,20 +511,20 @@
             
             <div class="req-list">
                 <div class="req-item">
-                    <i class="fas fa-desktop"></i>
-                    <span>Windows 10 或更高版本</span>
+                    <i class="fas fa-chrome"></i>
+                    <span>Chrome 88+ 或 Edge 88+</span>
                 </div>
                 <div class="req-item">
-                    <i class="fas fa-microchip"></i>
-                    <span>64位系统架构</span>
+                    <i class="fas fa-firefox"></i>
+                    <span>Firefox 85+ (部分功能)</span>
+                </div>
+                <div class="req-item">
+                    <i class="fas fa-desktop"></i>
+                    <span>Windows 10/11, macOS, Linux</span>
                 </div>
                 <div class="req-item">
                     <i class="fas fa-memory"></i>
-                    <span>建议 4GB 以上内存</span>
-                </div>
-                <div class="req-item">
-                    <i class="fas fa-hdd"></i>
-                    <span>约 200MB 磁盘空间</span>
+                    <span>建议 2GB 以上内存</span>
                 </div>
             </div>
         </div>
@@ -539,41 +536,44 @@
             </div>
             
             <div class="trouble-item">
-                <div class="trouble-question">❓ 应用无法启动怎么办？</div>
+                <div class="trouble-question">❓ 插件无法安装怎么办？</div>
                 <div class="trouble-answer">
                     <ul>
-                        <li>确保使用64位Windows系统</li>
-                        <li>尝试以管理员权限运行</li>
-                        <li>检查杀毒软件是否误报，将应用添加到白名单</li>
+                        <li>确保浏览器版本符合要求</li>
+                        <li>检查是否已开启开发者模式</li>
+                        <li>尝试重新下载插件文件</li>
+                        <li>清除浏览器缓存后重试</li>
                     </ul>
                 </div>
             </div>
             
             <div class="trouble-item">
-                <div class="trouble-question">❓ PowerShell脚本无法执行？</div>
+                <div class="trouble-question">❓ 无法检测到网页资源？</div>
                 <div class="trouble-answer">
                     <ul>
-                        <li>右键选择"使用PowerShell运行"而不是双击</li>
-                        <li>或者使用批处理文件 "启动应用.bat" 启动</li>
-                        <li>也可以直接运行 "图片水印工具.exe"</li>
+                        <li>刷新网页后重新尝试</li>
+                        <li>检查网页是否完全加载完成</li>
+                        <li>某些动态加载的资源需要滚动页面触发</li>
+                        <li>部分网站可能有反爬虫机制</li>
                     </ul>
                 </div>
             </div>
             
             <div class="trouble-item">
-                <div class="trouble-question">❓ 文件被杀毒软件拦截？</div>
+                <div class="trouble-question">❓ 下载速度慢或失败？</div>
                 <div class="trouble-answer">
                     <ul>
-                        <li>将应用文件夹添加到杀毒软件白名单</li>
-                        <li>或暂时关闭实时保护进行安装</li>
-                        <li>本工具为绿色软件，安全无毒</li>
+                        <li>检查网络连接是否稳定</li>
+                        <li>尝试单个文件下载而非批量下载</li>
+                        <li>某些网站可能限制下载频率</li>
+                        <li>大文件建议使用右键另存为</li>
                     </ul>
                 </div>
             </div>
         </div>
         
         <div class="footer">
-            <p>© 2025 OZON工具盒子 - 图片水印工具 v1.0.0</p>
+            <p>© 2025 OZON工具盒子 - 网页资源嗅探神器</p>
             <p>如有问题，请联系技术支持</p>
         </div>
     </div>

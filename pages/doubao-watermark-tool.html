@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>豆包水印去除器 - 专业水印处理工具</title>
+    <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            margin-bottom: 30px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+
+            transition: transform 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .version {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .download-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .download-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .download-info {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .download-note {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .usage-guide {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 50px;
+        }
+
+        .guide-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .guide-steps {
+            counter-reset: step-counter;
+        }
+
+        .guide-step {
+            counter-increment: step-counter;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            position: relative;
+            padding-left: 70px;
+        }
+
+        .guide-step::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .step-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .system-requirements {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 50px;
+        }
+
+        .requirements-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .requirement-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .requirement-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .requirement-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .requirement-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .troubleshooting {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 50px;
+        }
+
+        .troubleshooting-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .faq-item {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .faq-answer {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .download-info {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .guide-step {
+                padding-left: 60px;
+            }
+
+            .requirements-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="tools.html" class="back-btn">
+            ← 返回工具页面
+        </a>
+
+        <div class="header">
+            <h1 class="title">豆包水印去除器</h1>
+            <div class="version">专业版</div>
+            <p class="subtitle">基于Photoshop的专业水印去除工具，自动化处理，高质量输出</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">🎯</span>
+                <h3 class="feature-title">Photoshop集成</h3>
+                <p class="feature-description">直接调用Photoshop进行专业级水印去除，确保最佳处理效果和图像质量。</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">⚡</span>
+                <h3 class="feature-title">拖拽处理</h3>
+                <p class="feature-description">简单拖拽图片到程序上即可开始处理，无需复杂操作，一键完成水印去除。</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">🔧</span>
+                <h3 class="feature-title">多版本支持</h3>
+                <p class="feature-description">支持配置多个Photoshop版本，可根据需要选择不同版本进行处理。</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">💾</span>
+                <h3 class="feature-title">自动保存</h3>
+                <p class="feature-description">处理完成后自动覆盖原图保存，无需手动操作，提高工作效率。</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">⚙️</span>
+                <h3 class="feature-title">智能配置</h3>
+                <p class="feature-description">首次配置后自动保存设置，后续使用无需重复配置Photoshop路径。</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">🎨</span>
+                <h3 class="feature-title">专业品质</h3>
+                <p class="feature-description">基于Photoshop的专业算法，确保水印去除后图像质量不受影响。</p>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <h2 class="download-title">下载豆包水印去除器</h2>
+            <div class="download-info">
+                <div class="info-item">
+                    <div class="info-label">文件大小</div>
+                    <div class="info-value">约 15MB</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">支持系统</div>
+                    <div class="info-value">Windows 10/11</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">提取码</div>
+                    <div class="info-value">f7ju</div>
+                </div>
+            </div>
+            <a href="https://pan.baidu.com/s/1XfbjiUjOcEhqeHs7GQdPzA?pwd=f7ju" class="download-btn" target="_blank">
+                百度网盘下载
+            </a>
+            <div class="download-note">
+                <strong>下载说明：</strong> 点击上方按钮跳转到百度网盘，输入提取码 <strong>f7ju</strong> 即可下载。下载后请解压到任意目录使用。
+            </div>
+        </div>
+
+        <div class="usage-guide">
+            <h2 class="guide-title">安装与使用步骤</h2>
+            <div class="guide-steps">
+                <div class="guide-step">
+                    <div class="step-title">解压文件</div>
+                    <div class="step-description">下载完成后，解压 auto_watermark_remove 压缩包到任意目录。</div>
+                </div>
+
+                <div class="guide-step">
+                    <div class="step-title">进入程序目录</div>
+                    <div class="step-description">进入解压后的 dist 文件夹，找到 watermark_remover.exe 程序文件。</div>
+                </div>
+
+                <div class="guide-step">
+                    <div class="step-title">拖拽图片处理</div>
+                    <div class="step-description">将需要处理的图片直接拖拽到 watermark_remover.exe 程序图标上。</div>
+                </div>
+
+                <div class="guide-step">
+                    <div class="step-title">配置Photoshop路径</div>
+                    <div class="step-description">首次使用时需要配置Photoshop路径：<br>
+                    • 右键点击Photoshop图标 → 打开文件所在位置<br>
+                    • 复制路径并在末尾添加 \Photoshop.exe<br>
+                    • 粘贴到程序提示框中，回车确认<br>
+                    • 为该PS版本起一个名称（如"PS2022"）</div>
+                </div>
+
+                <div class="guide-step">
+                    <div class="step-title">开始处理</div>
+                    <div class="step-description">根据提示输入 y（是）或 n（否）确认处理。程序会自动调用Photoshop处理图片，完成后覆盖原图。</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="system-requirements">
+            <h2 class="requirements-title">系统要求</h2>
+            <div class="requirements-grid">
+                <div class="requirement-item">
+                    <span class="requirement-icon">💻</span>
+                    <div class="requirement-title">操作系统</div>
+                    <div class="requirement-description">Windows 10 或更高版本</div>
+                </div>
+                <div class="requirement-item">
+                    <span class="requirement-icon">🎨</span>
+                    <div class="requirement-title">必需软件</div>
+                    <div class="requirement-description">Adobe Photoshop（任意版本）</div>
+                </div>
+                <div class="requirement-item">
+                    <span class="requirement-icon">💾</span>
+                    <div class="requirement-title">存储空间</div>
+                    <div class="requirement-description">至少 50MB 可用空间</div>
+                </div>
+                <div class="requirement-item">
+                    <span class="requirement-icon">⚡</span>
+                    <div class="requirement-title">内存要求</div>
+                    <div class="requirement-description">建议 4GB 或以上内存</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="troubleshooting">
+            <h2 class="troubleshooting-title">常见问题</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">Q: 程序无法找到Photoshop怎么办？</div>
+                <div class="faq-answer">A: 请确保已正确安装Photoshop，并在首次使用时正确配置Photoshop路径。路径格式应为：C:\Program Files\Adobe\Adobe Photoshop 2022\Photoshop.exe</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: 配置文件丢失需要重新配置？</div>
+                <div class="faq-answer">A: 程序会在图片所在目录生成 photoshop_versions.ini 配置文件，请不要移动或删除该文件。如果丢失，需要重新配置Photoshop路径。</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: 支持哪些图片格式？</div>
+                <div class="faq-answer">A: 支持Photoshop能够处理的所有常见图片格式，包括JPG、PNG、PSD、TIFF等。处理后会保持原始格式。</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 豆包水印去除器. 专业水印处理解决方案.</p>
+        </div>
+    </div>
+</body>
+</html>
