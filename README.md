@@ -53,9 +53,9 @@ ozpl/
 ├── index.html                          # 主页
 ├── ai-tools.html                        # AI工具页面
 ├── tools.html                           # 实用工具页面
-├── data-analysis.html                   # 数据分析页面
+
 ├── ozon-plugin.html                     # 插件下载页面
-├── settings.html                        # 设置页面
+
 ├── title-generator.html                 # 标题生成器
 ├── ai-image-generator.html              # AI图片生成器
 ├── ai-translator.html                   # AI翻译工具

@@ -6,7 +6,7 @@ const url = require('url');
 const zlib = require('zlib');
 const puppeteer = require('puppeteer-core');
 
-const PORT = 8081;
+const PORT = process.env.PORT || 3000;
 
 // 新增：交互式会话存储（用于验证码人工验证）
 const interactiveSessions = new Map();
