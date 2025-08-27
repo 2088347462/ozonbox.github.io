@@ -805,6 +805,30 @@
                         </div>
                     </div>
                     
+                    <div class="quick-filter-row">
+                        <div class="quick-filter-group">
+                            <span class="quick-filter-label">商品评分:</span>
+                            <input type="number" class="quick-filter-input" id="quickRatingMin" placeholder="最小值" min="0.1" max="5" step="0.1" style="width: 80px;">
+                            <span class="quick-filter-unit">分 ~</span>
+                            <input type="number" class="quick-filter-input" id="quickRatingMax" placeholder="最大值" min="0.1" max="5" step="0.1" style="width: 80px;">
+                            <span class="quick-filter-unit">分</span>
+                            <label style="margin-left: 10px; font-size: 12px;">
+                                <input type="checkbox" id="quickRatingEmpty" style="margin-right: 5px;"> 无评分
+                            </label>
+                        </div>
+                        
+                        <div class="quick-filter-group">
+                            <span class="quick-filter-label">评价次数:</span>
+                            <input type="number" class="quick-filter-input" id="quickReviewMin" placeholder="最小值" min="0" style="width: 80px;">
+                            <span class="quick-filter-unit">次 ~</span>
+                            <input type="number" class="quick-filter-input" id="quickReviewMax" placeholder="最大值" min="0" style="width: 80px;">
+                            <span class="quick-filter-unit">次</span>
+                            <label style="margin-left: 10px; font-size: 12px;">
+                                <input type="checkbox" id="quickReviewEmpty" style="margin-right: 5px;"> 无评价
+                            </label>
+                        </div>
+                    </div>
+                    
                     <div class="quick-filter-actions">
                         <button class="apply-filters-btn" onclick="applyQuickFilters()">
                             <i class="fas fa-search"></i> 应用筛选
@@ -1434,6 +1458,12 @@
         }
         
         function applyQuickFilters() {
+            // 检查是否已加载数据
+            if (originalData.length === 0) {
+                showError('请先上传Excel文件再进行筛选');
+                return;
+            }
+            
             let filtered = [...originalData];
             
             // 商品名称筛选
@@ -1602,6 +1632,68 @@
                 });
             }
             
+            // 商品评分筛选
+            const ratingMin = parseFloat(document.getElementById('quickRatingMin').value);
+            const ratingMax = parseFloat(document.getElementById('quickRatingMax').value);
+            const onlyNoRating = document.getElementById('quickRatingEmpty').checked;
+            
+            if (!isNaN(ratingMin) || !isNaN(ratingMax) || onlyNoRating) {
+                filtered = filtered.filter(row => {
+                    const ratingFields = ['商品评分', '评分', '星级', '评价分数', 'rating', 'score', '商品星级'];
+                    const ratingValue = findMatchingField(row, ratingFields);
+                    const rating = parseFloat(ratingValue);
+                    
+                    // 判断是否为空值或无效评分
+                    const isEmpty = !ratingValue || ratingValue === '' || ratingValue === null || ratingValue === undefined || isNaN(rating) || rating === 0;
+                    
+                    // 如果只筛选无评分商品
+                    if (onlyNoRating) {
+                        return isEmpty;
+                    }
+                    
+                    // 如果是空值，且没有勾选"无评分"，则排除
+                    if (isEmpty) {
+                        return false;
+                    }
+                    
+                    // 数值范围筛选
+                    if (!isNaN(ratingMin) && rating < ratingMin) return false;
+                    if (!isNaN(ratingMax) && rating > ratingMax) return false;
+                    return true;
+                });
+            }
+            
+            // 评价次数筛选
+            const reviewMin = parseFloat(document.getElementById('quickReviewMin').value);
+            const reviewMax = parseFloat(document.getElementById('quickReviewMax').value);
+            const onlyNoReview = document.getElementById('quickReviewEmpty').checked;
+            
+            if (!isNaN(reviewMin) || !isNaN(reviewMax) || onlyNoReview) {
+                filtered = filtered.filter(row => {
+                    const reviewFields = ['评价次数', '评论数', '评价数量', '评论次数', 'review_count', 'reviews', '评价总数'];
+                    const reviewValue = findMatchingField(row, reviewFields);
+                    const reviewCount = parseFloat(reviewValue);
+                    
+                    // 判断是否为空值或无效评价次数
+                    const isEmpty = !reviewValue || reviewValue === '' || reviewValue === null || reviewValue === undefined || isNaN(reviewCount) || reviewCount === 0;
+                    
+                    // 如果只筛选无评价商品
+                    if (onlyNoReview) {
+                        return isEmpty;
+                    }
+                    
+                    // 如果是空值，且没有勾选"无评价"，则排除
+                    if (isEmpty) {
+                        return false;
+                    }
+                    
+                    // 数值范围筛选
+                    if (!isNaN(reviewMin) && reviewCount < reviewMin) return false;
+                    if (!isNaN(reviewMax) && reviewCount > reviewMax) return false;
+                    return true;
+                });
+            }
+            
             filteredData = filtered;
             currentSort = { column: null, direction: 'asc' }; // 重置排序
             displayResults();
@@ -1626,6 +1718,12 @@
             document.getElementById('quickDateStart').value = '';
             document.getElementById('quickDateEnd').value = '';
             document.getElementById('quickBrandFilter').value = '';
+            document.getElementById('quickRatingMin').value = '';
+            document.getElementById('quickRatingMax').value = '';
+            document.getElementById('quickRatingEmpty').checked = false;
+            document.getElementById('quickReviewMin').value = '';
+            document.getElementById('quickReviewMax').value = '';
+            document.getElementById('quickReviewEmpty').checked = false;
             
             filteredData = [...originalData];
             currentSort = { column: null, direction: 'asc' }; // 重置排序
