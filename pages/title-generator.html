@@ -679,7 +679,7 @@
         
         <div class="header">
             <img src="../images/logo.png" alt="AI工具" class="logo">
-            <h1>AI智能生成: 商品图、标题、简介、关键词、标签</h1>
+            <h1>AI智能生成: 商品图、标题、简介、标签</h1>
         </div>
         
         <!-- 更新通知 -->
@@ -823,6 +823,37 @@
             <div class="ai-prompt" id="competitorResult"></div>
         </div>
         
+        <!-- 关键规格输入 -->
+        <div class="form-group" style="margin-bottom: 20px; background: #f8f9fa; padding: 20px; border-radius: 10px; border: 2px solid #e9ecef;">
+            <label class="form-label" style="display: flex; align-items: center; gap: 6px; margin-bottom: 15px; font-weight: 600; color: #4a5568;">📏 关键规格</label>
+            <div class="spec-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
+                <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">长度（厘米）</label>
+                    <input type="text" placeholder="如：15" id="length" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
+                </div>
+                <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">宽度（厘米）</label>
+                    <input type="text" placeholder="如：10" id="width" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
+                </div>
+                <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">高度（厘米）</label>
+                    <input type="text" placeholder="如：5" id="height" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
+                </div>
+                <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">重量（克）</label>
+                    <input type="text" placeholder="如：200" id="weight" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
+                </div>
+                <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">颜色</label>
+                    <input type="text" placeholder="如：黑色" id="color" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
+                </div>
+                <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">数量</label>
+                    <input type="text" placeholder="如：1个" id="quantity" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
+                </div>
+            </div>
+        </div>
+        
         <div class="form-group">
             <label>商品特征</label>
 
@@ -835,7 +866,7 @@
         </div>
         
             <div class="button-group">
-                <button class="btn" onclick="generatePrompt()">生成【标题、简介、关键词、标签】AI提问词</button>
+                <button class="btn" onclick="generatePrompt()">生成【标题、简介、标签】AI提问词</button>
                 <button class="btn btn-secondary" onclick="clearForm()">清空</button>
                 <button class="btn btn-view" onclick="showDemo()">查看视频演示</button>
             </div>
@@ -1050,36 +1081,7 @@
                 </div>
             </div>
             
-            <!-- 关键规格输入 -->
-            <div class="form-group" style="margin-bottom: 20px;">
-                <label class="form-label" style="display: flex; align-items: center; gap: 6px; margin-bottom: 15px; font-weight: 600; color: #4a5568;">📏 关键规格</label>
-                <div class="spec-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
-                    <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
-                        <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">长度</label>
-                        <input type="text" placeholder="如：15cm" id="length" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
-                    </div>
-                    <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
-                        <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">宽度</label>
-                        <input type="text" placeholder="如：10cm" id="width" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
-                    </div>
-                    <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
-                        <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">高度</label>
-                        <input type="text" placeholder="如：5cm" id="height" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
-                    </div>
-                    <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
-                        <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">重量</label>
-                        <input type="text" placeholder="如：200g" id="weight" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
-                    </div>
-                    <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
-                        <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">颜色</label>
-                        <input type="text" placeholder="如：黑色" id="color" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
-                    </div>
-                    <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
-                        <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">数量</label>
-                        <input type="text" placeholder="如：1个" id="quantity" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
-                    </div>
-                </div>
-            </div>
+
             
             <!-- 强调内容设置 -->
             <div class="form-group" style="margin-bottom: 20px;">
@@ -1266,6 +1268,23 @@
                     features.push(value);
                 }
             });
+            
+            // 获取模块三的关键规格信息
+            const length = document.getElementById('length')?.value?.trim() || '';
+            const width = document.getElementById('width')?.value?.trim() || '';
+            const height = document.getElementById('height')?.value?.trim() || '';
+            const weight = document.getElementById('weight')?.value?.trim() || '';
+            const color = document.getElementById('color')?.value?.trim() || '';
+            const quantity = document.getElementById('quantity')?.value?.trim() || '';
+            
+            // 构建规格信息数组（包含单位）
+            const specs = [];
+            if (length) specs.push(`长度: ${length}厘米`);
+            if (width) specs.push(`宽度: ${width}厘米`);
+            if (height) specs.push(`高度: ${height}厘米`);
+            if (weight) specs.push(`重量: ${weight}克`);
+            if (color) specs.push(`颜色: ${color}`);
+            if (quantity) specs.push(`数量: ${quantity}`);
 
             // 生成AI提问词
             let prompt = `我是做俄罗斯OZON电商平台的跨境卖家，OZON是货架电商平台，我正在OZON平台上架一款商品，它的中文名称是："${productName}"`;
@@ -1291,29 +1310,51 @@
             
             prompt += `\n\n请结合商品的中文名称、商品的特征`;
             
+            // 添加规格信息到提示词中
+            if (specs.length > 0) {
+                prompt += `、以下关键规格信息（${specs.join('、')}）`;
+            }
+            
             if (links.length > 0) {
                 prompt += `以及参考链接（请解析链接中的俄文标题以及"Описание"属性中的俄文商品描述）`;
             }
             
             prompt += `，请按照以下详细要求生成完整的产品信息：\n\n` +
                 `**1. 产品标题（俄文）**\n` +
-                `- 要求：简洁有力，包含核心关键词和长尾词\n` +
-                `- 长度：不超过100个字符\n` +
+                `- 要求：简洁有力，包含核心关键词和长尾词`;
+            
+            if (specs.length > 0) {
+                prompt += `，适当融入关键规格信息`;
+            }
+            
+            prompt += `\n- 长度：不超过100个字符\n` +
                 `- 格式：用文本编辑器方式展示俄文标题\n` +
                 `- 下方提供中文翻译对照\n\n` +
                 `**2. 产品描述（俄文）**\n` +
                 `- 要求：详细描述产品功能、特点、优势和使用场景\n` +
                 `- 长度：不少于300字，不超过500字\n` +
-                `- 内容：突出产品卖点，避免具体尺寸信息\n` +
-                `- 语言：符合俄罗斯人口语习惯，包含适当标点符号\n` +
+                `- 内容：突出产品卖点`;
+            
+            if (specs.length > 0) {
+                prompt += `，自然融入关键规格信息（${specs.join('、')}）`;
+            }
+            
+            prompt += `\n- 语言：符合俄罗斯人口语习惯，包含适当标点符号\n` +
                 `- 格式：用文本编辑器方式展示俄文描述\n` +
-                `- 下方提供中文翻译对照\n\n` +
+                `- 下方提供中文翻译对照\n` +
+                `- 特别要求：由于OZON平台已取消关键词功能，请将原本的关键词自然地融入到产品描述中，使描述更加丰富和完整\n\n` +
                 `**3. 产品关键词（俄文）**\n` +
                 `- 数量：20-28个关键词\n` +
                 `- 分隔：关键词之间用分号(;)分隔\n` +
-                `- 内容：包含产品类别、功能、材质、适用人群等\n` +
-                `- 格式：用文本编辑器方式展示俄文关键词\n` +
-                `- 下方提供中文翻译对照\n\n` +
+                `- 内容：包含产品类别、功能、材质、适用人群等`;
+            
+            if (specs.length > 0) {
+                prompt += `，包含规格相关词汇`;
+            }
+            
+            prompt += `\n- 格式：用文本编辑器方式展示俄文关键词\n` +
+                `- 下方提供中文翻译对照\n` +
+                `- 注意：这些关键词主要用于内容优化，将被融入到产品描述中\n\n` +
                 `**4. 主题标签（俄文）**\n` +
                 `- 数量：25-28个标签\n` +
                 `- 格式：每个标签以#开头，只包含字母、数字、下划线\n` +
@@ -1327,7 +1368,8 @@
                 `- 每个部分都要有清晰的标题分隔\n` +
                 `- 俄文内容用代码块格式展示（模拟文本编辑器）\n` +
                 `- 每个俄文部分下方都要有对应的中文翻译\n` +
-                `- 确保所有内容符合OZON平台规范和俄罗斯市场习惯`;
+                `- 确保所有内容符合OZON平台规范和俄罗斯市场习惯\n` +
+                `- 重点：产品描述要充分融入关键词内容，使其自然流畅且信息丰富`;
 
             // 显示结果区域并添加动画效果
              const resultArea = document.getElementById('resultArea');
@@ -2566,10 +2608,10 @@
             
             // 添加规格信息（如果有填写）
             const specs = [];
-            if (length) specs.push(`长度Длина: ${length}`);
-            if (width) specs.push(`宽度Ширина: ${width}`);
-            if (height) specs.push(`高度Высота: ${height}`);
-            if (weight) specs.push(`重量Вес: ${weight}`);
+            if (length) specs.push(`长度Длина: ${length}厘米см`);
+            if (width) specs.push(`宽度Ширина: ${width}厘米см`);
+            if (height) specs.push(`高度Высота: ${height}厘米см`);
+            if (weight) specs.push(`重量Вес: ${weight}克г`);
             if (color) specs.push(`颜色Цвет: ${color}`);
             if (quantity) specs.push(`数量Количество: ${quantity}`);
             
@@ -2602,7 +2644,7 @@
                 });
             } else if (sellPoints.length > 0) {
                 imagePrompt += `- **重点突出：** 将【${sellPoints[0]}】`;
-                if (weight) imagePrompt += `和【重量: ${weight}】`;
+                if (weight) imagePrompt += `和【重量: ${weight}克г】`;
                 imagePrompt += `用醒目的颜色突出显示。\n`;
             }
             
