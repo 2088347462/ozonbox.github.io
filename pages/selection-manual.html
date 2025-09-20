@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>选品手册 - OZON销售助手</title>
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white; border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 20px; border-radius: 25px; cursor: pointer;
+            font-size: 14px; font-weight: 500; margin-bottom: 20px;
+            display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.3); box-shadow: 0 4px 15px rgba(255,255,255,0.2); }
+        .header { text-align: center; margin-bottom: 30px; color: white; }
+        .header h1 {
+            font-size: 2.2rem; font-weight: 700; margin-bottom: 8px;
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .tips { color: #eef2ff; opacity: .9; font-size: 0.95rem; }
+        .quick-nav { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 14px 0 6px; }
+        .quick-btn { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.35); padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; text-decoration: none; transition: background .2s ease, box-shadow .2s ease; }
+        .quick-btn:hover { background: rgba(255,255,255,0.25); box-shadow: 0 4px 14px rgba(0,0,0,.15); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .card {
+            background: rgba(255,255,255,0.96);
+            border-radius: 16px; padding: 20px;
+            border: 1px solid rgba(255,255,255,0.35);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .title { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #4f46e5; font-size: 1.1rem; }
+        .title .icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; color: white; background: linear-gradient(135deg, #4f46e5, #7c3aed); }
+        .ext-link { text-decoration: none; background: #eef2ff; color: #4338ca; padding: 6px 10px; border-radius: 10px; font-size: .85rem; font-weight: 600; }
+        .kw-wrap { display: flex; flex-wrap: wrap; gap: 10px; }
+        .kw {
+            border: 1px solid #e2e8f0; background: #f8fafc; color: #1e293b;
+            padding: 8px 12px; border-radius: 999px; font-size: .9rem; cursor: pointer;
+            transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+        }
+        .kw:hover { transform: translateY(-1px); border-color: #6366f1; box-shadow: 0 2px 10px rgba(79,70,229,.15); }
+        .kw small { color: #64748b; font-size: .75rem; margin-left: 6px; }
+        .note { margin-top: 12px; color: #64748b; font-size: .85rem; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-btn"><i class="fas fa-arrow-left"></i> 返回首页</a>
+        <div class="header">
+            <h1><i class="fas fa-book"></i> 选品手册</h1>
+            <div class="tips">点击关键词将直接在 Ozon 发起搜索；右上角“查看站内手册”打开我们制作的站内类目指南页面。</div>
+            <div class="quick-nav">
+                <a class="quick-btn" href="selection-car.html"><i class="fas fa-car"></i> 汽摩配件</a>
+                <a class="quick-btn" href="selection-winter.html"><i class="fas fa-snowflake"></i> 秋冬用品</a>
+                <a class="quick-btn" href="selection-festival.html"><i class="fas fa-gift"></i> 节日用品</a>
+                <a class="quick-btn" href="selection-wedding.html"><i class="fas fa-ring"></i> 婚礼用品</a>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- 汽摩配件 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="title"><span class="icon"><i class="fas fa-car"></i></span>汽摩配件</div>
+                    <a class="ext-link" href="selection-car.html">查看站内手册</a>
+                </div>
+                <div class="kw-wrap" data-cat="car">
+                    <button class="kw" data-q="автомобильные аксессуары">汽车配件 <small>автомобильные аксессуары</small></button>
+                    <button class="kw" data-q="чехлы для сидений">座椅套 <small>чехлы для сидений</small></button>
+                    <button class="kw" data-q="дворники">雨刷 <small>дворники</small></button>
+                    <button class="kw" data-q="аккумулятор для авто">汽车电瓶 <small>аккумулятор</small></button>
+                    <button class="kw" data-q="автомобильный компрессор">打气泵 <small>автокомпрессор</small></button>
+                </div>
+                <div class="note">建议结合车系关键词进行长尾搜索。</div>
+            </div>
+
+            <!-- 秋冬用品 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="title"><span class="icon"><i class="fas fa-snowflake"></i></span>秋冬用品</div>
+                    <a class="ext-link" href="selection-winter.html">查看站内手册</a>
+                </div>
+                <div class="kw-wrap" data-cat="winter">
+                    <button class="kw" data-q="зимняя одежда">冬季服装 <small>зимняя одежда</small></button>
+                    <button class="kw" data-q="термобельё">保暖内衣 <small>термобельё</small></button>
+                    <button class="kw" data-q="шапка зимняя">保暖帽 <small>шапка зимняя</small></button>
+                    <button class="kw" data-q="перчатки зимние">手套 <small>перчатки зимние</small></button>
+                    <button class="kw" data-q="обогреватель">取暖器 <small>обогреватель</small></button>
+                </div>
+                <div class="note">季节性强，注意时效与库存周转。</div>
+            </div>
+
+            <!-- 节日用品 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="title"><span class="icon"><i class="fas fa-gift"></i></span>节日用品</div>
+                    <a class="ext-link" href="selection-festival.html">查看站内手册</a>
+                </div>
+                <div class="kw-wrap" data-cat="festival">
+                    <button class="kw" data-q="новогодние украшения">新年装饰 <small>новогодние украшения</small></button>
+                    <button class="kw" data-q="гирлянды">彩灯 <small>гирлянды</small></button>
+                    <button class="kw" data-q="подарочные наборы">礼品套装 <small>подарочные наборы</small></button>
+                    <button class="kw" data-q="пасхальные украшения">复活节装饰 <small>пасхальные украшения</small></button>
+                    <button class="kw" data-q="хэллоуин декор">万圣节装饰 <small>хэллоуин декор</small></button>
+                </div>
+                <div class="note">结合俄罗斯当地节日节奏做活动节点布局。</div>
+            </div>
+
+            <!-- 婚礼用品 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="title"><span class="icon"><i class="fas fa-ring"></i></span>婚礼用品</div>
+                    <a class="ext-link" href="selection-wedding.html">查看站内手册</a>
+                </div>
+                <div class="kw-wrap" data-cat="wedding">
+                    <button class="kw" data-q="свадебное платье">婚纱 <small>свадебное платье</small></button>
+                    <button class="kw" data-q="аксессуары для свадьбы">婚礼配饰 <small>аксессуары для свадьбы</small></button>
+                    <button class="kw" data-q="свадебный декор">婚礼装饰 <small>свадебный декор</small></button>
+                    <button class="kw" data-q="букет невесты">新娘捧花 <small>букет невесты</small></button>
+                    <button class="kw" data-q="приглашения на свадьбу">请柬 <small>приглашения на свадьбу</small></button>
+                </div>
+                <div class="note">可按风格、预算、材质等维度延展关键词。</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openOzonSearch(query) {
+            const url = 'https://www.ozon.ru/search/?text=' + encodeURIComponent(query);
+            window.open(url, '_blank', 'noopener');
+        }
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.kw');
+            if (btn && btn.dataset.q) {
+                openOzonSearch(btn.dataset.q);
+            }
+        });
+    </script>
+</body>
+</html>

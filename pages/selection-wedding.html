@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>婚礼用品选品手册 - 中俄文对照表</title>
+  <link rel="icon" type="image/svg+xml" href="../images/favicon.svg" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #1e293b; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .back-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; text-decoration: none; color: #fff; border: 1px solid rgba(255,255,255,.35); background: rgba(255,255,255,.18); transition: .2s ease; }
+    .back-btn:hover { background: rgba(255,255,255,.28); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+    .header { color: #fff; margin: 20px 0 18px; text-align: center; }
+    .header h1 { margin: 8px 0 6px; font-size: 28px; }
+    .header p { margin: 0; opacity: .92; }
+
+    .panel { background: rgba(255,255,255,.96); border: 1px solid rgba(255,255,255,.35); border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,.08); padding: 18px; margin-bottom: 16px; }
+    .panel-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; color: #4f46e5; font-weight: 800; }
+    .panel-title .left { display: inline-flex; align-items: center; gap: 10px; }
+    .panel-title .icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, #4f46e5, #7c3aed); }
+    .panel-desc { color: #64748b; margin: 0 0 10px; }
+
+    .item { border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin: 10px 0; background: #f8fafc; }
+    .item-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .item-name { font-weight: 700; }
+    .item-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn { border: 1px solid #e2e8f0; background: #fff; color: #1e293b; padding: 6px 10px; border-radius: 999px; font-size: 13px; cursor: pointer; }
+    .btn.primary { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; border: none; }
+    .btn:hover { box-shadow: 0 2px 8px rgba(79,70,229,.14); border-color: #6366f1; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .tag { border: 1px solid #e2e8f0; background: #fff; color: #1e293b; padding: 6px 10px; border-radius: 999px; font-size: 13px; cursor: pointer; }
+    .tag:hover { border-color: #6366f1; box-shadow: 0 2px 8px rgba(79,70,229,.12); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="selection-manual.html" class="back-btn"><i class="fas fa-arrow-left"></i> 返回选品手册</a>
+    <div class="header">
+      <h1>婚礼用品选品手册</h1>
+      <p>中俄文对照表｜点击俄文标签在 Ozon 搜索，或一键复制全部标签词（#分割 / 换行）</p>
+    </div>
+
+    <div id="content"></div>
+  </div>
+
+  <script>
+    const DATA_URL = './data/selection-wedding.json';
+    function openOzonSearch(q) { window.open('https://www.ozon.ru/search/?text=' + encodeURIComponent(q), '_blank', 'noopener'); }
+    function copyText(text) { navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板')); }
+
+    function renderCategory(category) {
+      const panel = document.createElement('div');
+      panel.className = 'panel';
+      panel.innerHTML = `
+        <div class=\"panel-title\">
+          <div class=\"left\"><span class=\"icon\"><i class=\"${category.icon || 'fas fa-list'}\"></i></span>${category.name}</div>
+        </div>
+        <p class=\"panel-desc\">${category.desc || ''}</p>
+      `;
+      (category.items || []).forEach(item => {
+        const wrap = document.createElement('div');
+        wrap.className = 'item';
+        wrap.innerHTML = `
+          <div class=\"item-head\">
+            <div class=\"item-name\">${item.cn}</div>
+            <div class=\"item-actions\">
+              <button class=\"btn primary\">复制所有标签词</button>
+            </div>
+          </div>
+          <div class=\"tags\"></div>
+        `;
+        const tagsDiv = wrap.querySelector('.tags');
+        const allTags = (item.ru || []);
+        allTags.forEach(t => {
+          const b = document.createElement('button');
+          b.className = 'tag';
+          b.textContent = t;
+          b.addEventListener('click', () => openOzonSearch(t));
+          tagsDiv.appendChild(b);
+        });
+        wrap.querySelector('.btn.primary').addEventListener('click', () => {
+          const formatted = allTags.map(t => `#${t}`).join('\n');
+          copyText(formatted);
+        });
+        panel.appendChild(wrap);
+      });
+      return panel;
+    }
+
+    fetch(DATA_URL).then(r => r.json()).then(data => {
+      const root = document.getElementById('content');
+      data.categories.forEach(cat => root.appendChild(renderCategory(cat)));
+    }).catch(err => {
+      const root = document.getElementById('content');
+      root.innerHTML = '<div class="panel"><div class="panel-title"><div class="left"><span class="icon"><i class="fas fa-triangle-exclamation"></i></span>加载失败</div></div><p class="panel-desc">无法加载数据文件，请稍后重试。</p></div>';
+      console.error(err);
+    });
+  </script>
+</body>
+</html>
