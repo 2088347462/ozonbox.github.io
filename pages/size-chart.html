@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中俄尺码对照表 - OZON工具盒子</title>
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #64748b;
+            backdrop-filter: blur(10px);
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #e91e63, #ad1457);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .size-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .size-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .size-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #f1f5f9;
+            font-weight: 500;
+        }
+        
+        .size-table tr:hover {
+            background-color: #f8fafc;
+        }
+        
+        .size-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #e91e63;
+            display: inline-block;
+        }
+        
+        .coming-soon {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+        
+        .coming-soon i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #cbd5e1;
+        }
+        
+        .coming-soon h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .coming-soon p {
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tabs {
+                justify-content: center;
+            }
+            
+            .tab-btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .size-table {
+                font-size: 0.85rem;
+            }
+            
+            .size-table th,
+            .size-table td {
+                padding: 12px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            返回首页
+        </a>
+        
+        <div class="header">
+            <h1>中俄尺码对照表</h1>
+            <p>准确的尺码转换，助力OZON跨境销售</p>
+        </div>
+        
+        <!-- 重要提示 -->
+        <div style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; padding: 25px; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 8px 32px rgba(255, 107, 107, 0.3);">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 24px;"></i>
+                <h3 style="margin: 0; font-size: 1.3rem; font-weight: 600;">重要建议</h3>
+            </div>
+            <p style="margin: 0; font-size: 1.1rem; line-height: 1.6; font-weight: 500;">
+                <strong>俄罗斯人体型普遍偏大，填入尺码时建议填小一码</strong><br>
+                例如：通用S对应俄罗斯（RU）44码，后台填写尺码可填42（RU）码
+            </p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('women-clothing')">女装尺码</button>
+            <button class="tab-btn" onclick="showTab('women-shoes')">女鞋尺码</button>
+            <button class="tab-btn" onclick="showTab('men-clothing')">男装尺码</button>
+            <button class="tab-btn" onclick="showTab('men-shoes')">男鞋尺码</button>
+            <button class="tab-btn" onclick="showTab('children-clothing')">童装尺码</button>
+            <button class="tab-btn" onclick="showTab('children-shoes')">童鞋尺码</button>
+        </div>
+        
+        <!-- 女装尺码对照表 -->
+        <div id="women-clothing" class="tab-content active">
+            <div class="section-title">女装尺码对照表（通用）</div>
+            
+            <h3 style="margin: 30px 0 15px 0; color: #2c3e50; font-weight: 600;">1. 上衣（衬衫、T恤、外套等）</h3>
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>中国尺码</th>
+                        <th>俄罗斯尺码</th>
+                        <th>国际尺码</th>
+                        <th>胸围 (cm)</th>
+                        <th>腰围 (cm)</th>
+                        <th>臀围 (cm)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>155/76A</td>
+                        <td>40</td>
+                        <td>XXS</td>
+                        <td>76-80</td>
+                        <td>60-64</td>
+                        <td>84-88</td>
+                    </tr>
+                    <tr>
+                        <td>160/80A</td>
+                        <td>42</td>
+                        <td>XS</td>
+                        <td>80-84</td>
+                        <td>64-68</td>
+                        <td>88-92</td>
+                    </tr>
+                    <tr>
+                        <td>165/84A</td>
+                        <td>44</td>
+                        <td>S</td>
+                        <td>84-88</td>
+                        <td>68-72</td>
+                        <td>92-96</td>
+                    </tr>
+                    <tr>
+                        <td>170/88A</td>
+                        <td>46</td>
+                        <td>M</td>
+                        <td>88-92</td>
+                        <td>72-76</td>
+                        <td>96-100</td>
+                    </tr>
+                    <tr>
+                        <td>175/92A</td>
+                        <td>48</td>
+                        <td>L</td>
+                        <td>92-96</td>
+                        <td>76-80</td>
+                        <td>100-104</td>
+                    </tr>
+                    <tr>
+                        <td>180/96A</td>
+                        <td>50</td>
+                        <td>XL</td>
+                        <td>96-100</td>
+                        <td>80-84</td>
+                        <td>104-108</td>
+                    </tr>
+                    <tr>
+                        <td>185/100A</td>
+                        <td>52</td>
+                        <td>XXL</td>
+                        <td>100-104</td>
+                        <td>84-88</td>
+                        <td>108-112</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 style="margin: 30px 0 15px 0; color: #2c3e50; font-weight: 600;">2. 下装（裤子、半身裙）</h3>
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>中国尺码 (腰围)</th>
+                        <th>俄罗斯尺码</th>
+                        <th>国际尺码</th>
+                        <th>腰围 (cm)</th>
+                        <th>臀围 (cm)</th>
+                        <th>裤长 (cm)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>64 (XXS)</td>
+                        <td>40</td>
+                        <td>XXS</td>
+                        <td>64-68</td>
+                        <td>84-88</td>
+                        <td>90-92</td>
+                    </tr>
+                    <tr>
+                        <td>68 (XS)</td>
+                        <td>42</td>
+                        <td>XS</td>
+                        <td>68-72</td>
+                        <td>88-92</td>
+                        <td>92-94</td>
+                    </tr>
+                    <tr>
+                        <td>72 (S)</td>
+                        <td>44</td>
+                        <td>S</td>
+                        <td>72-76</td>
+                        <td>92-96</td>
+                        <td>94-96</td>
+                    </tr>
+                    <tr>
+                        <td>76 (M)</td>
+                        <td>46</td>
+                        <td>M</td>
+                        <td>76-80</td>
+                        <td>96-100</td>
+                        <td>96-98</td>
+                    </tr>
+                    <tr>
+                        <td>80 (L)</td>
+                        <td>48</td>
+                        <td>L</td>
+                        <td>80-84</td>
+                        <td>100-104</td>
+                        <td>98-100</td>
+                    </tr>
+                    <tr>
+                        <td>84 (XL)</td>
+                        <td>50</td>
+                        <td>XL</td>
+                        <td>84-88</td>
+                        <td>104-108</td>
+                        <td>100-102</td>
+                    </tr>
+                    <tr>
+                        <td>88 (XXL)</td>
+                        <td>52</td>
+                        <td>XXL</td>
+                        <td>88-92</td>
+                        <td>108-112</td>
+                        <td>102-104</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 style="margin: 30px 0 15px 0; color: #2c3e50; font-weight: 600;">3. 内衣（文胸尺码对照）</h3>
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>中国尺码 (下胸围/罩杯)</th>
+                        <th>俄罗斯尺码</th>
+                        <th>国际尺码 (EU)</th>
+                        <th>下胸围 (cm)</th>
+                        <th>罩杯 (A/B/C/D)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>70A</td>
+                        <td>65A</td>
+                        <td>65A</td>
+                        <td>68-72</td>
+                        <td>A</td>
+                    </tr>
+                    <tr>
+                        <td>75B</td>
+                        <td>70B</td>
+                        <td>70B</td>
+                        <td>73-77</td>
+                        <td>B</td>
+                    </tr>
+                    <tr>
+                        <td>80C</td>
+                        <td>75C</td>
+                        <td>75C</td>
+                        <td>78-82</td>
+                        <td>C</td>
+                    </tr>
+                    <tr>
+                        <td>85D</td>
+                        <td>80D</td>
+                        <td>80D</td>
+                        <td>83-87</td>
+                        <td>D</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 女鞋尺码对照表 -->
+        <div id="women-shoes" class="tab-content">
+            <div class="section-title">女鞋尺码对照表（通用）</div>
+            
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>中国尺码 (cm)</th>
+                        <th>俄罗斯尺码</th>
+                        <th>欧码 (EUR)</th>
+                        <th>美码 (US)</th>
+                        <th>英码 (UK)</th>
+                        <th>脚长 (cm)</th>
+                        <th>脚长 (mm)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>22.5</td>
+                        <td>35</td>
+                        <td>35</td>
+                        <td>5</td>
+                        <td>3</td>
+                        <td>22.5</td>
+                        <td>225</td>
+                    </tr>
+                    <tr>
+                        <td>23</td>
+                        <td>36</td>
+                        <td>36</td>
+                        <td>6</td>
+                        <td>4</td>
+                        <td>23</td>
+                        <td>230</td>
+                    </tr>
+                    <tr>
+                        <td>23.5</td>
+                        <td>37</td>
+                        <td>37</td>
+                        <td>7</td>
+                        <td>5</td>
+                        <td>23.5</td>
+                        <td>235</td>
+                    </tr>
+                    <tr>
+                        <td>24</td>
+                        <td>38</td>
+                        <td>38</td>
+                        <td>8</td>
+                        <td>6</td>
+                        <td>24</td>
+                        <td>240</td>
+                    </tr>
+                    <tr>
+                        <td>24.5</td>
+                        <td>39</td>
+                        <td>39</td>
+                        <td>9</td>
+                        <td>7</td>
+                        <td>24.5</td>
+                        <td>245</td>
+                    </tr>
+                    <tr>
+                        <td>25</td>
+                        <td>40</td>
+                        <td>40</td>
+                        <td>10</td>
+                        <td>8</td>
+                        <td>25</td>
+                        <td>250</td>
+                    </tr>
+                    <tr>
+                        <td>25.5</td>
+                        <td>41</td>
+                        <td>41</td>
+                        <td>11</td>
+                        <td>9</td>
+                        <td>25.5</td>
+                        <td>255</td>
+                    </tr>
+                    <tr>
+                        <td>26</td>
+                        <td>42</td>
+                        <td>42</td>
+                        <td>12</td>
+                        <td>10</td>
+                        <td>26</td>
+                        <td>260</td>
+                    </tr>
+                    <tr>
+                        <td>26.5</td>
+                        <td>43</td>
+                        <td>43</td>
+                        <td>13</td>
+                        <td>11</td>
+                        <td>26.5</td>
+                        <td>265</td>
+                    </tr>
+                    <tr>
+                        <td>27</td>
+                        <td>44</td>
+                        <td>44</td>
+                        <td>14</td>
+                        <td>12</td>
+                        <td>27</td>
+                        <td>270</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="men-clothing" class="tab-content">
+            <div class="section-title">男装尺码对照表（通用）</div>
+            
+            <h3 style="margin: 30px 0 15px 0; color: #2c3e50; font-weight: 600;">1. 上衣（衬衫、T恤、外套）</h3>
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>中国尺码</th>
+                        <th>俄罗斯尺码</th>
+                        <th>国际尺码</th>
+                        <th>胸围 (cm)</th>
+                        <th>腰围 (cm)</th>
+                        <th>适合身高 (cm)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>160/80A</td>
+                        <td>40</td>
+                        <td>XS</td>
+                        <td>80-84</td>
+                        <td>68-72</td>
+                        <td>160-165</td>
+                    </tr>
+                    <tr>
+                        <td>165/84A</td>
+                        <td>42</td>
+                        <td>S</td>
+                        <td>84-88</td>
+                        <td>72-76</td>
+                        <td>165-170</td>
+                    </tr>
+                    <tr>
+                        <td>170/88A</td>
+                        <td>44</td>
+                        <td>M</td>
+                        <td>88-92</td>
+                        <td>76-80</td>
+                        <td>170-175</td>
+                    </tr>
+                    <tr>
+                        <td>175/92A</td>
+                        <td>46</td>
+                        <td>L</td>
+                        <td>92-96</td>
+                        <td>80-84</td>
+                        <td>175-180</td>
+                    </tr>
+                    <tr>
+                        <td>180/96A</td>
+                        <td>48</td>
+                        <td>XL</td>
+                        <td>96-100</td>
+                        <td>84-88</td>
+                        <td>180-185</td>
+                    </tr>
+                    <tr>
+                        <td>185/100A</td>
+                        <td>50</td>
+                        <td>XXL</td>
+                        <td>100-104</td>
+                        <td>88-92</td>
+                        <td>185-190</td>
+                    </tr>
+                    <tr>
+                        <td>190/104A</td>
+                        <td>52</td>
+                        <td>XXXL</td>
+                        <td>104-108</td>
+                        <td>92-96</td>
+                        <td>190-195</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 style="margin: 30px 0 15px 0; color: #2c3e50; font-weight: 600;">2. 下装（裤子、牛仔裤）</h3>
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>中国尺码 (腰围)</th>
+                        <th>俄罗斯尺码</th>
+                        <th>国际尺码</th>
+                        <th>腰围 (cm)</th>
+                        <th>臀围 (cm)</th>
+                        <th>裤长 (cm)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>70 (XXS)</td>
+                        <td>40</td>
+                        <td>XS</td>
+                        <td>70-74</td>
+                        <td>88-92</td>
+                        <td>100-102</td>
+                    </tr>
+                    <tr>
+                        <td>74 (XS)</td>
+                        <td>42</td>
+                        <td>S</td>
+                        <td>74-78</td>
+                        <td>92-96</td>
+                        <td>102-104</td>
+                    </tr>
+                    <tr>
+                        <td>78 (S)</td>
+                        <td>44</td>
+                        <td>M</td>
+                        <td>78-82</td>
+                        <td>96-100</td>
+                        <td>104-106</td>
+                    </tr>
+                    <tr>
+                        <td>82 (M)</td>
+                        <td>46</td>
+                        <td>L</td>
+                        <td>82-86</td>
+                        <td>100-104</td>
+                        <td>106-108</td>
+                    </tr>
+                    <tr>
+                        <td>86 (L)</td>
+                        <td>48</td>
+                        <td>XL</td>
+                        <td>86-90</td>
+                        <td>104-108</td>
+                        <td>108-110</td>
+                    </tr>
+                    <tr>
+                        <td>90 (XL)</td>
+                        <td>50</td>
+                        <td>XXL</td>
+                        <td>90-94</td>
+                        <td>108-112</td>
+                        <td>110-112</td>
+                    </tr>
+                    <tr>
+                        <td>94 (XXL)</td>
+                        <td>52</td>
+                        <td>XXXL</td>
+                        <td>94-98</td>
+                        <td>112-116</td>
+                        <td>112-114</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="men-shoes" class="tab-content">
+            <div class="section-title">男鞋尺码对照表（通用）</div>
+            
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>中国尺码 (cm)</th>
+                        <th>俄罗斯尺码</th>
+                        <th>欧码 (EUR)</th>
+                        <th>美码 (US)</th>
+                        <th>英码 (UK)</th>
+                        <th>脚长 (cm)</th>
+                        <th>脚长 (mm)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>24.5</td>
+                        <td>38</td>
+                        <td>38</td>
+                        <td>6</td>
+                        <td>5</td>
+                        <td>24.5</td>
+                        <td>245</td>
+                    </tr>
+                    <tr>
+                        <td>25</td>
+                        <td>39</td>
+                        <td>39</td>
+                        <td>7</td>
+                        <td>6</td>
+                        <td>25</td>
+                        <td>250</td>
+                    </tr>
+                    <tr>
+                        <td>25.5</td>
+                        <td>40</td>
+                        <td>40</td>
+                        <td>7.5</td>
+                        <td>6.5</td>
+                        <td>25.5</td>
+                        <td>255</td>
+                    </tr>
+                    <tr>
+                        <td>26</td>
+                        <td>41</td>
+                        <td>41</td>
+                        <td>8</td>
+                        <td>7</td>
+                        <td>26</td>
+                        <td>260</td>
+                    </tr>
+                    <tr>
+                        <td>26.5</td>
+                        <td>42</td>
+                        <td>42</td>
+                        <td>9</td>
+                        <td>8</td>
+                        <td>26.5</td>
+                        <td>265</td>
+                    </tr>
+                    <tr>
+                        <td>27</td>
+                        <td>43</td>
+                        <td>43</td>
+                        <td>10</td>
+                        <td>9</td>
+                        <td>27</td>
+                        <td>270</td>
+                    </tr>
+                    <tr>
+                        <td>27.5</td>
+                        <td>44</td>
+                        <td>44</td>
+                        <td>11</td>
+                        <td>10</td>
+                        <td>27.5</td>
+                        <td>275</td>
+                    </tr>
+                    <tr>
+                        <td>28</td>
+                        <td>45</td>
+                        <td>45</td>
+                        <td>12</td>
+                        <td>11</td>
+                        <td>28</td>
+                        <td>280</td>
+                    </tr>
+                    <tr>
+                        <td>28.5</td>
+                        <td>46</td>
+                        <td>46</td>
+                        <td>13</td>
+                        <td>12</td>
+                        <td>28.5</td>
+                        <td>285</td>
+                    </tr>
+                    <tr>
+                        <td>29</td>
+                        <td>47</td>
+                        <td>47</td>
+                        <td>14</td>
+                        <td>13</td>
+                        <td>29</td>
+                        <td>290</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="children-clothing" class="tab-content">
+            <div class="section-title">童装尺码对照表（通用）</div>
+            
+            <h3 style="margin: 30px 0 15px 0; color: #2c3e50; font-weight: 600;">一、中国 vs 俄罗斯童装尺码对照（通用）</h3>
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>中国尺码</th>
+                        <th>俄罗斯尺码</th>
+                        <th>身高 (cm)</th>
+                        <th>年龄 (岁)</th>
+                        <th>胸围/腰围 (cm)</th>
+                        <th>国际尺码</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>80</td>
+                        <td>80</td>
+                        <td>80-86</td>
+                        <td>1岁左右</td>
+                        <td>50-52</td>
+                        <td>1Y</td>
+                    </tr>
+                    <tr>
+                        <td>90</td>
+                        <td>90</td>
+                        <td>86-92</td>
+                        <td>1-2岁</td>
+                        <td>52-54</td>
+                        <td>2Y</td>
+                    </tr>
+                    <tr>
+                        <td>100</td>
+                        <td>100</td>
+                        <td>98-104</td>
+                        <td>3-4岁</td>
+                        <td>54-56</td>
+                        <td>3-4Y</td>
+                    </tr>
+                    <tr>
+                        <td>110</td>
+                        <td>110</td>
+                        <td>104-110</td>
+                        <td>4-5岁</td>
+                        <td>56-58</td>
+                        <td>4-5Y</td>
+                    </tr>
+                    <tr>
+                        <td>120</td>
+                        <td>120</td>
+                        <td>110-116</td>
+                        <td>5-6岁</td>
+                        <td>58-60</td>
+                        <td>5-6Y</td>
+                    </tr>
+                    <tr>
+                        <td>130</td>
+                        <td>130</td>
+                        <td>122-128</td>
+                        <td>7-8岁</td>
+                        <td>60-62</td>
+                        <td>7-8Y</td>
+                    </tr>
+                    <tr>
+                        <td>140</td>
+                        <td>140</td>
+                        <td>134-140</td>
+                        <td>9-10岁</td>
+                        <td>62-64</td>
+                        <td>9-10Y</td>
+                    </tr>
+                    <tr>
+                        <td>150</td>
+                        <td>150</td>
+                        <td>146-152</td>
+                        <td>11-12岁</td>
+                        <td>64-66</td>
+                        <td>11-12Y</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div style="background: #f8f9fa; padding: 25px; border-radius: 15px; margin-top: 30px; border-left: 4px solid #e91e63;">
+                <h3 style="margin: 0 0 20px 0; color: #2c3e50; font-weight: 600;">二、俄罗斯童装尺码常见标注方式</h3>
+                <p style="margin-bottom: 15px; color: #64748b; line-height: 1.6;">
+                    俄罗斯童装通常采用<strong>"身高/年龄"</strong>标注，例如：
+                </p>
+                <ul style="margin: 15px 0; padding-left: 20px; color: #64748b; line-height: 1.8;">
+                    <li><strong>80/1</strong>（身高80cm，1岁左右）</li>
+                    <li><strong>110/4</strong>（身高110cm，4岁左右）</li>
+                    <li><strong>140/9</strong>（身高140cm，9岁左右）</li>
+                </ul>
+                <p style="margin: 15px 0 0 0; color: #64748b; line-height: 1.6;">
+                    部分品牌可能直接使用<strong>欧码（EUR）</strong>，如<strong>28（约身高140cm）</strong>。
+                </p>
+            </div>
+            
+            <div style="background: #fff3cd; padding: 25px; border-radius: 15px; margin-top: 20px; border-left: 4px solid #ffc107;">
+                <h3 style="margin: 0 0 20px 0; color: #2c3e50; font-weight: 600;">三、注意事项</h3>
+                <div style="color: #64748b; line-height: 1.8;">
+                    <p style="margin-bottom: 12px;"><strong>身高优先：</strong>俄罗斯童装以<strong>身高（cm）</strong>为主要参考，年龄仅作辅助。</p>
+                    <p style="margin-bottom: 12px;"><strong>体型差异：</strong>中国童装可能偏瘦长，俄罗斯童装版型较宽松，尤其各季服装（如羽绒服）可能大1码。</p>
+                    <p style="margin-bottom: 12px;"><strong>品牌差异：</strong>不同品牌（如ZARA、H&M、Gloria Jeans）可能有自己的尺码体系，建议查看具体尺码表。</p>
+                    <p style="margin: 0;"><strong>婴儿装（0-12个月）：</strong>俄罗斯常用<strong>月龄（如3M、6M、12M）</strong>标注，中国则用<strong>"52、59、66"</strong>（身高cm）。</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="children-shoes" class="tab-content">
+            <div class="section-title">童鞋尺码对照表（通用）</div>
+            
+            <h3 style="margin: 30px 0 15px 0; color: #2c3e50; font-weight: 600;">1. 婴童鞋（0-3岁）</h3>
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>中国尺码 (cm)</th>
+                        <th>俄罗斯尺码</th>
+                        <th>欧码 (EUR)</th>
+                        <th>脚长 (cm)</th>
+                        <th>脚长 (mm)</th>
+                        <th>适用年龄（参考）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>10</td>
+                        <td>16</td>
+                        <td>16</td>
+                        <td>10</td>
+                        <td>100</td>
+                        <td>0-6个月</td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>17</td>
+                        <td>17</td>
+                        <td>11</td>
+                        <td>110</td>
+                        <td>6-12个月</td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>18</td>
+                        <td>18</td>
+                        <td>12</td>
+                        <td>120</td>
+                        <td>1-1.5岁</td>
+                    </tr>
+                    <tr>
+                        <td>13</td>
+                        <td>19</td>
+                        <td>19</td>
+                        <td>13</td>
+                        <td>130</td>
+                        <td>1.5-2岁</td>
+                    </tr>
+                    <tr>
+                        <td>14</td>
+                        <td>20</td>
+                        <td>20</td>
+                        <td>14</td>
+                        <td>140</td>
+                        <td>2-3岁</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 style="margin: 30px 0 15px 0; color: #2c3e50; font-weight: 600;">2. 小童鞋（3-7岁）</h3>
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>中国尺码 (cm)</th>
+                        <th>俄罗斯尺码</th>
+                        <th>欧码 (EUR)</th>
+                        <th>脚长 (cm)</th>
+                        <th>脚长 (mm)</th>
+                        <th>适用年龄（参考）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>15</td>
+                        <td>21</td>
+                        <td>21</td>
+                        <td>15</td>
+                        <td>150</td>
+                        <td>3-4岁</td>
+                    </tr>
+                    <tr>
+                        <td>16</td>
+                        <td>22</td>
+                        <td>22</td>
+                        <td>16</td>
+                        <td>160</td>
+                        <td>4-5岁</td>
+                    </tr>
+                    <tr>
+                        <td>17</td>
+                        <td>23</td>
+                        <td>23</td>
+                        <td>17</td>
+                        <td>170</td>
+                        <td>5-6岁</td>
+                    </tr>
+                    <tr>
+                        <td>18</td>
+                        <td>24</td>
+                        <td>24</td>
+                        <td>18</td>
+                        <td>180</td>
+                        <td>6-7岁</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 style="margin: 30px 0 15px 0; color: #2c3e50; font-weight: 600;">3. 大童鞋（7-14岁）</h3>
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>中国尺码 (cm)</th>
+                        <th>俄罗斯尺码</th>
+                        <th>欧码 (EUR)</th>
+                        <th>脚长 (cm)</th>
+                        <th>脚长 (mm)</th>
+                        <th>适用年龄（参考）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>19</td>
+                        <td>25</td>
+                        <td>25</td>
+                        <td>19</td>
+                        <td>190</td>
+                        <td>7-8岁</td>
+                    </tr>
+                    <tr>
+                        <td>20</td>
+                        <td>26</td>
+                        <td>26</td>
+                        <td>20</td>
+                        <td>200</td>
+                        <td>8-9岁</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>27</td>
+                        <td>27</td>
+                        <td>21</td>
+                        <td>210</td>
+                        <td>9-10岁</td>
+                    </tr>
+                    <tr>
+                        <td>22</td>
+                        <td>28</td>
+                        <td>28</td>
+                        <td>22</td>
+                        <td>220</td>
+                        <td>10-12岁</td>
+                    </tr>
+                    <tr>
+                        <td>23</td>
+                        <td>29</td>
+                        <td>29</td>
+                        <td>23</td>
+                        <td>230</td>
+                        <td>12-14岁</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabId) {
+            // 隐藏所有标签内容
+            const allTabs = document.querySelectorAll('.tab-content');
+            allTabs.forEach(tab => tab.classList.remove('active'));
+            
+            // 移除所有按钮的激活状态
+            const allBtns = document.querySelectorAll('.tab-btn');
+            allBtns.forEach(btn => btn.classList.remove('active'));
+            
+            // 显示选中的标签内容
+            document.getElementById(tabId).classList.add('active');
+            
+            // 激活对应的按钮
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
