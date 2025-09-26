@@ -3,253 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OZON工具盒子</title>
+    <title>OZON工具盒子 - 专业跨境电商工具平台</title>
+    
+    <!-- 缓存控制 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     
     <!-- 网站图标 -->
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="images/favicon.svg">
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.svg">
     <link rel="apple-touch-icon" href="images/favicon.svg">
-    <meta name="theme-color" content="#2196F3">
+    <meta name="theme-color" content="#667eea">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            --border-radius: 16px;
+            --border-radius-lg: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* 性能优化 - 移除所有消耗性能的效果 */
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            will-change: auto !important;
+        }
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-gradient);
             background-attachment: fixed;
-            color: #2c3e50;
-            display: flex;
-            min-height: 100vh;
+            color: var(--text-primary);
             line-height: 1.6;
             font-weight: 400;
             letter-spacing: -0.01em;
+            overflow-x: hidden;
         }
-        .sidebar {
-            width: 220px;
-            background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
-            color: #333;
-            height: 100vh;
+        
+        /* 动画定义 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        @keyframes shimmer {
+            0% {
+                background-position: -200px 0;
+            }
+            100% {
+                background-position: calc(200px + 100%) 0;
+            }
+        }
+        
+        /* 玻璃态效果 */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* 顶部导航栏 */
+        .navbar {
             position: fixed;
-            left: -220px;
             top: 0;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
             z-index: 1000;
-            overflow-y: auto;
-            border-right: 1px solid rgba(255,255,255,0.2);
-            transition: transform 0.2s ease;
-            transform: translateX(0);
-            will-change: transform;
+            transition: var(--transition);
         }
-        .sidebar.open {
-            transform: translateX(220px);
-        }
-        .sidebar-header {
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            text-align: left;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 18px;
-            letter-spacing: -0.01em;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            color: white;
-            justify-content: space-between;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .menu-toggle {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 5px;
-        }
-        .top-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            z-index: 999;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        }
-        .top-bar-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .top-bar-logo {
-            width: 32px;
-            height: 32px;
-            background-image: url('images/favicon.svg');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-        .top-bar-title {
-            color: white;
-            font-size: 18px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-        }
-        .search-container {
-            position: relative;
-            display: none;
-        }
-        .search-container.active {
-            display: block;
-        }
-        .search-input {
-            padding: 8px 35px 8px 12px;
-            border: none;
-            border-radius: 20px;
-            width: 250px;
-            font-size: 14px;
-            outline: none;
-        }
-        .search-icon {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-        }
-        .search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 1001;
-            display: none;
-            will-change: scroll-position;
-        }
-        .search-results.show {
-            display: block;
-        }
-        .search-result-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background-color 0.2s;
-        }
-        .search-result-item:hover {
-            background-color: #f5f5f5;
-        }
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
-        .search-result-icon {
-            color: #1565C0;
-            width: 20px;
-        }
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 999;
-            display: none;
-        }
-        .overlay.show {
-            display: block;
-        }
-        .sidebar-menu {
-            padding: 20px 0;
-        }
-        .sidebar-menu-item {
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            color: #64748b;
-            text-decoration: none;
-            transition: background-color 0.15s ease, color 0.15s ease;
-            font-size: 14px;
-            font-weight: 500;
-            letter-spacing: -0.005em;
-            margin: 2px 0;
-        }
-        .sidebar-menu-item:hover {
-            background-color: rgba(0,0,0,0.05);
-            color: #1565C0;
-        }
-        .sidebar-menu-item i {
-            margin-right: 12px;
-            width: 20px;
-            text-align: center;
-            color: #999;
-        }
-        .sidebar-menu-item:hover i {
-            color: #1565C0;
-        }
-        .main-content {
-            flex: 1;
-            margin-left: 0;
-            margin-top: 60px;
-            padding: 30px 40px;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 30px auto;
-            padding: 40px 50px;
+        
+        .navbar.scrolled {
             background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            width: 100%;
-            will-change: transform;
+            box-shadow: var(--shadow-md);
         }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 35px 30px;
-            text-align: center;
-            border-radius: 20px;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
-            pointer-events: none;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 32px;
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             font-family: 'Poppins', sans-serif;
             font-weight: 700;
-            letter-spacing: -0.02em;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: relative;
-            z-index: 1;
+            font-size: 1.5rem;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .navbar.scrolled .navbar-brand {
+            color: var(--text-primary);
+        }
+        
+        .navbar-logo {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            list-style: none;
         }
         
         /* OZON货代导航广告样式 */
@@ -339,378 +278,483 @@
             color: #333;
             font-size: 12px;
             font-weight: 500;
-        }        
-
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
         }
-        .tool-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            overflow: hidden;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            will-change: transform;
-        }
-        .tool-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        .tool-card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        
+        .nav-link {
             color: white;
-            padding: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .navbar.scrolled .nav-link {
+            color: var(--text-secondary);
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .navbar.scrolled .nav-link:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            margin-top: 80px;
+        }
+        
+        /* 英雄区域 */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
+            padding: 2rem;
             position: relative;
             overflow: hidden;
         }
-        .tool-card-header::before {
+        
+        .hero::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
-            pointer-events: none;
-        }
-        .tool-card-header.ai {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        }
-        .tool-card-header.data {
-            background: linear-gradient(135deg, #9D50BB 0%, #6E48AA 100%);
-        }
-        .tool-card-body {
-            padding: 25px 30px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.9) 100%);
-        }
-        .tool-card-title {
-            font-size: 22px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            margin: 0 0 15px 0;
-            letter-spacing: -0.01em;
-            color: #2c3e50;
-            line-height: 1.3;
-        }
-        .tool-card-description {
-            color: #64748b;
-            margin-top: 0;
-            font-size: 16px;
-            line-height: 1.6;
-            font-weight: 400;
-        }
-        .tool-card-footer {
-            padding: 20px 30px;
-            text-align: center;
-            border-top: 1px solid #eee;
-        }
-        .tool-card-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            position: relative;
-            overflow: hidden;
-            will-change: transform;
-        }
-        .tool-card-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-        .tool-card-header.ai + .tool-card-body + .tool-card-footer .tool-card-btn {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
-        }
-        .tool-card-header.ai + .tool-card-body + .tool-card-footer .tool-card-btn:hover {
-            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
-        }
-        .tool-card-header.data + .tool-card-body + .tool-card-footer .tool-card-btn {
-            background: linear-gradient(135deg, #9D50BB 0%, #6E48AA 100%);
-            box-shadow: 0 4px 15px rgba(157, 80, 187, 0.3);
-        }
-        .tool-card-header.data + .tool-card-body + .tool-card-footer .tool-card-btn:hover {
-            box-shadow: 0 8px 25px rgba(157, 80, 187, 0.4);
-        }
-        .tool-card-btn[style*="#FF9800"]:hover {
-            background-color: #F57C00 !important;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            padding: 30px 20px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            color: #64748b;
-            font-size: 14px;
-            font-weight: 400;
-            letter-spacing: -0.005em;
-        }
-        .customer-service {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 65px;
-            height: 65px;
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            box-shadow: 0 6px 20px rgba(17, 153, 142, 0.25);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            z-index: 1000;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-        .customer-service:hover {
-            transform: scale(1.05) translateY(-1px);
-            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.3);
-        }
-        .customer-service i {
-            font-size: 28px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
         }
         
-        /* 返回顶部按钮样式 */
-        .back-to-top {
+        .hero-content {
+            max-width: 800px;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .hero-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            color: white;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+            font-weight: 400;
+            line-height: 1.6;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+        
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-3px);
+        }
+        
+        /* 特性区域 */
+        .features {
+            padding: 6rem 2rem;
+            background: white;
+            position: relative;
+        }
+        
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(180deg, transparent 0%, white 100%);
+            transform: translateY(-100px);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .feature-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+        
+        .feature-card:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+        
+        .feature-card:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+        
+        .feature-card:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+        
+        .feature-card:nth-child(6) {
+            animation-delay: 0.5s;
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-icon.ai {
+            background: var(--success-gradient);
+        }
+        
+        .feature-icon.tools {
+            background: var(--primary-gradient);
+        }
+        
+        .feature-icon.auxiliary {
+            background: var(--secondary-gradient);
+        }
+        
+        .feature-icon.plugin {
+            background: var(--warning-gradient);
+        }
+        
+        .feature-icon.manual {
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+        }
+        
+        .feature-icon.size {
+            background: linear-gradient(135deg, #e91e63 0%, #ad1457 100%);
+        }
+        
+        .feature-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+        
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .feature-link:hover {
+            gap: 0.75rem;
+            color: #5a67d8;
+        }
+        
+        /* 统计数据区域 */
+        .stats {
+            padding: 4rem 2rem;
+            background: var(--primary-gradient);
+            color: white;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .stat-item:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+        
+        .stat-item:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+        
+        .stat-item:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+        
+        .stat-number {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        
+        /* 页脚 */
+        .footer {
+            background: var(--text-primary);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+        
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .footer-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-description {
+            opacity: 0.8;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+        
+        .footer-link:hover {
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            opacity: 0.6;
+        }
+        
+        /* 浮动按钮 */
+        .floating-buttons {
             position: fixed;
-            bottom: 100px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 1000;
+        }
+        
+        .floating-btn {
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 999;
+            text-decoration: none;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .floating-btn:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        
+        .floating-btn.customer-service {
+            background: var(--success-gradient);
+        }
+        
+        .floating-btn.back-to-top {
+            background: var(--primary-gradient);
             opacity: 0;
             visibility: hidden;
             transform: translateY(20px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
         }
-        .back-to-top.show {
+        
+        .floating-btn.back-to-top.show {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
         }
-        .back-to-top:hover {
-            transform: scale(1.1) translateY(-4px);
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
-        }
-        .back-to-top i {
-            font-size: 20px;
+        
+        .floating-btn:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: var(--shadow-xl);
         }
         
-        /* Toast提示样式 */
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-size: 14px;
-            z-index: 1100;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-        .toast.show {
-            opacity: 1;
-        }
-        
-        /* 更新提示弹窗样式 */
-        .update-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        .update-modal.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        .update-modal-content {
-            background: white;
-            border-radius: 12px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            transform: scale(0.8);
-            transition: transform 0.3s ease;
-        }
-        .update-modal.show .update-modal-content {
-            transform: scale(1);
-        }
-        .update-modal-header {
-            background: linear-gradient(135deg, #2196F3, #1565C0);
-            color: white;
-            padding: 20px;
-            border-radius: 12px 12px 0 0;
-            text-align: center;
-            position: relative;
-        }
-        .update-modal-header h2 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 600;
-        }
-        .update-modal-header .version {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-top: 5px;
-        }
-        .update-modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.3s;
-        }
-        .update-modal-close:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .update-modal-body {
-            padding: 25px;
-        }
-        .update-item {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        .update-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-        .update-item-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .update-item-type {
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .update-item-type.new {
-            background-color: #E8F5E8;
-            color: #2E7D32;
-        }
-        .update-item-type.improve {
-            background-color: #E3F2FD;
-            color: #1565C0;
-        }
-        .update-item-type.fix {
-            background-color: #FFF3E0;
-            color: #F57C00;
-        }
-        .update-item-description {
-            color: #666;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        .update-modal-footer {
-            padding: 20px 25px;
-            border-top: 1px solid #eee;
-            text-align: center;
-        }
-        .update-modal-btn {
-            background: linear-gradient(135deg, #2196F3, #1565C0);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .update-modal-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
-        }
-        
-        /* 通知图标样式 */
-        .notification-btn {
-            background: none;
-            border: none;
-            color: #333;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            position: relative;
-            margin-left: 15px;
-        }
-        .notification-btn:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-            color: #2196F3;
-        }
-        .notification-btn .notification-badge {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            background-color: #f44336;
-            color: white;
-            border-radius: 50%;
-            width: 8px;
-            height: 8px;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        /* 响应式设计 */
         @media (max-width: 768px) {
-            .top-bar {
-                padding: 0 15px;
+            .navbar {
+                padding: 0 1rem;
                 flex-wrap: wrap;
             }
             
-            .top-bar-title {
+            .navbar-nav {
                 display: none;
             }
             
@@ -743,62 +787,75 @@
                 height: 100px;
             }
             
-            .search-container {
-                display: none;
+            .hero {
+                padding: 1rem;
+                min-height: 80vh;
             }
             
-            .search-container.active {
-                display: flex;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: white;
-                border-top: 1px solid #e0e0e0;
-                padding: 15px;
-                z-index: 1000;
+            .hero-cta {
+                flex-direction: column;
+                align-items: center;
             }
             
-            .main-content {
-                margin-left: 0;
-                padding-top: 100px;
+            .features {
+                padding: 4rem 1rem;
             }
             
-            .tools-grid {
+            .features-grid {
                 grid-template-columns: 1fr;
-                gap: 20px;
+                gap: 1.5rem;
             }
             
-            .customer-service {
+            .feature-card {
+                padding: 2rem;
+            }
+            
+            .stats {
+                padding: 3rem 1rem;
+            }
+            
+            .stats-grid {
+                gap: 2.5rem;
+            }
+            
+            .floating-buttons {
+                bottom: 1rem;
+                right: 1rem;
+            }
+            
+            .floating-btn {
                 width: 50px;
                 height: 50px;
-                bottom: 20px;
-                right: 20px;
-            }
-            
-            .customer-service i {
-                font-size: 24px;
+                font-size: 1.2rem;
             }
         }
         
-        /* 选品手册样式（首页不再内嵌，预留空位避免污染样式表） */
+        @media (max-width: 480px) {
+            .stats-grid {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+        
+
     </style>
 </head>
 <body>
-    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
     
-    <div class="top-bar">
-        <div class="top-bar-left">
-            <div class="top-bar-logo"></div>
-            <button class="menu-toggle" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
-            <span class="top-bar-title">ozon工具盒子</span>
-            <button class="notification-btn" onclick="showUpdateModal()" title="查看更新通知">
-                <i class="fas fa-bell"></i>
-                <span class="notification-badge" id="notificationBadge" style="display: none;"></span>
-            </button>
-        </div>
+    <!-- 导航栏 -->
+    <nav class="navbar" id="navbar">
+        <a href="#" class="navbar-brand">
+            <div class="navbar-logo">
+                <i class="fas fa-cube"></i>
+            </div>
+            OZON工具盒子
+        </a>
         
         <!-- OZON货代广告 -->
         <div class="ozon-nav-ad">
@@ -815,425 +872,291 @@
             </div>
         </div>
         
-        <div class="search-container" id="searchContainer">
-            <input type="text" class="search-input" id="searchInput" placeholder="搜索功能..." oninput="performSearch()">
-            <i class="fas fa-search search-icon"></i>
-            <div class="search-results" id="searchResults"></div>
-        </div>
+        <ul class="navbar-nav">
+            <li><a href="#home" class="nav-link">首页</a></li>
+            <li><a href="#features" class="nav-link">功能</a></li>
+            <li><a href="pages/ai-tools.html" class="nav-link">AI工具</a></li>
+            <li><a href="pages/tools.html" class="nav-link">实用工具</a></li>
+        </ul>
+    </nav>
+    
+    <!-- 主要内容 -->
+    <main class="main-content">
+        <!-- 英雄区域 -->
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    专业的OZON跨境电商
+                    <br>
+                    <span style="background: linear-gradient(45deg, #fff, #f0f0f0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">工具平台</span>
+                </h1>
+                <p class="hero-subtitle">
+                    集成AI智能生成、数据分析、实用工具于一体的专业平台
+                    <br>
+                    助力您的OZON店铺快速成长，提升运营效率
+                </p>
+                <div class="hero-cta">
+                    <a href="pages/ai-tools.html" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i>
+                        开始使用
+                    </a>
+                    <a href="#features" class="btn btn-secondary">
+                        <i class="fas fa-info-circle"></i>
+                        了解更多
+                    </a>
+                </div>
+            </div>
+        </section>
         
-        <button class="menu-toggle" onclick="toggleSearch()">
-            <i class="fas fa-search"></i>
-        </button>
-    </div>
-    
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <span>导航菜单</span>
-            <button class="menu-toggle" onclick="closeSidebar()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="sidebar-menu">
-            <a href="index.html" class="sidebar-menu-item" data-keywords="首页 主页 home"><i class="fas fa-home"></i> 首页</a>
-            <a href="pages/tools.html" class="sidebar-menu-item" data-keywords="实用工具 工具 tools 物流 计算器"><i class="fas fa-tools"></i> 实用工具</a>
-            <a href="pages/ai-tools.html" class="sidebar-menu-item" data-keywords="AI工具 人工智能 ai 标题生成 翻译 图片生成"><i class="fas fa-robot"></i> AI工具</a>
-            <a href="pages/auxiliary-tools.html" class="sidebar-menu-item" data-keywords="辅助工具 翻译 汇率 物流 图片处理 在线工具"><i class="fas fa-wrench"></i> 辅助工具</a>
-            <a href="pages/ozon-plugin.html" class="sidebar-menu-item" data-keywords="OZON插件 插件 plugin 浏览器扩展"><i class="fas fa-puzzle-piece"></i> OZON插件</a>
-            <a href="pages/selection-manual.html" class="sidebar-menu-item" data-keywords="选品手册 汽摩配件 秋冬 节日 婚礼"><i class="fas fa-book"></i> 选品手册</a>
-            <a href="pages/size-chart.html" class="sidebar-menu-item" data-keywords="中俄尺码对照表 尺码 尺寸 服装 鞋子 童装 男装 女装"><i class="fas fa-ruler-combined"></i> 中俄尺码对照表</a>
-
-        </div>
-    </div>
-    
-    <div class="main-content">
-        <div class="container">
-            <div class="header">
-                <h1>OZON跨境电商工具盒子</h1>
-            </div>
-            
-
-            <div class="tools-grid">
-                <div class="tool-card">
-                    <div class="tool-card-header">
-                        <h3 class="tool-card-title">实用工具</h3>
+        <!-- 统计数据 -->
+        <section class="stats">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="9880">0</div>
+                        <div class="stat-label">用户信赖</div>
                     </div>
-                    <div class="tool-card-body">
-                        <p class="tool-card-description">提供各种实用工具，帮助您更高效地管理OZON店铺。</p>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="50">0</div>
+                        <div class="stat-label">实用工具</div>
                     </div>
-                    <div class="tool-card-footer">
-                        <a href="pages/tools.html" class="tool-card-btn">查看工具</a>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="99">0</div>
+                        <div class="stat-label">满意度 %</div>
                     </div>
-                </div>
-                
-                <div class="tool-card">
-                    <div class="tool-card-header ai">
-                        <h3 class="tool-card-title">AI工具</h3>
-                    </div>
-                    <div class="tool-card-body">
-                        <p class="tool-card-description">利用人工智能技术，自动生成高质量的商品标题、描述和关键词。</p>
-                    </div>
-                    <div class="tool-card-footer">
-                        <a href="pages/ai-tools.html" class="tool-card-btn">查看工具</a>
-                    </div>
-                </div>
-                
-                <div class="tool-card">
-                    <div class="tool-card-header" style="background: linear-gradient(135deg, #9C27B0, #673AB7);">
-                        <h3 class="tool-card-title">辅助工具</h3>
-                    </div>
-                    <div class="tool-card-body">
-                        <p class="tool-card-description">提供文字翻译、图片翻译、汇率转换、物流查询等多种在线辅助工具。</p>
-                    </div>
-                    <div class="tool-card-footer">
-                        <a href="pages/auxiliary-tools.html" class="tool-card-btn" style="background-color: #9C27B0;">查看工具</a>
-                    </div>
-                </div>
-
-                <div class="tool-card">
-                    <div class="tool-card-header" style="background: linear-gradient(135deg, #FF9800, #F57C00);">
-                        <h3 class="tool-card-title">OZON后台数据分析插件</h3>
-                    </div>
-                    <div class="tool-card-body">
-                        <p class="tool-card-description">专业的浏览器插件，实时监控OZON后台数据，提供深度分析报告。30天免费试用！</p>
-                    </div>
-                    <div class="tool-card-footer">
-                        <a href="pages/ozon-plugin.html" class="tool-card-btn" style="background-color: #FF9800;">立即下载</a>
-                    </div>
-                </div>
-                
-                <!-- 选品手册（统一入口到站内专页） -->
-                <div class="tool-card">
-                    <div class="tool-card-header" style="background: linear-gradient(135deg, #3b82f6, #6366f1);">
-                        <h3 class="tool-card-title">选品手册</h3>
-                    </div>
-                    <div class="tool-card-body">
-                        <p class="tool-card-description">四大类目词库（汽摩配件 / 秋冬用品 / 节日用品 / 婚礼用品），一键复制、点击直达 Ozon 搜索。</p>
-                    </div>
-                    <div class="tool-card-footer">
-                        <a href="pages/selection-manual.html" class="tool-card-btn">打开选品手册</a>
-                    </div>
-                </div>
-
-                <!-- 中俄尺码对照表 -->
-                <div class="tool-card">
-                    <div class="tool-card-header" style="background: linear-gradient(135deg, #e91e63, #ad1457);">
-                        <h3 class="tool-card-title">中俄尺码对照表</h3>
-                    </div>
-                    <div class="tool-card-body">
-                        <p class="tool-card-description">完整的服装鞋帽尺码对照，包含女装、男装、童装及鞋类尺码转换表，帮助准确选择商品尺码。</p>
-                    </div>
-                    <div class="tool-card-footer">
-                        <a href="pages/size-chart.html" class="tool-card-btn" style="background: linear-gradient(135deg, #e91e63, #ad1457);">查看对照表</a>
-                    </div>
-                </div>
-
-
-            </div>
-            
-            <div class="footer">
-                2025 Made By Nicole. 
-            </div>
-        </div>
-    </div>
-    
-    <div class="customer-service" onclick="showCustomerService()">
-        <i class="fas fa-headset"></i>
-    </div>
-    
-    <!-- 返回顶部按钮 -->
-    <div class="back-to-top" id="backToTop" onclick="scrollToTop()">
-        <i class="fas fa-chevron-up"></i>
-    </div>
-    
-    <div id="toast" class="toast"></div>
-    
-    <!-- 更新提示弹窗 -->
-    <div class="update-modal" id="updateModal">
-        <div class="update-modal-content">
-            <div class="update-modal-header">
-                <button class="update-modal-close" onclick="closeUpdateModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-                <h2>🎉 平台更新</h2>
-                <div class="version">版本 v2.3.1</div>
-            </div>
-            <div class="update-modal-body">
-                <div class="update-item">
-                    <div class="update-item-title">
-                        <span class="update-item-type improve">优化</span>
-                        标题生成工具界面精简
-                    </div>
-                    <div class="update-item-description">
-                        ✨ 移除了"填充示例特征"和"模拟卖点分析"功能，界面更加简洁专注。专注于核心的AI提问词生成和产品分析功能，建议配置DeepSeek API密钥以获得最佳效果。
-                    </div>
-                </div>
-                
-                <div class="update-item">
-                     <div class="update-item-description">
-                         <span class="update-item-type fix"> 🤖 支持DeepSeek AI模型，用户需要配置DeepSeek API密钥来使用AI智能生成: 标题、简介、关键词、标签中的竞品分析功能</span>
-                       
-                    </div>
-                    <div class="update-item-title">
-                        <span class="update-item-type fix">修复</span>
-                        OZON插件下载问题
-                    </div>
-                    <div class="update-item-description">
-                        🔧 修复了永久版本插件无法下载的问题，优化服务器配置，添加zip文件MIME类型支持，确保下载功能正常工作。
-                    </div>
-                </div>
-                
-                <div class="update-item">
-                    <div class="update-item-title">
-                        <span class="update-item-type improve">优化</span>
-                        插件页面布局
-                    </div>
-                    <div class="update-item-description">
-                        🎨 重新设计插件下载页面，试用版和永久版并排显示，添加醒目的更新通知，提升用户体验和视觉效果。
-                    </div>
-                </div>
-                
-                <div class="update-item">
-                    <div class="update-item-title">
-                        <span class="update-item-type new">新增</span>
-                        永久版本文件打包
-                    </div>
-                    <div class="update-item-description">
-                        📦 将永久版本源文件夹重新打包为标准zip格式，解决文件名空格问题，确保下载的是完整功能版本。
-                    </div>
-                </div>
-                
-                <div class="update-item">
-                    <div class="update-item-title">
-                        <span class="update-item-type improve">优化</span>
-                        文件服务器配置
-                    </div>
-                    <div class="update-item-description">
-                        ⚙️ 升级文件服务器，更改端口配置，添加完整URL路径支持，提高文件下载的稳定性和可靠性。
-                    </div>
-                </div>
-                
-                <div class="update-item">
-                    <div class="update-item-title">
-                        <span class="update-item-type improve">优化</span>
-                        AI工具模型精简
-                    </div>
-                   
-                </div>
-                
-                <div class="update-item">
-                    <div class="update-item-title">
-                        <span class="update-item-type new">新增</span>
-                        Excel数据分析器
-                    </div>
-                    <div class="update-item-description">
-                        📊 Excel数据分析器筛选商品，更快速的筛选出高利润商品，支持品牌筛选功能。
-                    </div>
-                </div>
-                
-                <div class="update-item">
-                    <div class="update-item-title">
-                        <span class="update-item-type new">新增</span>
-                        智能搜索功能
-                    </div>
-                    <div class="update-item-description">
-                        🔍 新增了强大的搜索功能，支持按功能名称和关键词快速查找工具，提升使用效率。
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="24">0</div>
+                        <div class="stat-label">小时服务</div>
                     </div>
                 </div>
             </div>
-            <div class="update-modal-footer">
-                <button class="update-modal-btn" onclick="closeUpdateModal()">我知道了</button>
+        </section>
+        
+        <!-- 功能特性 -->
+        <section class="features" id="features">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">强大的功能特性</h2>
+                    <p class="section-subtitle">
+                        为OZON跨境电商卖家量身定制的专业工具集合，覆盖运营全流程
+                    </p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon ai">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3 class="feature-title">AI智能工具</h3>
+                        <p class="feature-description">
+                            利用先进的人工智能技术，自动生成高质量的商品标题、描述、关键词和场景图提示词，大幅提升工作效率。
+                        </p>
+                        <a href="pages/ai-tools.html" class="feature-link">
+                            立即体验 <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon tools">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3 class="feature-title">实用工具</h3>
+                        <p class="feature-description">
+                            提供物流费用计算、Excel数据分析、商品筛选等多种实用工具，帮助您更高效地管理OZON店铺。
+                        </p>
+                        <a href="pages/tools.html" class="feature-link">
+                            查看工具 <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon auxiliary">
+                            <i class="fas fa-wrench"></i>
+                        </div>
+                        <h3 class="feature-title">辅助工具</h3>
+                        <p class="feature-description">
+                            集成文字翻译、图片翻译、汇率转换、物流查询等多种在线辅助工具，一站式解决日常需求。
+                        </p>
+                        <a href="pages/auxiliary-tools.html" class="feature-link">
+                            使用工具 <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon plugin">
+                            <i class="fas fa-puzzle-piece"></i>
+                        </div>
+                        <h3 class="feature-title">数据分析插件</h3>
+                        <p class="feature-description">
+                            专业的浏览器插件，实时监控OZON后台数据，提供深度分析报告。30天免费试用，助力数据驱动决策。
+                        </p>
+                        <a href="pages/ozon-plugin.html" class="feature-link">
+                            立即下载 <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon manual">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3 class="feature-title">选品手册</h3>
+                        <p class="feature-description">
+                            四大类目词库（汽摩配件/秋冬用品/节日用品/婚礼用品），一键复制，点击直达OZON搜索，精准选品。
+                        </p>
+                        <a href="pages/selection-manual.html" class="feature-link">
+                            打开手册 <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon size">
+                            <i class="fas fa-ruler-combined"></i>
+                        </div>
+                        <h3 class="feature-title">尺码对照表</h3>
+                        <p class="feature-description">
+                            完整的中俄服装鞋帽尺码对照表，包含女装、男装、童装及鞋类尺码转换，准确选择商品尺码。
+                        </p>
+                        <a href="pages/size-chart.html" class="feature-link">
+                            查看对照 <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <h3 class="footer-title">OZON工具盒子</h3>
+            <p class="footer-description">
+                专注于为OZON跨境电商卖家提供专业、高效的工具服务
+            </p>
+            <div class="footer-links">
+                <a href="pages/ai-tools.html" class="footer-link">AI工具</a>
+                <a href="pages/tools.html" class="footer-link">实用工具</a>
+                <a href="pages/auxiliary-tools.html" class="footer-link">辅助工具</a>
+                <a href="pages/ozon-plugin.html" class="footer-link">数据插件</a>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Made By Nicole. All rights reserved.</p>
             </div>
         </div>
+    </footer>
+    
+    <!-- 浮动按钮 -->
+    <div class="floating-buttons">
+        <a href="#" class="floating-btn customer-service" onclick="showCustomerService()">
+            <i class="fas fa-headset"></i>
+        </a>
+        <a href="#home" class="floating-btn back-to-top" id="backToTop">
+            <i class="fas fa-chevron-up"></i>
+        </a>
     </div>
-
+    
     <script>
-        // 菜单数据
-        const menuItems = [
-            { name: '首页', url: 'index.html', icon: 'fas fa-home', keywords: '首页 主页 home' },
-            { name: '实用工具', url: 'pages/tools.html', icon: 'fas fa-tools', keywords: '实用工具 工具 tools 物流 计算器' },
-            { name: 'AI工具', url: 'pages/ai-tools.html', icon: 'fas fa-robot', keywords: 'AI工具 人工智能 ai 标题生成 翻译 图片生成' },
-            { name: '辅助工具', url: 'pages/auxiliary-tools.html', icon: 'fas fa-wrench', keywords: '辅助工具 翻译 汇率 物流 图片处理 在线工具' },
-            { name: 'OZON后台数据分析插件', url: 'pages/ozon-plugin.html', icon: 'fas fa-puzzle-piece', keywords: 'OZON插件 后台数据 分析插件 浏览器插件 数据监控 试用 下载' },
-            { name: '中俄尺码对照表', url: 'pages/size-chart.html', icon: 'fas fa-ruler-combined', keywords: '中俄尺码对照表 尺码 尺寸 服装 鞋子 童装 男装 女装 俄罗斯尺码' },
 
-        ];
         
-        function showToast(message, duration = 2000) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, duration);
-        }
-        
-        function showCustomerService() {
-            showToast('联系我们：邮箱：zouqifeng@jiawae-commerce.com\n工作时间：周一至周五 9:00-18:00');
-        }
-        
-        // 更新提示弹窗功能
-        function showUpdateModal() {
-            const modal = document.getElementById('updateModal');
-            modal.classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeUpdateModal() {
-            const modal = document.getElementById('updateModal');
-            const notificationBadge = document.getElementById('notificationBadge');
-            modal.classList.remove('show');
-            document.body.style.overflow = 'auto';
-            
-            // 记录用户已查看更新提示
-            localStorage.setItem('lastViewedUpdate', '2.3.1');
-            
-            // 隐藏通知徽章
-            notificationBadge.style.display = 'none';
-        }
-        
-        function checkForUpdates() {
-            const currentVersion = '2.3.1';
-            const lastViewedVersion = localStorage.getItem('lastViewedUpdate');
-            const notificationBadge = document.getElementById('notificationBadge');
-            
-            // 如果是新用户或版本更新，显示更新提示和通知徽章
-            if (!lastViewedVersion || lastViewedVersion !== currentVersion) {
-                // 显示通知徽章
-                notificationBadge.style.display = 'flex';
-                
-                setTimeout(() => {
-                    showUpdateModal();
-                }, 1000); // 延迟1秒显示，让页面完全加载
-            } else {
-                // 隐藏通知徽章
-                notificationBadge.style.display = 'none';
-            }
-        }
-        
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('show');
-        }
-        
-        function closeSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            
-            sidebar.classList.remove('open');
-            overlay.classList.remove('show');
-        }
-        
-        function toggleSearch() {
-            const searchContainer = document.getElementById('searchContainer');
-            const searchInput = document.getElementById('searchInput');
-            
-            searchContainer.classList.toggle('active');
-            
-            if (searchContainer.classList.contains('active')) {
-                setTimeout(() => {
-                    searchInput.focus();
-                }, 100);
-            } else {
-                hideSearchResults();
-            }
-        }
-        
-        function performSearch() {
-            const searchInput = document.getElementById('searchInput');
-            const searchResults = document.getElementById('searchResults');
-            const query = searchInput.value.toLowerCase().trim();
-            
-            if (query === '') {
-                hideSearchResults();
-                return;
-            }
-            
-            const results = menuItems.filter(item => 
-                item.name.toLowerCase().includes(query) || 
-                item.keywords.toLowerCase().includes(query)
-            );
-            
-            if (results.length > 0) {
-                searchResults.innerHTML = results.map(item => 
-                    `<div class="search-result-item" onclick="navigateToPage('${item.url}')">
-                        <i class="${item.icon} search-result-icon"></i>
-                        <span>${item.name}</span>
-                    </div>`
-                ).join('');
-                searchResults.classList.add('show');
-            } else {
-                searchResults.innerHTML = '<div class="search-result-item">未找到相关功能</div>';
-                searchResults.classList.add('show');
-            }
-        }
-        
-        function hideSearchResults() {
-            const searchResults = document.getElementById('searchResults');
-            searchResults.classList.remove('show');
-        }
-        
-        function navigateToPage(url) {
-            window.location.href = url;
-        }
-        
-        // 点击页面其他地方隐藏搜索结果
-        document.addEventListener('click', function(e) {
-            const searchContainer = document.getElementById('searchContainer');
-            if (!searchContainer.contains(e.target)) {
-                hideSearchResults();
-            }
-        });
-        
-        // ESC键关闭侧边栏和搜索
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                // 优先关闭更新弹窗
-                const updateModal = document.getElementById('updateModal');
-                if (updateModal.classList.contains('show')) {
-                    closeUpdateModal();
-                    return;
-                }
-                
-                closeSidebar();
-                const searchContainer = document.getElementById('searchContainer');
-                if (searchContainer.classList.contains('active')) {
-                    toggleSearch();
-                }
-            }
-        });
-        
-        // 返回顶部功能
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-        
-        // 监听滚动事件，控制返回顶部按钮显示
+        // 导航栏滚动效果
         window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
             const backToTop = document.getElementById('backToTop');
-            if (window.pageYOffset > 300) {
+            
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
                 backToTop.classList.add('show');
             } else {
+                navbar.classList.remove('scrolled');
                 backToTop.classList.remove('show');
             }
         });
         
-        // 页面加载完成后检查更新
-        document.addEventListener('DOMContentLoaded', function() {
-            checkForUpdates();
+        // 数字动画
+        function animateNumbers() {
+            const stats = document.querySelectorAll('.stat-number');
+            
+            stats.forEach(stat => {
+                const target = parseInt(stat.getAttribute('data-count'));
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    stat.textContent = Math.floor(current);
+                }, 16);
+            });
+        }
+        
+        // 监听统计区域进入视口
+        const statsSection = document.querySelector('.stats');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateNumbers();
+                    observer.unobserve(entry.target);
+                }
+            });
         });
         
-        // 点击弹窗背景关闭
-        document.getElementById('updateModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeUpdateModal();
+        observer.observe(statsSection);
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // 客服功能
+        function showCustomerService() {
+            alert('联系我们：\n邮箱：zouqifeng@jiawae-commerce.com\n工作时间：周一至周五 9:00-18:00');
+        }
+        
+        // 添加页面进入动画
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为所有动画元素添加观察器
+            const animatedElements = document.querySelectorAll('.feature-card, .stat-item, .section-header');
+            
+            const animationObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            animatedElements.forEach(el => {
+                el.style.animationPlayState = 'paused';
+                animationObserver.observe(el);
+            });
+        });
+        
+        // 浏览器返回按钮处理
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // 页面从缓存中恢复，强制刷新
+                window.location.reload();
             }
+        });
+        
+        // 防止页面缓存
+        window.addEventListener('beforeunload', function() {
+            // 清除页面状态
+            sessionStorage.removeItem('pageState');
         });
     </script>
 </body>
