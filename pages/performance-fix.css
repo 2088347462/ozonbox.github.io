@@ -1,39 +1,221 @@
-/* 性能优化CSS - 移除所有消耗性能的效果 */
+/* 性能优化CSS - 解决卡顿问题 */
 
-/* 禁用所有毛玻璃效果 */
+/* 禁用消耗性能的毛玻璃效果 */
 * {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
 }
 
-/* 简化动画 */
-* {
-    will-change: auto !important;
+/* 简化复杂的渐变背景 */
+.loading-container,
+.container,
+.sidebar,
+.main-content {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+/* 优化动画性能 */
+.analyzing {
     transform: none !important;
+    transition: none !important;
+}
+
+.fade-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+.slide-in {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+}
+
+/* 简化按钮悬停效果 */
+.btn:hover,
+button:hover,
+.add-btn:hover,
+.remove-btn:hover {
+    transform: none !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+.btn:active,
+button:active {
+    transform: none !important;
+}
+
+/* 移除复杂的客服按钮动画 */
+.customer-service:hover {
+    transform: none !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+}
+
+/* 简化Toast动画 */
+.toast {
+    animation: none !important;
+    background: #333 !important;
+    color: white !important;
+}
+
+/* 移除复杂的加载动画 */
+.loading-spinner {
+    animation: spin 1s linear infinite !important;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 禁用不必要的transition */
+.spec-input,
+.sell-point-input,
+.ratio-select,
+input,
+textarea,
+select {
+    transition: border-color 0.15s ease !important;
+}
+
+/* 简化强调项动画 */
+.emphasize-item:hover {
+    transform: none !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+
+/* 移除复杂的渐变按钮 */
+.btn-primary {
+    background: #2563eb !important;
+}
+
+.btn-secondary {
+    background: #64748b !important;
+}
+
+.btn-copy {
+    background: #0ea5e9 !important;
+}
+
+.btn-external {
+    background: #ea580c !important;
+}
+
+.add-btn {
+    background: #16a34a !important;
+}
+
+.remove-btn {
+    background: #dc2626 !important;
+}
+
+/* 优化表单性能 */
+.form-group,
+.feature-container,
+.input-group {
+    transition: none !important;
+}
+
+/* 移除复杂的模块分隔线动画 */
+div[style*="linear-gradient(90deg"] {
+    background: #e2e8f0 !important;
+    height: 1px !important;
+}
+
+/* 简化更新通知样式 */
+.update-notice {
+    background: #2563eb !important;
     animation: none !important;
 }
 
-/* 保留基本过渡效果但简化 */
-.simple-transition {
-    transition: opacity 0.2s ease, background-color 0.2s ease !important;
+.update-notice div[style*="animation"] {
+    animation: none !important;
 }
 
-/* 简化阴影效果 */
-.simple-shadow {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-}
-
-/* 移除复杂渐变，使用纯色 */
-.simple-bg {
-    background: rgba(255,255,255,0.95) !important;
-}
-
-/* 简化按钮效果 */
-.simple-button {
-    transition: background-color 0.2s ease !important;
-}
-
-.simple-button:hover {
+/* 优化复选框 */
+input[type="checkbox"] {
     transform: none !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+}
+
+/* 移除复杂的阴影效果 */
+* {
+    box-shadow: none !important;
+}
+
+.container,
+.sidebar,
+.btn,
+button {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+
+/* 强制硬件加速优化 */
+.container,
+.sidebar,
+.main-content {
+    will-change: auto !important;
+    transform: translateZ(0) !important;
+}
+
+/* 禁用复杂的CSS滤镜 */
+* {
+    filter: none !important;
+}
+
+/* 优化字体渲染 */
+body {
+    text-rendering: optimizeSpeed !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* 移除不必要的边框圆角 */
+.container,
+.sidebar,
+input,
+button,
+.btn {
+    border-radius: 6px !important;
+}
+
+/* 简化进度条动画 */
+.progress-fill {
+    transition: width 0.2s linear !important;
+}
+
+/* 优化结果区域 */
+.result-section {
+    animation: none !important;
+}
+
+#competitorAnalysis {
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+}
+
+#competitorAnalysis.show {
+    transform: none !important;
+    opacity: 1 !important;
+}
+
+/* 移除模态框复杂动画 */
+div[style*="animation: fadeIn"],
+div[style*="animation: slideIn"] {
+    animation: none !important;
+}
+
+/* 优化滚动性能 */
+.sidebar,
+.main-content {
+    scroll-behavior: auto !important;
+}
+
+/* 禁用复杂的伪元素动画 */
+*::before,
+*::after {
+    animation: none !important;
+    transition: none !important;
 }
