@@ -3,172 +3,386 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OZON后台数据分析插件 - OZON工具盒子</title>
+    <title>OZON数据插件 - OZON工具盒子</title>
+    <!-- 缓存控制 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     
     <!-- 网站图标 -->
     <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon.svg">
     <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon.svg">
     <link rel="apple-touch-icon" href="../images/favicon.svg">
-    <meta name="theme-color" content="#2196F3">
+    <meta name="theme-color" content="#667eea">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
         
-        body {
-            font-family: 'Inter', sans-serif;
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --plugin-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            --border-radius: 16px;
+            --border-radius-lg: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-sizing: border-box;
+            /* 性能优化 - 移除所有消耗性能的效果 */
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            will-change: auto !important;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--primary-gradient);
             background-attachment: fixed;
-            color: #2c3e50;
+            color: var(--text-primary);
             line-height: 1.6;
             font-weight: 400;
             letter-spacing: -0.01em;
+            overflow-x: hidden;
+            min-height: 100vh;
         }
         
-        .top-bar {
+
+        
+        /* 动画定义 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        /* 玻璃态效果 */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* 顶部导航栏 */
+        .navbar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            height: 60px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 80px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
-            z-index: 999;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding: 0 2rem;
+            z-index: 1000;
+            transition: var(--transition);
         }
         
-        .top-bar-left {
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .navbar-brand {
             display: flex;
             align-items: center;
-            gap: 15px;
-        }
-        
-        .top-bar-logo {
-            width: 32px;
-            height: 32px;
-            background-image: url('../images/favicon.svg');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-        
-        .top-bar-title {
-            color: white;
+            gap: 12px;
             font-family: 'Poppins', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .back-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .back-btn:hover {
-            background: rgba(255,255,255,0.3);
-            box-shadow: 0 4px 15px rgba(255,255,255,0.2);
-        }
-        
-        .main-content {
-            margin-top: 60px;
-            padding: 40px 20px;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .content-layout {
-            display: flex;
-            gap: 30px;
-            margin-top: 30px;
-        }
-        
-        .plugin-downloads {
-            flex: 2;
-        }
-        
-        .contact-sidebar {
-            flex: 1;
-            min-width: 300px;
-        }
-        
-        .plugin-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-            border-radius: 20px;
-            margin-bottom: 40px;
-            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        
-        .plugin-header h1 {
-            margin: 0 0 15px 0;
-            font-family: 'Poppins', sans-serif;
-            font-size: 36px;
             font-weight: 700;
-            letter-spacing: -0.01em;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: relative;
-            z-index: 1;
+            font-size: 1.2rem;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
         }
         
-        .plugin-header p {
-            margin: 0;
-            font-size: 18px;
-            opacity: 0.9;
-            position: relative;
-            z-index: 1;
+        .navbar.scrolled .navbar-brand {
+            color: var(--text-primary);
         }
         
+        .navbar-logo {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            list-style: none;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .navbar.scrolled .nav-link {
+            color: var(--text-secondary);
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .navbar.scrolled .nav-link:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+        
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .navbar.scrolled .nav-link.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        /* 移动端菜单按钮 */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+        
+        .navbar.scrolled .menu-toggle {
+            color: var(--text-primary);
+        }
+        
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        /* 面包屑导航 */
+        .breadcrumb {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .breadcrumb a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .breadcrumb a:hover {
+            color: white;
+        }
+        
+        .breadcrumb-separator {
+            color: rgba(255, 255, 255, 0.5);
+            margin: 0 0.5rem;
+        }
+        
+        .breadcrumb-current {
+            color: white;
+            font-weight: 500;
+        }
+        
+        /* 页面标题区域 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .page-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* 插件信息卡片 */
         .plugin-info {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
         }
         
         .info-card {
             background: rgba(255, 255, 255, 0.95);
-            padding: 30px;
-            border-radius: 16px;
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            will-change: transform;
+            transition: var(--transition);
+            animation: fadeInUp 1s ease-out;
+            position: relative;
+            overflow: hidden;
         }
+        
+        .info-card:nth-child(2) { animation-delay: 0.2s; }
+        
         .info-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--plugin-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .info-card:hover::before {
+            transform: scaleX(1);
         }
         
         .info-card h3 {
-            margin: 0 0 20px 0;
-            color: #667eea;
-            font-family: 'Poppins', sans-serif;
-            font-size: 24px;
-            font-weight: 600;
-            letter-spacing: -0.01em;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-card .icon {
+            width: 50px;
+            height: 50px;
+            background: var(--plugin-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            animation: float 3s ease-in-out infinite;
         }
         
         .feature-list {
@@ -178,78 +392,129 @@
         }
         
         .feature-list li {
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
         }
         
         .feature-list li:last-child {
             border-bottom: none;
         }
         
+        .feature-list li:hover {
+            background: rgba(102, 126, 234, 0.05);
+            padding-left: 0.5rem;
+            border-radius: 8px;
+        }
+        
         .feature-list i {
             color: #4CAF50;
             width: 20px;
+            font-size: 1rem;
         }
         
+        /* 下载区域 */
         .download-section {
             background: rgba(255, 255, 255, 0.95);
-            padding: 40px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            text-align: center;
-            margin-bottom: 40px;
+            border-radius: var(--border-radius-lg);
+            padding: 3rem;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 3rem;
+            animation: fadeInUp 1.2s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .download-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--plugin-gradient);
         }
         
         .download-section h3 {
-            margin: 0 0 30px 0;
-            color: #667eea;
+            text-align: center;
             font-family: 'Poppins', sans-serif;
-            font-size: 28px;
-            font-weight: 600;
-            letter-spacing: -0.01em;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
         
         .versions-container {
-            display: flex;
-            gap: 30px;
-            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
         }
         
         .version-card {
-            flex: 1;
-            padding: 30px;
-            border-radius: 12px;
+            border-radius: var(--border-radius);
+            padding: 2rem;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .version-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
         }
         
         .trial-version {
-            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            background: var(--success-gradient);
             color: white;
         }
         
         .premium-version {
-            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            background: var(--secondary-gradient);
             color: white;
         }
         
+        .version-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        
         .version-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 15px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
         }
         
         .version-description {
-            margin-bottom: 25px;
-            opacity: 0.9;
-            font-size: 16px;
+            margin-bottom: 1.5rem;
+            opacity: 0.95;
+            font-size: 1rem;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
         }
         
         .download-btn {
@@ -258,380 +523,726 @@
             gap: 10px;
             background: rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 15px 30px;
+            padding: 1rem 2rem;
             border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 500;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: var(--transition);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .download-btn:hover::before {
+            left: 100%;
         }
         
         .download-btn:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
             border-color: rgba(255, 255, 255, 0.5);
-        }
-        
-        .download-btn i {
-            font-size: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
         
         .premium-price {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 15px 0;
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 1rem 0;
+            position: relative;
+            z-index: 1;
         }
         
         .premium-price .original {
             text-decoration: line-through;
-            font-size: 18px;
+            font-size: 1.2rem;
             opacity: 0.7;
             margin-right: 10px;
         }
         
         .code-input-section {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-top: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
         }
         
         .code-input {
             width: 100%;
-            max-width: 250px;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            margin-bottom: 15px;
+            max-width: 280px;
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            margin-bottom: 1rem;
             text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+        
+        .code-input:focus {
+            outline: none;
+            border-color: white;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
         }
         
         .premium-download-btn {
             background: white;
-            color: #FF6B35;
-            padding: 12px 25px;
+            color: #f5576c;
+            padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
         }
         
         .premium-download-btn:hover {
-            background: #f0f0f0;
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
         
         .premium-download-btn:disabled {
             background: #ccc;
             color: #666;
             cursor: not-allowed;
+            transform: none;
         }
         
         .error-message {
             color: #ffcccb;
             margin-top: 10px;
-            font-size: 14px;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
         
-        @media (max-width: 768px) {
-            .versions-container {
-                flex-direction: column;
-                gap: 20px;
-            }
-        }
-        
+        /* 安装指南 */
         .installation-guide {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius-lg);
+            padding: 3rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 3rem;
+            animation: fadeInUp 1.4s ease-out;
         }
         
         .installation-guide h3 {
-            margin: 0 0 20px 0;
-            color: #1565C0;
-            font-size: 24px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         
         .step {
             display: flex;
             align-items: flex-start;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: var(--border-radius);
+            border-left: 4px solid #667eea;
+            transition: var(--transition);
+        }
+        
+        .step:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-md);
         }
         
         .step-number {
-            background: #2196F3;
+            background: var(--plugin-gradient);
             color: white;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            font-weight: 700;
             flex-shrink: 0;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow-sm);
         }
         
         .step-content h4 {
-            margin: 0 0 5px 0;
-            color: #333;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
         }
         
         .step-content p {
+            color: var(--text-secondary);
+            line-height: 1.6;
             margin: 0;
-            color: #666;
         }
         
+        /* 联系信息 */
         .contact-info {
-            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            background: var(--success-gradient);
             color: white;
-            padding: 30px;
-            border-radius: 12px;
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
             text-align: center;
             position: sticky;
-            top: 80px;
+            top: 100px;
+            box-shadow: var(--shadow-lg);
+            animation: slideInRight 1.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .contact-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            pointer-events: none;
         }
         
         .contact-info h3 {
-            margin: 0 0 15px 0;
-            font-size: 24px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
         }
         
         .contact-info p {
-            margin: 0;
-            font-size: 16px;
-            opacity: 0.9;
+            opacity: 0.95;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
         }
         
         .wechat-contact {
             background: rgba(255,255,255,0.2);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 18px;
-            font-weight: 500;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 1;
         }
         
         .qr-code-section {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            position: relative;
+            z-index: 1;
         }
         
         .qr-code-image {
             width: 150px;
             height: 150px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
             background: white;
             padding: 10px;
+            transition: var(--transition);
         }
         
-        .qr-code-text {
-            text-align: center;
-            color: white;
+        .qr-code-image:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
         }
         
         .qr-code-text h5 {
-            margin: 0 0 5px 0;
-            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
         
         .qr-code-text p {
-            margin: 0;
-            font-size: 14px;
+            font-size: 0.9rem;
             opacity: 0.9;
+            margin: 0;
         }
         
-        @media (max-width: 768px) {
-            .plugin-info {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .plugin-header {
-                padding: 30px 20px;
-            }
-            
-            .plugin-header h1 {
-                font-size: 28px;
-            }
-            
-            .main-content {
-                padding: 20px 15px;
-            }
-            
+        /* 内容布局 */
+        .content-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+        
+        /* 浮动按钮 */
+        .floating-buttons {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 1000;
+        }
+        
+        .floating-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            animation: float 3s ease-in-out infinite;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .floating-btn:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        
+        .floating-btn.customer-service {
+            background: var(--success-gradient);
+        }
+        
+        .floating-btn.back-to-top {
+            background: var(--primary-gradient);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+        }
+        
+        .floating-btn.back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        /* Toast 提示 */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            z-index: 1100;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-10px);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
             .content-layout {
-                flex-direction: column;
+                grid-template-columns: 1fr;
+                gap: 2rem;
             }
             
             .contact-info {
                 position: static;
             }
         }
+        
+        @media (max-width: 768px) {
+            .navbar-nav {
+                display: none;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .plugin-info {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .versions-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .download-section {
+                padding: 2rem;
+            }
+            
+            .installation-guide {
+                padding: 2rem;
+            }
+            
+            .floating-buttons {
+                bottom: 1rem;
+                right: 1rem;
+            }
+            
+            .floating-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .page-subtitle {
+                font-size: 1rem;
+            }
+            
+            .breadcrumb {
+                padding: 0.75rem 1rem;
+                font-size: 0.8rem;
+            }
+            
+            .info-card {
+                padding: 1.5rem;
+            }
+            
+            .step {
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="top-bar">
-        <div class="top-bar-left">
-            <div class="top-bar-logo"></div>
-            <div class="top-bar-title">OZON工具盒子</div>
+
+    
+    <!-- 导航栏 -->
+    <nav class="navbar" id="navbar">
+        <a href="../index.html" class="navbar-brand">
+            <div class="navbar-logo">
+                <i class="fas fa-cube"></i>
+            </div>
+            OZON工具盒子
+        </a>
+        
+        <ul class="navbar-nav">
+            <li><a href="../index.html" class="nav-link">首页</a></li>
+            <li><a href="ai-tools.html" class="nav-link">AI工具</a></li>
+            <li><a href="tools.html" class="nav-link">实用工具</a></li>
+            <li><a href="auxiliary-tools.html" class="nav-link">辅助工具</a></li>
+            <li><a href="ozon-plugin.html" class="nav-link active">数据插件</a></li>
+        </ul>
+        
+        <button class="menu-toggle" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
+    
+    <!-- 主要内容 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 面包屑导航 -->
+            <nav class="breadcrumb">
+                <a href="../index.html">
+                    <i class="fas fa-home"></i>
+                    首页
+                </a>
+                <span class="breadcrumb-separator">
+                    <i class="fas fa-chevron-right"></i>
+                </span>
+                <span class="breadcrumb-current">数据插件</span>
+            </nav>
+            
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-puzzle-piece"></i>
+                    OZON数据插件
+                </h1>
+                <p class="page-subtitle">
+                    专业的OZON后台数据分析插件，助力您的跨境电商业务数据化运营
+                </p>
+            </div>
+            
+            <!-- 插件信息 -->
+            <div class="plugin-info">
+                <div class="info-card">
+                    <h3>
+                        <div class="icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        核心功能
+                    </h3>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> 实时数据监控与分析</li>
+                        <li><i class="fas fa-check"></i> 销售趋势可视化展示</li>
+                        <li><i class="fas fa-check"></i> 商品表现深度分析</li>
+                        <li><i class="fas fa-check"></i> 竞争对手数据追踪</li>
+                        <li><i class="fas fa-check"></i> 智能报表生成</li>
+                        <li><i class="fas fa-check"></i> 多维度数据对比</li>
+                    </ul>
+                </div>
+                
+                <div class="info-card">
+                    <h3>
+                        <div class="icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        技术特点
+                    </h3>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> 轻量级浏览器插件</li>
+                        <li><i class="fas fa-check"></i> 无需额外软件安装</li>
+                        <li><i class="fas fa-check"></i> 数据安全加密传输</li>
+                        <li><i class="fas fa-check"></i> 支持多浏览器兼容</li>
+                        <li><i class="fas fa-check"></i> 自动更新功能</li>
+                        <li><i class="fas fa-check"></i> 24/7技术支持</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- 内容布局 -->
+            <div class="content-layout">
+                <div class="plugin-downloads">
+                    <!-- 下载区域 -->
+                    <div class="download-section">
+                        <h3>
+                            <i class="fas fa-download"></i>
+                            立即下载体验
+                        </h3>
+                        
+                        <div class="versions-container">
+                            <div class="version-card trial-version">
+                                <h4 class="version-title">
+                                    <i class="fas fa-gift"></i>
+                                    30天免费试用
+                                </h4>
+                                <p class="version-description">完整功能体验，无任何限制，让您充分了解插件的强大功能</p>
+                                <a href="../ozon-sales-assistant-30day-trial-fixed.zip" class="download-btn" download>
+                                    <i class="fas fa-download"></i>
+                                    下载试用版
+                                </a>
+                            </div>
+                            
+                            <div class="version-card premium-version">
+                                <h4 class="version-title">
+                                    <i class="fas fa-crown"></i>
+                                    永久付费版
+                                </h4>
+                                <p class="version-description">一次购买，终身使用，享受所有功能和持续更新</p>
+                                <div class="premium-price">
+                                    <span class="original">¥99.9</span>
+                                    <span>限时特惠 ¥29.9</span>
+                                </div>
+                                <div class="code-input-section">
+                                    <p>请输入提取码下载永久版：</p>
+                                    <input type="text" class="code-input" id="extractCode" placeholder="请输入提取码">
+                                    <br>
+                                    <button class="premium-download-btn" onclick="validateAndDownload()">验证并下载</button>
+                                    <div class="error-message" id="errorMessage" style="display: none;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 安装指南 -->
+                    <div class="installation-guide">
+                        <h3>
+                            <i class="fas fa-book"></i>
+                            安装指南
+                        </h3>
+                        
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>下载插件文件</h4>
+                                <p>点击上方下载按钮，获取插件安装包到本地</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>解压文件</h4>
+                                <p>将下载的zip文件解压到任意文件夹，记住解压路径</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>打开浏览器扩展管理</h4>
+                                <p>在Chrome浏览器中输入 chrome://extensions/ 或通过菜单进入扩展程序管理页面</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>启用开发者模式</h4>
+                                <p>在扩展程序页面右上角开启"开发者模式"开关</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>加载插件</h4>
+                                <p>点击"加载已解压的扩展程序"，选择解压后的插件文件夹</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">6</div>
+                            <div class="step-content">
+                                <h4>开始使用</h4>
+                                <p>访问OZON后台，插件将自动激活并开始工作，享受数据分析功能</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 联系信息侧边栏 -->
+                <div class="contact-sidebar">
+                    <div class="contact-info">
+                        <h3>
+                            <i class="fas fa-headset"></i>
+                            技术支持
+                        </h3>
+                        <p>如果您在使用过程中遇到任何问题，请随时联系我们的技术支持团队</p>
+                        <div class="wechat-contact">
+                            <i class="fab fa-weixin"></i> 微信：ZQF13532538910
+                        </div>
+                        <div class="qr-code-section">
+                            <img src="../images/buy.jpg" alt="联系二维码" class="qr-code-image">
+                            <div class="qr-code-text">
+                                <h5>扫码联系客服</h5>
+                                <p>获取技术支持与购买咨询</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <button class="back-btn" onclick="window.location.href='../index.html'">
-            <i class="fas fa-arrow-left"></i> 返回首页
+    </main>
+    
+    <!-- 浮动按钮 -->
+    <div class="floating-buttons">
+        <button class="floating-btn customer-service" onclick="showCustomerService()">
+            <i class="fas fa-headset"></i>
+        </button>
+        <button class="floating-btn back-to-top" id="backToTop" onclick="scrollToTop()">
+            <i class="fas fa-chevron-up"></i>
         </button>
     </div>
     
-    <div class="main-content">
-        <div class="plugin-header">
-            <h1><i class="fas fa-puzzle-piece"></i> OZON后台数据分析插件</h1>
-            <p>本插件是一款用于OZON 卖家后台-分析图表 功能数据可视化的开源插件工具</p>
-        </div>
-        
-        <div class="plugin-info">
-            <div class="info-card">
-                <h3><i class="fas fa-star"></i> 核心功能</h3>
-                <ul class="feature-list">
-                    <li><i class="fas fa-check"></i> 实时数据监控与分析</li>
-                    <li><i class="fas fa-check"></i> 销售趋势可视化展示</li>
-                    <li><i class="fas fa-check"></i> 商品表现深度分析</li>
-                    <li><i class="fas fa-check"></i> 竞争对手数据追踪</li>
-                
-                </ul>
-            </div>
-            
-            <div class="info-card">
-                <h3><i class="fas fa-cog"></i> 技术特点</h3>
-                <ul class="feature-list">
-                    <li><i class="fas fa-check"></i> 轻量级浏览器插件</li>
-                    <li><i class="fas fa-check"></i> 无需额外软件安装</li>
-                    <li><i class="fas fa-check"></i> 数据安全加密传输</li>
-                    <li><i class="fas fa-check"></i> 支持多浏览器兼容</li>
-                    <li><i class="fas fa-check"></i> 自动更新功能</li>
-                    <li><i class="fas fa-check"></i> 24/7技术支持</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="content-layout">
-            <div class="plugin-downloads">
-                <div class="download-section">
-                    <h3><i class="fas fa-download"></i> 立即下载体验</h3>
-                    
-                    <div class="versions-container">
-                        <div class="version-card trial-version">
-                            <h4 class="version-title"><i class="fas fa-gift"></i> 30天免费试用</h4>
-                            <p class="version-description">完整功能体验，无任何限制，让您充分了解插件的强大功能</p>
-                            <a href="../ozon-sales-assistant-30day-trial-fixed.zip" class="download-btn" download>
-                                <i class="fas fa-download"></i>
-                                下载试用版
-                            </a>
-                        </div>
-                        
-                        <div class="version-card premium-version">
-                            <h4 class="version-title"><i class="fas fa-crown"></i> 永久付费版</h4>
-                            <p class="version-description">一次购买，终身使用，享受所有功能和持续更新</p>
-                            <div class="premium-price">
-                                <span class="original">¥99.9</span>
-                                <span>限时特惠 ¥29.9</span>
-                            </div>
-                            <div class="code-input-section">
-                                <p>请输入提取码下载永久版：</p>
-                                <input type="text" class="code-input" id="extractCode" placeholder="请输入提取码">
-                                <br>
-                                <button class="premium-download-btn" onclick="validateAndDownload()">验证并下载</button>
-                                <div class="error-message" id="errorMessage" style="display: none;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="installation-guide">
-                    <h3><i class="fas fa-book"></i> 安装指南</h3>
-                    
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>下载插件文件</h4>
-                            <p>点击上方下载按钮，获取插件安装包</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>解压文件</h4>
-                            <p>将下载的zip文件解压到任意文件夹</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>打开浏览器扩展管理</h4>
-                            <p>在Chrome浏览器中输入 chrome://extensions/ 或通过菜单进入扩展程序管理页面</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h4>启用开发者模式</h4>
-                            <p>在扩展程序页面右上角开启"开发者模式"开关</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-content">
-                            <h4>加载插件</h4>
-                            <p>点击"加载已解压的扩展程序"，选择解压后的插件文件夹</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
-                        <div class="step-number">6</div>
-                        <div class="step-content">
-                            <h4>开始使用</h4>
-                            <p>访问OZON后台，插件将自动激活并开始工作</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="contact-sidebar">
-                <div class="contact-info">
-                    <h3><i class="fas fa-headset"></i> 技术支持</h3>
-                    <p>如果您在使用过程中遇到任何问题，请随时联系我们的技术支持团队</p>
-                    <div class="wechat-contact">
-                        <i class="fab fa-weixin"></i> 微信：ZQF13532538910
-                    </div>
-                    <div class="qr-code-section">
-                        <img src="../images/buy.jpg" alt="联系二维码" class="qr-code-image">
-                        <div class="qr-code-text">
-                            <h5>扫码联系客服</h5>
-                            <p>获取技术支持与购买咨询</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Toast 提示 -->
+    <div class="toast" id="toast"></div>
     
     <script>
+        // 处理浏览器返回按钮
+        window.addEventListener('popstate', function(event) {
+            location.reload();
+        });
+        
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            const backToTop = document.getElementById('backToTop');
+            
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+                backToTop.classList.add('show');
+            } else {
+                navbar.classList.remove('scrolled');
+                backToTop.classList.remove('show');
+            }
+        });
+        
+        // 返回顶部功能
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // 客服功能
+        function showCustomerService() {
+            showToast('联系我们：邮箱：zouqifeng@jiawae-commerce.com\n工作时间：周一至周五 9:00-18:00', 4000);
+        }
+        
+        // Toast 提示功能
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+        
+        // 移动端菜单切换
+        function toggleMobileMenu() {
+            showToast('移动端菜单功能开发中...', 2000);
+        }
+        
+        // 验证提取码并下载
         function validateAndDownload() {
             const extractCode = document.getElementById('extractCode').value.trim();
             const errorMessage = document.getElementById('errorMessage');
@@ -653,6 +1264,9 @@
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
+                
+                // 显示成功提示
+                showToast('下载成功！感谢您的支持！', 3000);
                 
                 // 重置按钮状态
                 setTimeout(() => {
@@ -684,6 +1298,46 @@
             if (e.key === 'Enter') {
                 validateAndDownload();
             }
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // 页面进入动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.info-card, .download-section, .installation-guide, .contact-info, .page-header, .breadcrumb');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            animatedElements.forEach(el => {
+                el.style.animationPlayState = 'paused';
+                observer.observe(el);
+            });
+        });
+        
+        // 页面切换动画
+        window.addEventListener('beforeunload', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transform = 'translateY(-20px)';
         });
     </script>
 </body>

@@ -1,0 +1,39 @@
+/* 性能优化CSS - 移除所有消耗性能的效果 */
+
+/* 禁用所有毛玻璃效果 */
+* {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* 简化动画 */
+* {
+    will-change: auto !important;
+    transform: none !important;
+    animation: none !important;
+}
+
+/* 保留基本过渡效果但简化 */
+.simple-transition {
+    transition: opacity 0.2s ease, background-color 0.2s ease !important;
+}
+
+/* 简化阴影效果 */
+.simple-shadow {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+}
+
+/* 移除复杂渐变，使用纯色 */
+.simple-bg {
+    background: rgba(255,255,255,0.95) !important;
+}
+
+/* 简化按钮效果 */
+.simple-button {
+    transition: background-color 0.2s ease !important;
+}
+
+.simple-button:hover {
+    transform: none !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+}

@@ -3,236 +3,770 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>辅助工具 - OZON销售助手</title>
+    <title>辅助工具 - OZON工具盒子</title>
+    <!-- 缓存控制 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- 网站图标 -->
     <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon.svg">
+    <link rel="apple-touch-icon" href="../images/favicon.svg">
+    <meta name="theme-color" content="#667eea">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --auxiliary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            --border-radius: 16px;
+            --border-radius-lg: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            /* 性能优化 - 移除所有消耗性能的效果 */
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            will-change: auto !important;
         }
-
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--primary-gradient);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            overflow-x: hidden;
             min-height: 100vh;
-            color: #333;
         }
+        
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            will-change: transform;
+        
+        /* 动画定义 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-
-        .back-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
-            margin-bottom: 20px;
-            display: inline-flex;
+        
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        /* 玻璃态效果 */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* 顶部导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+        
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: white;
             text-decoration: none;
+            transition: var(--transition);
         }
-        .back-btn:hover {
-            background: rgba(255,255,255,0.3);
-            box-shadow: 0 4px 15px rgba(255,255,255,0.2);
+        
+        .navbar.scrolled .navbar-brand {
+            color: var(--text-primary);
         }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
+        
+        .navbar-logo {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            list-style: none;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .navbar.scrolled .nav-link {
+            color: var(--text-secondary);
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .navbar.scrolled .nav-link:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+        
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
             color: white;
         }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 10px;
+        
+        .navbar.scrolled .nav-link.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        /* 移动端菜单按钮 */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+        
+        .navbar.scrolled .menu-toggle {
+            color: var(--text-primary);
+        }
+        
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        /* 面包屑导航 */
+        .breadcrumb {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .breadcrumb a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .breadcrumb a:hover {
+            color: white;
+        }
+        
+        .breadcrumb-separator {
+            color: rgba(255, 255, 255, 0.5);
+            margin: 0 0.5rem;
+        }
+        
+        .breadcrumb-current {
+            color: white;
+            font-weight: 500;
+        }
+        
+        /* 页面标题区域 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .page-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
             background: linear-gradient(45deg, #fff, #e0e7ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
+        
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
         }
-
+        
+        /* 工具分类网格 */
         .tools-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
         }
-
+        
         .tool-category {
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            will-change: transform;
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+            animation: fadeInUp 1s ease-out;
         }
-
+        
+        .tool-category:nth-child(2) { animation-delay: 0.1s; }
+        .tool-category:nth-child(3) { animation-delay: 0.2s; }
+        .tool-category:nth-child(4) { animation-delay: 0.3s; }
+        .tool-category:nth-child(5) { animation-delay: 0.4s; }
+        .tool-category:nth-child(6) { animation-delay: 0.5s; }
+        .tool-category:nth-child(7) { animation-delay: 0.6s; }
+        .tool-category:nth-child(8) { animation-delay: 0.7s; }
+        .tool-category:nth-child(9) { animation-delay: 0.8s; }
+        .tool-category:nth-child(10) { animation-delay: 0.9s; }
+        .tool-category:nth-child(11) { animation-delay: 1.0s; }
+        .tool-category:nth-child(12) { animation-delay: 1.1s; }
+        
+        .tool-category:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .tool-category::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--auxiliary-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .tool-category:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .category-header {
+            background: var(--auxiliary-gradient);
+            color: white;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        
         .category-title {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 20px;
+            font-family: 'Poppins', sans-serif;
             font-size: 1.3rem;
-            font-weight: 600;
-            color: #4f46e5;
+            font-weight: 700;
+            margin: 0;
+            position: relative;
+            z-index: 1;
         }
-
+        
         .category-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            border-radius: 10px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
+            animation: float 3s ease-in-out infinite;
         }
-
+        
+        .category-body {
+            padding: 1.5rem;
+            background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.9) 100%);
+        }
+        
         .tool-item {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 12px;
-            border: 1px solid #e2e8f0;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            will-change: transform;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
-
-        .tool-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-            border-color: #4f46e5;
-        }
-
+        
         .tool-item:last-child {
             margin-bottom: 0;
         }
-
+        
+        .tool-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: #4f46e5;
+        }
+        
+        .tool-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--auxiliary-gradient);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .tool-item:hover::before {
+            transform: scaleY(1);
+        }
+        
         .tool-name {
+            font-family: 'Poppins', sans-serif;
             font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 5px;
-            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            line-height: 1.3;
         }
-
+        
         .tool-desc {
-            color: #64748b;
+            color: var(--text-secondary);
             font-size: 0.9rem;
-            margin-bottom: 10px;
+            margin-bottom: 1rem;
+            line-height: 1.5;
         }
-
+        
         .tool-links {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 0.75rem;
         }
-
+        
         .tool-link {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            background: var(--auxiliary-gradient);
             color: white;
-            padding: 6px 12px;
+            padding: 0.5rem 1rem;
             border-radius: 20px;
             text-decoration: none;
             font-size: 0.85rem;
             font-weight: 500;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            will-change: transform;
+            transition: var(--transition);
             cursor: pointer;
             border: none;
+            position: relative;
+            overflow: hidden;
         }
-
+        
+        .tool-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .tool-link:hover::before {
+            left: 100%;
+        }
+        
         .tool-link:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
         }
-
+        
         /* 模态框样式 */
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
+            z-index: 2000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease-out;
         }
-
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
         .modal-content {
             position: relative;
             background-color: white;
             margin: 2% auto;
             width: 90%;
             height: 90%;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
             overflow: hidden;
-            will-change: transform;
+            animation: slideInUp 0.3s ease-out;
         }
-
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         .modal-header {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            background: var(--auxiliary-gradient);
             color: white;
-            padding: 15px 20px;
+            padding: 1rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            overflow: hidden;
         }
-
+        
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        
         .modal-title {
+            font-family: 'Poppins', sans-serif;
             font-size: 1.2rem;
             font-weight: 600;
+            position: relative;
+            z-index: 1;
         }
-
+        
         .close {
             background: none;
             border: none;
             color: white;
             font-size: 1.5rem;
             cursor: pointer;
-            padding: 5px;
+            padding: 0.5rem;
             border-radius: 50%;
-            transition: background-color 0.2s ease;
+            transition: var(--transition);
+            position: relative;
+            z-index: 1;
         }
-
+        
         .close:hover {
             background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
         }
-
+        
         .modal-iframe {
             width: 100%;
-            height: calc(100% - 60px);
+            height: calc(100% - 70px);
             border: none;
         }
-
+        
+        /* 页脚 */
+        .footer {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-link:hover {
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* 浮动按钮 */
+        .floating-buttons {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 1000;
+        }
+        
+        .floating-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            animation: float 3s ease-in-out infinite;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .floating-btn:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        
+        .floating-btn.customer-service {
+            background: var(--success-gradient);
+        }
+        
+        .floating-btn.back-to-top {
+            background: var(--primary-gradient);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+        }
+        
+        .floating-btn.back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        /* Toast 提示 */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            z-index: 1100;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-10px);
+        }
+        
+        /* 响应式设计 */
         @media (max-width: 768px) {
-            .tools-grid {
-                grid-template-columns: 1fr;
+            .navbar-nav {
+                display: none;
             }
             
-            .header h1 {
-                font-size: 2rem;
+            .menu-toggle {
+                display: block;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .category-header {
+                padding: 1.25rem;
+            }
+            
+            .category-body {
+                padding: 1.25rem;
+            }
+            
+            .tool-item {
+                padding: 1rem;
+            }
+            
+            .floating-buttons {
+                bottom: 1rem;
+                right: 1rem;
+            }
+            
+            .floating-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
             }
             
             .modal-content {
@@ -241,236 +775,363 @@
                 margin: 5% auto;
             }
         }
+        
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .page-subtitle {
+                font-size: 1rem;
+            }
+            
+            .breadcrumb {
+                padding: 0.75rem 1rem;
+                font-size: 0.8rem;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="../index.html" class="back-btn">
-            <i class="fas fa-arrow-left"></i>
-            返回首页
+
+    
+    <!-- 导航栏 -->
+    <nav class="navbar" id="navbar">
+        <a href="../index.html" class="navbar-brand">
+            <div class="navbar-logo">
+                <i class="fas fa-cube"></i>
+            </div>
+            OZON工具盒子
         </a>
+        
+        <ul class="navbar-nav">
+            <li><a href="../index.html" class="nav-link">首页</a></li>
+            <li><a href="ai-tools.html" class="nav-link">AI工具</a></li>
+            <li><a href="tools.html" class="nav-link">实用工具</a></li>
+            <li><a href="auxiliary-tools.html" class="nav-link active">辅助工具</a></li>
+            <li><a href="ozon-plugin.html" class="nav-link">数据插件</a></li>
+        </ul>
+        
+        <button class="menu-toggle" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
+    
+    <!-- 主要内容 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 面包屑导航 -->
+            <nav class="breadcrumb">
+                <a href="../index.html">
+                    <i class="fas fa-home"></i>
+                    首页
+                </a>
+                <span class="breadcrumb-separator">
+                    <i class="fas fa-chevron-right"></i>
+                </span>
+                <span class="breadcrumb-current">辅助工具</span>
+            </nav>
+            
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-wrench"></i>
+                    辅助工具
+                </h1>
+                <p class="page-subtitle">
+                    专业的OZON跨境电商辅助工具集合，一站式解决日常运营需求
+                </p>
+            </div>
+            
+            <!-- 工具分类网格 -->
+            <div class="tools-grid">
+                <!-- 文字翻译 -->
+                <div class="tool-category">
+                    <div class="category-header">
+                        <h3 class="category-title">
+                            <div class="category-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            文字翻译
+                        </h3>
+                    </div>
+                    <div class="category-body">
+                        <div class="tool-item">
+                            <div class="tool-name">俄文与中文在线互译工具</div>
+                            <div class="tool-desc">支持俄文和中文之间的实时翻译，准确率高，速度快</div>
+                            <div class="tool-links">
+                                <a class="tool-link" href="https://translate.yandex.com/?source_lang=ru&target_lang=zh" target="_blank">Yandex翻译</a>
+                                <a class="tool-link" href="https://www.deepl.com/zh/translator#zh/ru/" target="_blank">DeepL翻译</a>
+                                <button class="tool-link" onclick="openTool('Bing翻译', 'https://cn.bing.com/translator?setlang=zh-cn&from=auto&to=zh-Hans')">Bing翻译</button>
+                                <button class="tool-link" onclick="openTool('谷歌翻译', 'https://translate.google.com/?sl=ru&tl=zh-CN')">谷歌翻译</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="header">
-            <h1><i class="fas fa-tools"></i> 辅助工具</h1>
-            <p>专业的OZON销售辅助工具集合</p>
+                <!-- 图片翻译 -->
+                <div class="tool-category">
+                    <div class="category-header">
+                        <h3 class="category-title">
+                            <div class="category-icon">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            图片翻译
+                        </h3>
+                    </div>
+                    <div class="category-body">
+                        <div class="tool-item">
+                            <div class="tool-name">将图片中的中文翻译成俄文</div>
+                            <div class="tool-desc">OCR识别图片文字并进行翻译，支持多种图片格式</div>
+                            <div class="tool-links">
+                                <a class="tool-link" href="https://www.xiangjifanyi.com/console/workspace" target="_blank">象寄AI</a>
+                                <a class="tool-link" href="https://translate.yandex.com/ocr?lang=zh-ru" target="_blank">Yandex翻译</a>
+                                <button class="tool-link" onclick="openTool('百度翻译', 'https://fanyi.baidu.com/mtpe-individual/transImg#/')">百度翻译</button>
+                                <button class="tool-link" onclick="openTool('谷歌翻译', 'https://translate.google.com/?sl=zh-CN&tl=ru&op=images')">谷歌翻译</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 汇率转换 -->
+                <div class="tool-category">
+                    <div class="category-header">
+                        <h3 class="category-title">
+                            <div class="category-icon">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            汇率转换
+                        </h3>
+                    </div>
+                    <div class="category-body">
+                        <div class="tool-item">
+                            <div class="tool-name">多国货币汇率实时换算</div>
+                            <div class="tool-desc">实时查询各国货币汇率并进行换算，数据准确可靠</div>
+                            <div class="tool-links">
+                                <a class="tool-link" href="https://www.xe.com/zh-CN/currencyconverter/convert/?Amount=1&From=RUB&To=CNY" target="_blank">XE汇率</a>
+                                <a class="tool-link" href="https://wise.com/zh-cn/currency-converter/rub-to-cny-rate" target="_blank">Wise汇率</a>
+                                <button class="tool-link" onclick="openTool('汇率网', 'https://www.huilv.cc/RUB_CNY/')">汇率网</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 物流运费查询 -->
+                <div class="tool-category">
+                    <div class="category-header">
+                        <h3 class="category-title">
+                            <div class="category-icon">
+                                <i class="fas fa-shipping-fast"></i>
+                            </div>
+                            物流运费查询
+                        </h3>
+                    </div>
+                    <div class="category-body">
+                        <div class="tool-item">
+                            <div class="tool-name">UNI、GUOO运费计算</div>
+                            <div class="tool-desc">查询UNI和GUOO物流的运费价格，支持重量和体积计算</div>
+                            <div class="tool-links">
+                                <button class="tool-link" onclick="window.open('https://docs.qq.com/sheet/DYnhYVFhmenZ3bnJx?tab=000002', '_blank')">UNI运费</button>
+                                <button class="tool-link" onclick="window.open('https://docs.qq.com/sheet/DYk53WHdxakVWenZB?tab=000002', '_blank')">GUOO测算表</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 物流追踪 -->
+                <div class="tool-category">
+                    <div class="category-header">
+                        <h3 class="category-title">
+                            <div class="category-icon">
+                                <i class="fas fa-search-location"></i>
+                            </div>
+                            物流追踪
+                        </h3>
+                    </div>
+                    <div class="category-body">
+                        <div class="tool-item">
+                            <div class="tool-name">实时查询国际物流包裹状态</div>
+                            <div class="tool-desc">追踪包裹的实时物流状态，支持多家物流公司</div>
+                            <div class="tool-links">
+                                <a class="tool-link" href="https://unitrade.youtrack.info/" target="_blank">UNI物流</a>
+                                <a class="tool-link" href="https://rocket.ozon.ru/tracking/?SearchId" target="_blank">OZON尾程查询</a>
+                                <a class="tool-link" href="https://www.17track.net/zh-cn" target="_blank">17track</a>
+                                <button class="tool-link" onclick="openTool('track123', 'https://www.track123.com/cn/track')">track123</button>
+                                <button class="tool-link" onclick="openTool('track718', 'https://www.track718.com/zh-CN')">track718</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品数据分析 -->
+                <div class="tool-category">
+                    <div class="category-header">
+                        <h3 class="category-title">
+                            <div class="category-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            选品及商品数据分析
+                        </h3>
+                    </div>
+                    <div class="category-body">
+                        <div class="tool-item">
+                            <div class="tool-name">追踪单品的销量、价格、库存</div>
+                            <div class="tool-desc">专业的商品数据分析工具，帮助您做出明智的选品决策</div>
+                            <div class="tool-links">
+                                <a class="tool-link" href="https://ozon.maozierp.com/" target="_blank">毛子ERP</a>
+                                <a class="tool-link" href="https://yuchuang-erp.oem.niubeiapp.com/#/home" target="_blank">YC魔方</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品图制作 -->
+                <div class="tool-category">
+                    <div class="category-header">
+                        <h3 class="category-title">
+                            <div class="category-icon">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                            商品图制作
+                        </h3>
+                    </div>
+                    <div class="category-body">
+                        <div class="tool-item">
+                            <div class="tool-name">专业的商品图片设计工具</div>
+                            <div class="tool-desc">制作精美的商品展示图片，提升商品视觉效果</div>
+                            <div class="tool-links">
+                                <button class="tool-link" onclick="window.open('https://www.designkit.com/editor/', '_blank')">美图设计室</button>
+                                <button class="tool-link" onclick="openTool('讯排设计', 'https://design.palxp.cn/templates')">讯排设计</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图片压缩 -->
+                <div class="tool-category">
+                    <div class="category-header">
+                        <h3 class="category-title">
+                            <div class="category-icon">
+                                <i class="fas fa-compress-alt"></i>
+                            </div>
+                            图片压缩
+                        </h3>
+                    </div>
+                    <div class="category-body">
+                        <div class="tool-item">
+                            <div class="tool-name">在保留清晰度的基础上压缩图片大小</div>
+                            <div class="tool-desc">高效的图片压缩工具，减小文件大小，提升加载速度</div>
+                            <div class="tool-links">
+                                <button class="tool-link" onclick="openTool('ImageCompressor', 'https://imagecompressor.com/zh/')">ImageCompressor</button>
+                                <a class="tool-link" href="https://tinypng.com/" target="_blank">TinyPNG</a>
+                                <button class="tool-link" onclick="openTool('压缩图', 'https://www.yasuotu.com/')">压缩图</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图片修复 -->
+                <div class="tool-category">
+                    <div class="category-header">
+                        <h3 class="category-title">
+                            <div class="category-icon">
+                                <i class="fas fa-magic"></i>
+                            </div>
+                            图片修复
+                        </h3>
+                    </div>
+                    <div class="category-body">
+                        <div class="tool-item">
+                            <div class="tool-name">模糊变清晰</div>
+                            <div class="tool-desc">AI智能图片修复和增强，让模糊图片变得清晰</div>
+                            <div class="tool-links">
+                                <button class="tool-link" onclick="window.open('https://arc.tencent.com/zh/ai-demos/faceRestoration', '_blank')">ARC实验室</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 去除背景 -->
+                <div class="tool-category">
+                    <div class="category-header">
+                        <h3 class="category-title">
+                            <div class="category-icon">
+                                <i class="fas fa-cut"></i>
+                            </div>
+                            去除背景
+                        </h3>
+                    </div>
+                    <div class="category-body">
+                        <div class="tool-item">
+                            <div class="tool-name">去除图片背景实现一键抠图</div>
+                            <div class="tool-desc">智能背景移除工具，快速制作透明背景图片</div>
+                            <div class="tool-links">
+                                <button class="tool-link" onclick="openTool('扣扣图', 'https://www.koukoutu.com/removebg')">扣扣图</button>
+                                <a class="tool-link" href="https://www.remove.bg/zh" target="_blank">Remove.bg</a>
+                                <button class="tool-link" onclick="openTool('BatchTool', 'https://images.batchtool.com/zh?utm_source=ai-bot.cn')">BatchTool</button>
+                                <button class="tool-link" onclick="openTool('Remove.photos', 'https://remove.photos/zh-cn/remove-background')">Remove.photos</button>
+                                <a class="tool-link" href="https://www.erase.bg/zh" target="_blank">Erase.bg</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 选品手册入口 -->
+                <div class="tool-category">
+                    <div class="category-header">
+                        <h3 class="category-title">
+                            <div class="category-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            选品手册
+                        </h3>
+                    </div>
+                    <div class="category-body">
+                        <div class="tool-item" onclick="window.location.href='selection-manual.html'">
+                            <div class="tool-name">进入选品手册</div>
+                            <div class="tool-desc">查看汽摩配件、秋冬用品、节日用品、婚礼用品的关键词并一键在 Ozon 搜索</div>
+                            <div class="tool-links">
+                                <a class="tool-link" href="selection-manual.html">打开选品手册</a>
+                                <a class="tool-link" href="https://www.ozon.wiki/Catalog/Car" target="_blank">汽摩配件手册</a>
+                                <a class="tool-link" href="https://www.ozon.wiki/Catalog/Winter" target="_blank">秋冬用品手册</a>
+                                <a class="tool-link" href="https://www.ozon.wiki/Catalog/Festival" target="_blank">节日用品手册</a>
+                                <a class="tool-link" href="https://www.ozon.wiki/Catalog/Wedding" target="_blank">婚礼用品手册</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 页脚 -->
+            <footer class="footer">
+                <div class="footer-links">
+                    <a href="../index.html" class="footer-link">首页</a>
+                    <a href="ai-tools.html" class="footer-link">AI工具</a>
+                    <a href="tools.html" class="footer-link">实用工具</a>
+                    <a href="ozon-plugin.html" class="footer-link">数据插件</a>
+                </div>
+                <p>&copy; 2025 Made By Nicole. All rights reserved.</p>
+            </footer>
         </div>
-
-        <div class="tools-grid">
-            <!-- 文字翻译 -->
-            <div class="tool-category">
-                <div class="category-title">
-                    <div class="category-icon">
-                        <i class="fas fa-language"></i>
-                    </div>
-                    文字翻译
-                </div>
-                <div class="tool-item">
-                    <div class="tool-name">俄文与中文在线互译工具</div>
-                    <div class="tool-desc">支持俄文和中文之间的实时翻译</div>
-                    <div class="tool-links">
-                        <a class="tool-link" href="https://translate.yandex.com/?source_lang=ru&target_lang=zh" target="_blank">Yandex翻译</a>
-                        <a class="tool-link" href="https://www.deepl.com/zh/translator#zh/ru/" target="_blank">DeepL翻译</a>
-                        <button class="tool-link" onclick="openTool('Bing翻译', 'https://cn.bing.com/translator?setlang=zh-cn&from=auto&to=zh-Hans')">Bing翻译</button>
-                        <button class="tool-link" onclick="openTool('谷歌翻译', 'https://translate.google.com/?sl=ru&tl=zh-CN')">谷歌翻译</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 图片翻译 -->
-            <div class="tool-category">
-                <div class="category-title">
-                    <div class="category-icon">
-                        <i class="fas fa-image"></i>
-                    </div>
-                    图片翻译
-                </div>
-                <div class="tool-item">
-                    <div class="tool-name">将图片中的中文翻译成俄文</div>
-                    <div class="tool-desc">OCR识别图片文字并进行翻译</div>
-                    <div class="tool-links">
-                        <a class="tool-link" href="https://www.xiangjifanyi.com/console/workspace" target="_blank">象寄AI</a>
-                        <a class="tool-link" href="https://translate.yandex.com/ocr?lang=zh-ru" target="_blank">Yandex翻译</a>
-                        <button class="tool-link" onclick="openTool('百度翻译', 'https://fanyi.baidu.com/mtpe-individual/transImg#/')">百度翻译</button>
-                        <button class="tool-link" onclick="openTool('谷歌翻译', 'https://translate.google.com/?sl=zh-CN&tl=ru&op=images')">谷歌翻译</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 汇率转换 -->
-            <div class="tool-category">
-                <div class="category-title">
-                    <div class="category-icon">
-                        <i class="fas fa-exchange-alt"></i>
-                    </div>
-                    汇率转换
-                </div>
-                <div class="tool-item">
-                    <div class="tool-name">多国货币汇率实时换算</div>
-                    <div class="tool-desc">实时查询各国货币汇率并进行换算</div>
-                    <div class="tool-links">
-                        <a class="tool-link" href="https://www.xe.com/zh-CN/currencyconverter/convert/?Amount=1&From=RUB&To=CNY" target="_blank">XE汇率</a>
-                        <a class="tool-link" href="https://wise.com/zh-cn/currency-converter/rub-to-cny-rate" target="_blank">Wise汇率</a>
-                        <button class="tool-link" onclick="openTool('汇率网', 'https://www.huilv.cc/RUB_CNY/')">汇率网</button>
-                      
-                    </div>
-                </div>
-            </div>
-
-            <!-- 物流运费查询 -->
-            <div class="tool-category">
-                <div class="category-title">
-                    <div class="category-icon">
-                        <i class="fas fa-shipping-fast"></i>
-                    </div>
-                    物流运费查询
-                </div>
-                <div class="tool-item">
-                    <div class="tool-name">UNI、GUOO运费</div>
-                    <div class="tool-desc">查询UNI和GUOO物流的运费价格</div>
-                    <div class="tool-links">
-                        <button class="tool-link" onclick="window.open('https://docs.qq.com/sheet/DYnhYVFhmenZ3bnJx?tab=000002', '_blank')">UNI运费</button>
-                        <button class="tool-link" onclick="window.open('https://docs.qq.com/sheet/DYk53WHdxakVWenZB?tab=000002', '_blank')">GUOO测算表</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 物流追踪 -->
-            <div class="tool-category">
-                <div class="category-title">
-                    <div class="category-icon">
-                        <i class="fas fa-search-location"></i>
-                    </div>
-                    物流追踪
-                </div>
-                <div class="tool-item">
-                    <div class="tool-name">实时查询国际物流包裹状态</div>
-                    <div class="tool-desc">追踪包裹的实时物流状态</div>
-                    <div class="tool-links">
-                        <a class="tool-link" href="https://unitrade.youtrack.info/" target="_blank">UNI物流</a>
-                         <a class="tool-link" href="https://rocket.ozon.ru/tracking/?SearchId" target="_blank">OZON尾程查询</a>
-                        <a class="tool-link" href="https://www.17track.net/zh-cn" target="_blank">17track</a>
-                        <button class="tool-link" onclick="openTool('track123', 'https://www.track123.com/cn/track')">track123</button>
-                        <button class="tool-link" onclick="openTool('track718', 'https://www.track718.com/zh-CN')">track718</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 商品数据分析 -->
-            <div class="tool-category">
-                <div class="category-title">
-                    <div class="category-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    选品及商品数据分析
-                </div>
-                <div class="tool-item">
-                    <div class="tool-name">追踪单品的销量、价格、库存</div>
-                    <div class="tool-desc">专业的商品数据分析工具</div>
-                    <div class="tool-links">
-                        <a class="tool-link" href="https://ozon.maozierp.com/" target="_blank">毛子ERP</a>
-                        <a class="tool-link" href="https://yuchuang-erp.oem.niubeiapp.com/#/home" target="_blank">YC魔方</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 商品图制作 -->
-            <div class="tool-category">
-                <div class="category-title">
-                    <div class="category-icon">
-                        <i class="fas fa-palette"></i>
-                    </div>
-                    商品图制作
-                </div>
-                <div class="tool-item">
-                    <div class="tool-name">专业的商品图片设计工具</div>
-                    <div class="tool-desc">制作精美的商品展示图片</div>
-                    <div class="tool-links">
-                        <button class="tool-link" onclick="window.open('https://www.designkit.com/editor/', '_blank')">美图设计室</button>
-                        <button class="tool-link" onclick="openTool('讯排设计', 'https://design.palxp.cn/templates')">讯排设计</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 图片压缩 -->
-            <div class="tool-category">
-                <div class="category-title">
-                    <div class="category-icon">
-                        <i class="fas fa-compress-alt"></i>
-                    </div>
-                    图片压缩
-                </div>
-                <div class="tool-item">
-                    <div class="tool-name">在保留清晰度的基础上压缩图片大小</div>
-                    <div class="tool-desc">高效的图片压缩工具</div>
-                    <div class="tool-links">
-                        <button class="tool-link" onclick="openTool('ImageCompressor', 'https://imagecompressor.com/zh/')">ImageCompressor</button>
-                        <a class="tool-link" href="https://tinypng.com/" target="_blank">TinyPNG</a>
-                        <button class="tool-link" onclick="openTool('压缩图', 'https://www.yasuotu.com/')">压缩图</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 图片修复 -->
-            <div class="tool-category">
-                <div class="category-title">
-                    <div class="category-icon">
-                        <i class="fas fa-magic"></i>
-                    </div>
-                    图片修复
-                </div>
-                <div class="tool-item">
-                    <div class="tool-name">模糊变清晰</div>
-                    <div class="tool-desc">AI智能图片修复和增强</div>
-                    <div class="tool-links">
-                        <button class="tool-link" onclick="window.open('https://arc.tencent.com/zh/ai-demos/faceRestoration', '_blank')">ARC实验室</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 去除背景 -->
-            <div class="tool-category">
-                <div class="category-title">
-                    <div class="category-icon">
-                        <i class="fas fa-cut"></i>
-                    </div>
-                    去除背景
-                </div>
-                <div class="tool-item">
-                    <div class="tool-name">去除图片背景实现一键抠图</div>
-                    <div class="tool-desc">智能背景移除工具</div>
-                    <div class="tool-links">
-                        <button class="tool-link" onclick="openTool('扣扣图', 'https://www.koukoutu.com/removebg')">扣扣图</button>
-                        <a class="tool-link" href="https://www.remove.bg/zh" target="_blank">Remove.bg</a>
-                        <button class="tool-link" onclick="openTool('BatchTool', 'https://images.batchtool.com/zh?utm_source=ai-bot.cn')">BatchTool</button>
-                        <button class="tool-link" onclick="openTool('Remove.photos', 'https://remove.photos/zh-cn/remove-background')">Remove.photos</button>
-                        <a class="tool-link" href="https://www.erase.bg/zh" target="_blank">Erase.bg</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 选品手册入口 -->
-            <div class="tool-category">
-                <div class="category-title">
-                    <div class="category-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    选品手册
-                </div>
-                <div class="tool-item" onclick="window.location.href='selection-manual.html'">
-                    <div class="tool-name">进入选品手册</div>
-                    <div class="tool-desc">查看汽摩配件、秋冬用品、节日用品、婚礼用品的关键词并一键在 Ozon 搜索</div>
-                    <div class="tool-links">
-                        <a class="tool-link" href="selection-manual.html">打开选品手册</a>
-                        <a class="tool-link" href="https://www.ozon.wiki/Catalog/Car" target="_blank">汽摩配件手册</a>
-                        <a class="tool-link" href="https://www.ozon.wiki/Catalog/Winter" target="_blank">秋冬用品手册</a>
-                        <a class="tool-link" href="https://www.ozon.wiki/Catalog/Festival" target="_blank">节日用品手册</a>
-                        <a class="tool-link" href="https://www.ozon.wiki/Catalog/Wedding" target="_blank">婚礼用品手册</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    </main>
+    
+    <!-- 浮动按钮 -->
+    <div class="floating-buttons">
+        <button class="floating-btn customer-service" onclick="showCustomerService()">
+            <i class="fas fa-headset"></i>
+        </button>
+        <button class="floating-btn back-to-top" id="backToTop" onclick="scrollToTop()">
+            <i class="fas fa-chevron-up"></i>
+        </button>
     </div>
-
+    
+    <!-- Toast 提示 -->
+    <div class="toast" id="toast"></div>
+    
     <!-- 模态框 -->
     <div id="toolModal" class="modal">
         <div class="modal-content">
@@ -483,8 +1144,58 @@
             <iframe id="toolFrame" class="modal-iframe" src=""></iframe>
         </div>
     </div>
-
+    
     <script>
+        // 处理浏览器返回按钮
+        window.addEventListener('popstate', function(event) {
+            location.reload();
+        });
+        
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            const backToTop = document.getElementById('backToTop');
+            
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+                backToTop.classList.add('show');
+            } else {
+                navbar.classList.remove('scrolled');
+                backToTop.classList.remove('show');
+            }
+        });
+        
+        // 返回顶部功能
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // 客服功能
+        function showCustomerService() {
+            showToast('联系我们：邮箱：zouqifeng@jiawae-commerce.com\n工作时间：周一至周五 9:00-18:00', 4000);
+        }
+        
+        // Toast 提示功能
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+        
+        // 移动端菜单切换
+        function toggleMobileMenu() {
+            // 这里可以添加移动端菜单的逻辑
+            showToast('移动端菜单功能开发中...', 2000);
+        }
+        
+        // 打开工具模态框
         function openTool(title, url) {
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('toolFrame').src = url;
@@ -492,6 +1203,7 @@
             document.body.style.overflow = 'hidden';
         }
 
+        // 关闭工具模态框
         function closeTool() {
             document.getElementById('toolModal').style.display = 'none';
             document.getElementById('toolFrame').src = '';
@@ -511,6 +1223,46 @@
             if (event.key === 'Escape') {
                 closeTool();
             }
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // 页面进入动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.tool-category, .page-header, .breadcrumb');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            animatedElements.forEach(el => {
+                el.style.animationPlayState = 'paused';
+                observer.observe(el);
+            });
+        });
+        
+        // 页面切换动画
+        window.addEventListener('beforeunload', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transform = 'translateY(-20px)';
         });
     </script>
 </body>
