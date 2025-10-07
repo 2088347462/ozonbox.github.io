@@ -341,6 +341,19 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
+        /* 显著标识：大促日历按钮高亮样式 */
+        .quick-btn.highlight {
+            background: rgba(255, 255, 255, 0.30);
+            border-color: rgba(255, 255, 255, 0.6);
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.35);
+            font-weight: 700;
+        }
+        .quick-btn.highlight:hover {
+            background: rgba(255, 255, 255, 0.40);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 14px 40px rgba(102, 126, 234, 0.50);
+        }
         
         /* 选品分类网格 */
         .selection-grid {
@@ -748,6 +761,10 @@
                 
                 <!-- 快速导航 -->
                 <div class="quick-nav">
+                    <a class="quick-btn highlight" href="ozon-calendar.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        俄罗斯电商大促日历
+                    </a>
                     <a class="quick-btn" href="selection-car.html">
                         <i class="fas fa-car"></i>
                         汽摩配件
@@ -769,6 +786,40 @@
             
             <!-- 选品分类网格 -->
             <div class="selection-grid">
+                <!-- 俄罗斯电商大促日历 -->
+                <div class="selection-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div class="card-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            俄罗斯电商大促日历
+                        </div>
+                        <a class="ext-link" href="ozon-calendar.html?month=january">查看日历</a>
+                    </div>
+                    <div class="card-body">
+                        <p style="color:#4a5568;margin-bottom:1rem;">
+                            汇总俄罗斯每月重要节日与消费特点，提供重点推广品类及营销建议。点击进入可查看一月详细日历内容。
+                        </p>
+                        <div class="keywords-wrap">
+                            <button class="keyword-btn" onclick="location.href='ozon-calendar.html?month=january'">
+                                <span class="keyword-text">查看一月</span>
+                                <span class="keyword-russian">Январь</span>
+                            </button>
+                            <button class="keyword-btn" onclick="location.href='ozon-calendar.html?month=january'">
+                                <span class="keyword-text">节日与消费特点</span>
+                                <span class="keyword-russian">Праздники и спрос</span>
+                            </button>
+                            <button class="keyword-btn" onclick="location.href='ozon-calendar.html?month=january'">
+                                <span class="keyword-text">重点品类建议</span>
+                                <span class="keyword-russian">Рекоменд. категории</span>
+                            </button>
+                        </div>
+                        <div class="card-note">
+                            建议在一月重点布局保暖、礼品、运动与室内娱乐类目，并结合平台运营节奏进行投放。
+                        </div>
+                    </div>
+                </div>
                 <!-- 汽摩配件 -->
                 <div class="selection-card">
                     <div class="card-header">
@@ -888,6 +939,8 @@
                         </div>
                     </div>
                 </div>
+
+
 
                 <!-- 婚礼用品 -->
                 <div class="selection-card">
@@ -1048,6 +1101,27 @@
             document.body.style.opacity = '0';
             document.body.style.transform = 'translateY(-20px)';
         });
+    // 修复浏览器后退缓存（bfcache）导致页面空白
+    window.addEventListener('pageshow', function(e) {
+        // 重置在 beforeunload 中设置的样式
+        document.body.style.opacity = '1';
+        document.body.style.transform = 'none';
+
+        // 若为缓存恢复，重新应用滚动相关样式与状态
+        if (e.persisted) {
+            const navbar = document.getElementById('navbar');
+            const backToTop = document.getElementById('backToTop');
+            if (navbar && backToTop) {
+                if (window.scrollY > 100) {
+                    navbar.classList.add('scrolled');
+                    backToTop.classList.add('show');
+                } else {
+                    navbar.classList.remove('scrolled');
+                    backToTop.classList.remove('show');
+                }
+            }
+        }
+    });
     </script>
 </body>
 </html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>俄罗斯电商大促日历</title>
+  <link rel="icon" type="image/svg+xml" href="../images/favicon.svg" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary-color: #4f46e5;
+      --primary-color-light: #6366f1;
+      --primary-color-dark: #7c3aed;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --bg-primary: #f8fafc;
+      --bg-secondary: #fff;
+      --border-color: #e2e8f0;
+    }
+    * { 
+      box-sizing: border-box;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      will-change: auto !important;
+    }
+    body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: var(--text-primary); }
+    .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+    .back-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; text-decoration: none; color: #fff; border: 1px solid rgba(255,255,255,.35); background: rgba(255,255,255,.18); transition: .2s ease; }
+    .back-btn:hover { background: rgba(255,255,255,.28); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+    
+    .month-header {
+      background: #ffc107;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      color: #333;
+      text-align: center;
+    }
+    .month-title {
+      font-size: 3rem;
+      font-weight: bold;
+      margin: 0;
+    }
+    .month-summary {
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 30px 0 15px;
+        color: #fff;
+    }
+
+    .panel { background: var(--bg-secondary); border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,.08); padding: 18px; margin-bottom: 16px; }
+    
+    .festival-list .item {
+        display: flex;
+        align-items: flex-start; /* 顶部对齐，支持多行 */
+        gap: 15px;
+        padding: 15px;
+        background: var(--bg-primary);
+        border-radius: 12px;
+        margin-bottom: 10px;
+    }
+    .festival-list .date {
+        background: #333;
+        color: #fff;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-weight: bold;
+        text-align: center;
+    }
+    .festival-list .details h3 {
+        margin: 0 0 5px;
+        font-size: 1.1rem;
+    }
+    .festival-list .details { 
+        flex: 1;               /* 占满剩余宽度 */
+        min-width: 0;          /* 允许内容正常换行 */
+        word-break: break-word;/* 长词断行，避免溢出 */
+    }
+    .festival-list .details p {
+        margin: 0;
+        color: var(--text-secondary);
+        white-space: normal;   /* 正常换行 */
+        overflow: visible;     /* 不裁剪 */
+    }
+    .festival-list .tag {
+        margin-left: auto;
+        background: #ffc107;
+        color: #333;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-weight: bold;
+    }
+
+    .category-card {
+        background: var(--bg-secondary);
+        border-radius: 16px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 16px rgba(0,0,0,.08);
+    }
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .category-header .icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 1.2rem;
+        color: #fff;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark));
+    }
+    .category-header h3 { margin: 0; font-size: 1.2rem; }
+    .category-header .sales-growth { color: #e53935; font-weight: bold; }
+
+    .category-body {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+    }
+    .analysis {
+        flex: 1;
+        background: #e3f2fd;
+        border: 2px solid #90caf9;
+        border-radius: 12px;
+        padding: 15px;
+    }
+    .analysis h4 { margin: 0 0 10px; }
+    .analysis p { margin: 0; color: #1e88e5; }
+    .product-list {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .product-item {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 10px 15px;
+        text-align: center;
+        position: relative;
+    }
+    .product-item.hot::after {
+        content: '爆款';
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: #e53935;
+        color: #fff;
+        font-size: 10px;
+        padding: 2px 5px;
+        border-radius: 4px;
+    }
+    .strategy-card {
+        background: var(--bg-secondary);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .strategy-card h3 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 15px;
+        font-size: 1.3rem;
+        color: #333;
+    }
+    .strategy-card h3 i {
+        color: var(--primary-color);
+    }
+    .strategy-card .content {
+        background: #e3f2fd;
+        border-radius: 12px;
+        padding: 15px;
+        color: #1e88e5;
+    }
+    .platform-ops .ops-item {
+        background: #e3f2fd;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+    /* 全局排版优化 */
+    body { line-height: 1.6; }
+    .container { max-width: 1024px; }
+
+    /* 统一按钮样式（覆盖内联基础） */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      border: 1px solid var(--border-color);
+      background: #f8fafc;
+      color: #0f172a;
+      transition: all .2s ease;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(0,0,0,.08);
+      border-color: #cbd5e1;
+      background: #fff;
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark));
+      color: #fff;
+      border: none;
+      box-shadow: 0 8px 22px rgba(79, 70, 229, .35);
+    }
+    .btn.primary:hover {
+      filter: brightness(1.05);
+      box-shadow: 0 10px 26px rgba(79, 70, 229, .45);
+    }
+
+    /* 月份头部强化 */
+    .month-header {
+      background: linear-gradient(135deg, #ffef9f 0%, #ffd54f 100%);
+      box-shadow: 0 10px 28px rgba(0,0,0,.12);
+    }
+    .month-title {
+      letter-spacing: .5px;
+      line-height: 1.15;
+      text-shadow: 0 2px 6px rgba(0,0,0,.06);
+    }
+    .month-summary {
+      line-height: 1.7;
+      color: #374151;
+    }
+
+    /* 节日列表可读性增强 */
+    .festival-list .item {
+      gap: 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,.06);
+    }
+    .festival-list .date {
+      min-width: 88px;
+      padding: 10px 14px;
+      line-height: 1.2;
+      background: #0f172a;
+    }
+    .festival-list .details h3 {
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .festival-list .details p {
+      line-height: 1.7;
+    }
+    .festival-list .tag {
+      align-self: flex-start;
+      background: #fde68a;
+      border: 1px solid #f59e0b;
+      padding: 6px 10px;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, .18);
+    }
+
+    /* 品类卡片优化与移动端适配 */
+    .category-card {
+      overflow: hidden;
+    }
+    .category-header {
+      background: #f9fafb;
+    }
+    .category-body {
+      gap: 16px;
+    }
+    .product-item {
+      line-height: 1.5;
+    }
+    @media (max-width: 640px) {
+      .section-title { font-size: 1.25rem; }
+      .category-body { flex-direction: column; }
+      .product-list { grid-template-columns: 1fr; }
+      .festival-list .item { flex-direction: column; }
+      .festival-list .date { align-self: flex-start; }
+    }
+
+    /* 平台与策略卡片微调 */
+    .strategy-card .content { line-height: 1.7; }
+    .platform-ops .ops-item { line-height: 1.6; }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="selection-manual.html" class="back-btn"><i class="fas fa-arrow-left"></i> 返回选品手册</a>
+    
+    <div class="panel" style="margin-top:12px; background:#fff; border-radius:12px; padding:10px;">
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <a id="btn-jan" class="btn primary" style="padding:8px 12px; border-radius:999px; text-decoration:none;" href="ozon-calendar.html?month=january">一月</a>
+        <a id="btn-feb" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=february">二月</a>
+        <a id="btn-mar" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=march">三月</a>
+        <a id="btn-apr" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=april">四月</a>
+        <a id="btn-may" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=may">五月</a>
+        <a id="btn-jun" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=june">六月</a>
+        <a id="btn-jul" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=july">七月</a>
+        <a id="btn-aug" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=august">八月</a>
+        <a id="btn-sep" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=september">九月</a>
+        <a id="btn-oct" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=october">十月</a>
+        <a id="btn-nov" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=november">十一月</a>
+        <a id="btn-dec" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=december">十二月</a>
+      </div>
+    </div>
+    <div id="calendar-content"></div>
+
+  </div>
+
+  <script>
+    const DATA_URL = './data/ozon-calendar-data.json';
+
+    function getMonthFromQuery() {
+      const p = new URLSearchParams(location.search);
+      const m = (p.get('month') || '').toLowerCase();
+      if (m === 'february' || m === 'feb') return 'february';
+      if (m === 'march' || m === 'mar') return 'march';
+      if (m === 'april' || m === 'apr') return 'april';
+      if (m === 'may') return 'may';
+      if (m === 'june' || m === 'jun') return 'june';
+      if (m === 'july' || m === 'jul') return 'july';
+      if (m === 'august' || m === 'aug') return 'august';
+      if (m === 'september' || m === 'sep') return 'september';
+      if (m === 'october' || m === 'oct') return 'october';
+      if (m === 'november' || m === 'nov') return 'november';
+      if (m === 'december' || m === 'dec') return 'december';
+      return 'january';
+    }
+
+    function renderMonth(monthData) {
+      const container = document.getElementById('calendar-content');
+      // 一次性渲染，减少DOM操作
+      const html = `
+        <div class="month-header">
+          <h1 class="month-title">${monthData.month}</h1>
+          <div>${monthData.weather.condition} ${monthData.weather.temp}</div>
+          <div class="month-summary">${monthData.summary}</div>
+        </div>
+
+        <div>
+          <h2 class="section-title">重要节日与消费特点</h2>
+          <div class="festival-list">
+            ${monthData.festivals.map(f => `
+              <div class="item">
+                <div class="date">${f.date}</div>
+                <div class="details">
+                  <h3>${f.name}</h3>
+                  <p>${f.description}</p>
+                </div>
+                ${f.tag ? `<div class="tag">${f.tag}</div>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div>
+          <h2 class="section-title">重点推广品类及理由</h2>
+          ${monthData.recommended_categories.map(cat => `
+            <div class="category-card">
+              <div class="category-header">
+                <span class="icon"><i class="fas ${cat.icon}"></i></span>
+                <h3>${cat.name}</h3>
+                <span class="sales-growth">${cat.sales_growth}</span>
+              </div>
+              <div class="category-body">
+                <div class="analysis">
+                  <h4>推广理由分析:</h4>
+                  <p>${cat.analysis}</p>
+                </div>
+                <div class="product-list">
+                  ${cat.products.map(p => `<div class="product-item ${p.hot ? 'hot' : ''}">${p.name}</div>`).join('')}
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="strategy-card">
+          <h3><i class="fas ${monthData.marketing_strategy.icon}"></i> ${monthData.marketing_strategy.title}</h3>
+          <div class="content">${monthData.marketing_strategy.suggestion}</div>
+        </div>
+
+        <div class="strategy-card platform-ops">
+          <h3><i class="fas ${monthData.platform_operations.icon}"></i> ${monthData.platform_operations.title}</h3>
+          <div class="ops-list">
+            ${monthData.platform_operations.points.map(p => `<div class="ops-item"><b>${p.platform}:</b> ${p.action}</div>`).join('')}
+          </div>
+        </div>
+      `;
+      container.innerHTML = html;
+    }
+
+    fetch(DATA_URL)
+      .then(r => r.json())
+      .then(data => {
+        const m = getMonthFromQuery();
+        renderMonth(data[m] || data.january);
+        // 激活按钮样式（无重渲染）
+        const janBtn = document.getElementById('btn-jan');
+        const febBtn = document.getElementById('btn-feb');
+        const marBtn = document.getElementById('btn-mar');
+        const aprBtn = document.getElementById('btn-apr');
+        const mayBtn = document.getElementById('btn-may');
+        const junBtn = document.getElementById('btn-jun');
+        const julBtn = document.getElementById('btn-jul');
+        const augBtn = document.getElementById('btn-aug');
+        const sepBtn = document.getElementById('btn-sep');
+        const octBtn = document.getElementById('btn-oct');
+        const novBtn = document.getElementById('btn-nov');
+        const decBtn = document.getElementById('btn-dec');
+        if (janBtn && febBtn && marBtn && aprBtn && mayBtn && junBtn && julBtn && augBtn && sepBtn && octBtn && novBtn && decBtn) {
+          janBtn.className = 'btn';
+          febBtn.className = 'btn';
+          marBtn.className = 'btn';
+          aprBtn.className = 'btn';
+          mayBtn.className = 'btn';
+          junBtn.className = 'btn';
+          julBtn.className = 'btn';
+          augBtn.className = 'btn';
+          sepBtn.className = 'btn';
+          octBtn.className = 'btn';
+          novBtn.className = 'btn';
+          decBtn.className = 'btn';
+          if (m === 'february') febBtn.className = 'btn primary';
+          else if (m === 'march') marBtn.className = 'btn primary';
+          else if (m === 'april') aprBtn.className = 'btn primary';
+          else if (m === 'may') mayBtn.className = 'btn primary';
+          else if (m === 'june') junBtn.className = 'btn primary';
+          else if (m === 'july') julBtn.className = 'btn primary';
+          else if (m === 'august') augBtn.className = 'btn primary';
+          else if (m === 'september') sepBtn.className = 'btn primary';
+          else if (m === 'october') octBtn.className = 'btn primary';
+          else if (m === 'november') novBtn.className = 'btn primary';
+          else if (m === 'december') decBtn.className = 'btn primary';
+          else janBtn.className = 'btn primary';
+        }
+      })
+      .catch(err => {
+        const root = document.getElementById('calendar-content');
+        root.innerHTML = '<div class="panel" style="color: red; text-align: center;">加载日历数据失败，请检查数据文件或网络连接。</div>';
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
