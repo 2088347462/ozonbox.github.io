@@ -1,0 +1,169 @@
+{
+  "january": {
+    "month": "一月",
+    "weather": { "condition": "严寒/降雪", "temp": "-10°C" },
+    "summary": "新年假期延续，冬季运动与保暖用品旺季",
+    "festivals": [
+      { "date": "1月1日", "name": "新年", "description": "俄罗斯最重要的节日，持续10天假期，礼品和家庭消费旺盛", "tag": "假期周" },
+      { "date": "1月7日", "name": "东正教圣诞节", "description": "宗教节日，传统食品和宗教用品需求增加", "tag": "宗教" },
+      { "date": "1月14日", "name": "旧新年", "description": "传统节日延续新年氛围，派对用品仍有需求", "tag": "传统" },
+      { "date": "1月25日", "name": "大学生节", "description": "学生群体消费，年轻时尚和电子产品受青睐", "tag": "学生" }
+    ],
+    "recommended_categories": [
+      { "icon": "fa-snowflake", "name": "冬季保暖装备", "sales_growth": "保暖类增长220%", "analysis": "最低气温阶段，保暖服饰与居家取暖刚需。关注材质舒适与保暖性能。", "products": [ { "name": "加厚羽绒服", "hot": true }, { "name": "发热内衣", "hot": true }, { "name": "羊毛毛衣" }, { "name": "围巾" }, { "name": "毛线帽" }, { "name": "触屏手套" }, { "name": "保暖家居服" }, { "name": "保温水壶" }, { "name": "雪地靴", "hot": true }, { "name": "防滑地毯" } ] },
+      { "icon": "fa-person-skiing", "name": "冬季运动装备", "sales_growth": "运动品增长160%", "analysis": "滑雪旺季，专业/入门装备均有需求。社交分享带动增长。", "products": [ { "name": "滑雪板", "hot": true }, { "name": "滑雪服套装", "hot": true }, { "name": "防雾滑雪镜" }, { "name": "冰刀鞋" }, { "name": "护具" }, { "name": "登山杖" }, { "name": "保温水壶" }, { "name": "运动相机" }, { "name": "雪地摩托服" }, { "name": "触屏手套" } ] },
+      { "icon": "fa-fire-flame-simple", "name": "取暖设备", "sales_growth": "取暖类增长180%", "analysis": "室内取暖场景多样化，电暖器/电热毯/暖手宝走量。", "products": [ { "name": "电暖器", "hot": true }, { "name": "电热毯", "hot": true }, { "name": "暖手宝" }, { "name": "暖风机" }, { "name": "加湿器" }, { "name": "保温杯" }, { "name": "电热垫" }, { "name": "保暖被" }, { "name": "热水袋" }, { "name": "取暖器配件" } ] }
+    ],
+    "marketing_strategy": { "icon": "fa-lightbulb", "title": "营销策略建议", "suggestion": "延续新年氛围与冬季主题，突出保暖与滑雪场景；设置套装与满减，提升客单。" },
+    "platform_operations": { "icon": "fa-chart-line", "title": "平台运营重点", "points": [ { "platform": "OZON", "action": "冬季运动/保暖专题页" }, { "platform": "Wildberries", "action": "取暖设备频道加权" }, { "platform": "Yandex Market", "action": "冬季必备广告位投放" } ] }
+  },
+  "february": {
+    "month": "二月",
+    "weather": { "condition": "寒冷", "temp": "-6°C" },
+    "summary": "冬季持续，滑雪与情人节相关需求提升",
+    "festivals": [
+      { "date": "2月23日", "name": "祖国保卫者日", "description": "向男性致敬的节日，男士用品、军事主题商品热销", "tag": "男士节日" },
+      { "date": "2月14日", "name": "情人节", "description": "浪漫消费高峰，礼品、鲜花、餐饮相关产品需求激增", "tag": "礼物" }
+    ],
+    "recommended_categories": [
+      { "icon": "fa-heart", "name": "节日礼品", "sales_growth": "礼品类增长180%", "analysis": "情侣礼物与氛围布置需求旺盛，主打礼盒与定制。", "products": [ { "name": "巧克力礼盒", "hot": true }, { "name": "香薰蜡烛", "hot": true }, { "name": "鲜花周边" }, { "name": "定制照片册" }, { "name": "饰品/手链" }, { "name": "抱枕" }, { "name": "礼品包装" }, { "name": "贺卡" }, { "name": "情侣杯" }, { "name": "彩灯布置" } ] },
+      { "icon": "fa-person-skiing", "name": "冬季运动装备", "sales_growth": "运动品增长130%", "analysis": "雪季仍在，滑雪/滑冰与保暖运动配件持续走量。", "products": [ { "name": "滑雪板" }, { "name": "滑雪镜", "hot": true }, { "name": "滑雪服" }, { "name": "冰刀鞋" }, { "name": "护膝护肘" }, { "name": "保温壶" }, { "name": "运动相机" }, { "name": "登山杖" }, { "name": "防水手机袋" }, { "name": "保暖帽" } ] },
+      { "icon": "fa-fire-flame-simple", "name": "取暖设备", "sales_growth": "取暖类增长150%", "analysis": "家庭/办公取暖需求仍高，强调安全与节能。", "products": [ { "name": "电暖器", "hot": true }, { "name": "电热毯" }, { "name": "暖风机" }, { "name": "加湿器" }, { "name": "暖手宝" }, { "name": "保温杯" }, { "name": "电热垫" }, { "name": "保暖被" }, { "name": "热水袋" }, { "name": "取暖器配件" } ] }
+    ],
+    "marketing_strategy": { "icon": "fa-lightbulb", "title": "营销策略建议", "suggestion": "围绕情人节做礼品专区与限时折扣；滑雪与保暖联动套餐，提高转化。" },
+    "platform_operations": { "icon": "fa-chart-line", "title": "平台运营重点", "points": [ { "platform": "OZON", "action": "情人节礼品专区" }, { "platform": "Wildberries", "action": "冬季运动打榜" }, { "platform": "Yandex Market", "action": "礼品关键词广告加权" } ] }
+  },
+  "march": {
+    "month": "三月",
+    "weather": { "condition": "转暖", "temp": "2°C" },
+    "summary": "春季开端，户外与园艺需求启动",
+    "festivals": [
+      { "date": "3月8日", "name": "国际妇女节", "description": "女性消费主导，化妆品、珠宝、时尚单品销量暴涨", "tag": "女士节日" }
+    ],
+    "recommended_categories": [
+      { "icon": "fa-seedling", "name": "园艺用品", "sales_growth": "园艺类增长160%", "analysis": "春季种植季开启，基础园艺工具与装饰受欢迎。", "products": [ { "name": "花盆", "hot": true }, { "name": "园艺工具套装", "hot": true }, { "name": "土壤/肥料" }, { "name": "喷壶" }, { "name": "育苗盘" }, { "name": "围栏装饰" }, { "name": "植物灯" }, { "name": "手套" }, { "name": "园艺围裙" }, { "name": "园艺装饰" } ] },
+      { "icon": "fa-person-hiking", "name": "早春户外装备", "sales_growth": "户外类增长140%", "analysis": "气温回升，轻量出行与徒步需求增长。", "products": [ { "name": "徒步背包", "hot": true }, { "name": "户外软壳", "hot": true }, { "name": "保温水壶" }, { "name": "徒步鞋" }, { "name": "登山杖" }, { "name": "头灯" }, { "name": "多功能刀" }, { "name": "户外炉具" }, { "name": "折叠桌椅" }, { "name": "防潮垫" } ] },
+      { "icon": "fa-shirt", "name": "春季服装", "sales_growth": "春装增长120%", "analysis": "轻薄保暖兼顾，针织衫/风衣/休闲裤走量。", "products": [ { "name": "风衣", "hot": true }, { "name": "针织衫" }, { "name": "休闲裤" }, { "name": "牛仔外套" }, { "name": "运动鞋" }, { "name": "围巾" }, { "name": "轻薄羽绒" }, { "name": "防风夹克" }, { "name": "帽子" }, { "name": "双肩包" } ] }
+    ],
+    "marketing_strategy": { "icon": "fa-lightbulb", "title": "营销策略建议", "suggestion": "春季上新+园艺主题活动；组合销售提升客单；直播展示场景化使用。" },
+    "platform_operations": { "icon": "fa-chart-line", "title": "平台运营重点", "points": [ { "platform": "OZON", "action": "春季上新会场" }, { "platform": "Wildberries", "action": "园艺/户外频道推荐" }, { "platform": "Yandex Market", "action": "春季关键词投放" } ] }
+  },
+  "april": {
+    "month": "四月",
+    "weather": { "condition": "凉爽", "temp": "8°C" },
+    "summary": "春季中后段，出游装备与春装热度提升",
+    "festivals": [
+      { "date": "5月1日", "name": "春天和劳动节", "description": "春季假期，户外活动和家居改善需求上升", "tag": "假期" },
+      { "date": "5月9日", "name": "胜利日", "description": "爱国主题消费，军事纪念品和红色商品受欢迎", "tag": "重要纪念日" }
+    ],
+    "recommended_categories": [
+      { "icon": "fa-mountain-sun", "name": "露营装备", "sales_growth": "露营类增长170%", "analysis": "露营季前奏，注重便携与耐用。", "products": [ { "name": "帐篷", "hot": true }, { "name": "睡袋", "hot": true }, { "name": "露营灯" }, { "name": "户外炊具" }, { "name": "折叠桌椅" }, { "name": "防潮垫" }, { "name": "户外电源" }, { "name": "指南针" }, { "name": "净水器" }, { "name": "多功能刀" } ] },
+      { "icon": "fa-person-biking", "name": "骑行与运动", "sales_growth": "运动类增长130%", "analysis": "天气适宜骑行，运动穿戴与配件需求增。", "products": [ { "name": "自行车头盔", "hot": true }, { "name": "骑行手套" }, { "name": "运动手表" }, { "name": "骑行灯具" }, { "name": "水壶架" }, { "name": "车载打气筒" }, { "name": "护具" }, { "name": "运动腰包" }, { "name": "防水手机包" }, { "name": "骑行眼镜", "hot": true } ] },
+      { "icon": "fa-shirt", "name": "春季服装", "sales_growth": "春装增长120%", "analysis": "风衣/针织衫与轻薄羽绒持续走量。", "products": [ { "name": "风衣" }, { "name": "针织衫", "hot": true }, { "name": "休闲裤" }, { "name": "运动鞋" }, { "name": "防风夹克" }, { "name": "帽子" }, { "name": "背包" }, { "name": "薄卫衣" }, { "name": "轻薄羽绒" }, { "name": "围巾" } ] }
+    ],
+    "marketing_strategy": { "icon": "fa-lightbulb", "title": "营销策略建议", "suggestion": "出游季主题页+套装优惠；UGC露营/骑行内容带动转化。" },
+    "platform_operations": { "icon": "fa-chart-line", "title": "平台运营重点", "points": [ { "platform": "OZON", "action": "露营会场预热" }, { "platform": "Wildberries", "action": "运动品类促销" }, { "platform": "Yandex Market", "action": "出游关键词广告" } ] }
+  },
+  "may": {
+    "month": "五月",
+    "weather": { "condition": "初夏", "temp": "15°C" },
+    "summary": "气温升高，夏季服饰/防晒/户外需求启动",
+    "festivals": [
+      { "date": "6月12日", "name": "俄罗斯日", "description": "国家庆典，旅游和爱国主题商品需求增加", "tag": "国庆日" }
+    ],
+    "recommended_categories": [
+      { "icon": "fa-shirt", "name": "夏季服装", "sales_growth": "夏装增长200%", "analysis": "轻薄透气与防晒兼顾，T恤/短裤/凉鞋走量。", "products": [ { "name": "T恤", "hot": true }, { "name": "短裤", "hot": true }, { "name": "凉鞋" }, { "name": "防晒衣" }, { "name": "太阳帽" }, { "name": "沙滩裙" }, { "name": "运动背心" }, { "name": "休闲衬衫" }, { "name": "人字拖" }, { "name": "轻薄外套" } ] },
+      { "icon": "fa-sun", "name": "防晒护肤", "sales_growth": "防晒类增长220%", "analysis": "紫外线增强，防晒/晒后修复与遮阳品类上升。", "products": [ { "name": "防晒霜", "hot": true }, { "name": "晒后修复" }, { "name": "太阳镜", "hot": true }, { "name": "遮阳伞" }, { "name": "防晒唇膏" }, { "name": "保湿喷雾" }, { "name": "面膜" }, { "name": "芦荟胶" }, { "name": "清凉喷雾" }, { "name": "止汗露" } ] },
+      { "icon": "fa-person-hiking", "name": "户外运动装备", "sales_growth": "户外类增长160%", "analysis": "出游/徒步场景增，轻量便携与功能性为核心。", "products": [ { "name": "徒步背包", "hot": true }, { "name": "登山杖" }, { "name": "户外炉具" }, { "name": "露营灯" }, { "name": "防潮垫" }, { "name": "多功能刀" }, { "name": "头灯" }, { "name": "水壶" }, { "name": "折叠桌椅" }, { "name": "户外电源", "hot": true } ] }
+    ],
+    "marketing_strategy": { "icon": "fa-lightbulb", "title": "营销策略建议", "suggestion": "夏季上新与清凉主题；穿搭/防晒场景内容提升转化。" },
+    "platform_operations": { "icon": "fa-chart-line", "title": "平台运营重点", "points": [ { "platform": "OZON", "action": "夏季服饰会场" }, { "platform": "Wildberries", "action": "防晒护肤推荐位" }, { "platform": "Yandex Market", "action": "户外关键词广告" } ] }
+  },
+  "june": {
+    "month": "六月",
+    "weather": { "condition": "仲夏", "temp": "20°C" },
+    "summary": "暑期前夕，水上运动/户外旺季",
+    "festivals": [],
+    "recommended_categories": [
+      { "icon": "fa-person-swimming", "name": "水上运动装备", "sales_growth": "水上运动增长170%", "analysis": "泳装/浮潜/皮划艇等亲水场景拉动需求。", "products": [ { "name": "泳装", "hot": true }, { "name": "泳镜", "hot": true }, { "name": "浮潜设备" }, { "name": "皮划艇" }, { "name": "冲浪板" }, { "name": "救生衣" }, { "name": "水上相机" }, { "name": "沙滩球" }, { "name": "水上滑板", "hot": true }, { "name": "防水手机袋" } ] },
+      { "icon": "fa-mountain-sun", "name": "野营装备", "sales_growth": "露营类增长180%", "analysis": "露营旺季临近，家庭与朋友露营需求增加。", "products": [ { "name": "帐篷", "hot": true }, { "name": "睡袋" }, { "name": "露营灯" }, { "name": "户外炊具" }, { "name": "折叠桌椅" }, { "name": "防潮垫" }, { "name": "户外电源", "hot": true }, { "name": "多功能刀" }, { "name": "净水器" }, { "name": "指南针" } ] },
+      { "icon": "fa-sun", "name": "防晒护肤", "sales_growth": "防晒类增长230%", "analysis": "长日照叠加户外活动，防晒与晒后修复走量。", "products": [ { "name": "防晒霜", "hot": true }, { "name": "晒后修复" }, { "name": "太阳镜" }, { "name": "遮阳伞" }, { "name": "防晒唇膏" }, { "name": "保湿喷雾" }, { "name": "面膜" }, { "name": "芦荟胶" }, { "name": "清凉喷雾" }, { "name": "止汗露", "hot": true } ] }
+    ],
+    "marketing_strategy": { "icon": "fa-lightbulb", "title": "营销策略建议", "suggestion": "水上/露营双主线营销；套装/满减提升客单价。" },
+    "platform_operations": { "icon": "fa-chart-line", "title": "平台运营重点", "points": [ { "platform": "OZON", "action": "夏季运动会场" }, { "platform": "Wildberries", "action": "露营品类加权" }, { "platform": "Yandex Market", "action": "防晒相关关键词优化" } ] }
+  },
+  "july": {
+    "month": "七月",
+    "weather": { "condition": "盛夏", "temp": "23°C" },
+    "summary": "暑期高峰，水上运动与露营旺季",
+    "festivals": [],
+    "recommended_categories": [
+      { "icon": "fa-person-swimming", "name": "水上运动装备", "sales_growth": "水上运动增长180%", "analysis": "暑期达峰值，亲水与度假用品集中爆发。", "products": [ { "name": "泳镜", "hot": true }, { "name": "泳装" }, { "name": "浮潜设备", "hot": true }, { "name": "皮划艇" }, { "name": "冲浪板" }, { "name": "救生衣" }, { "name": "水上相机" }, { "name": "沙滩球" }, { "name": "水上滑板", "hot": true }, { "name": "防晒手机袋" } ] },
+      { "icon": "fa-mountain-sun", "name": "野营装备", "sales_growth": "露营类增长190%", "analysis": "家庭露营和长途旅行拉动露营全套件。", "products": [ { "name": "帐篷", "hot": true }, { "name": "睡袋" }, { "name": "露营灯" }, { "name": "户外炊具" }, { "name": "折叠桌椅" }, { "name": "防潮垫" }, { "name": "户外电源", "hot": true }, { "name": "净水器" }, { "name": "指南针" }, { "name": "多功能刀" } ] },
+      { "icon": "fa-shirt", "name": "夏季服装", "sales_growth": "夏装增长210%", "analysis": "清凉穿搭与度假风格热销，防晒与透气为核心。", "products": [ { "name": "T恤", "hot": true }, { "name": "短裤", "hot": true }, { "name": "凉鞋" }, { "name": "防晒衣" }, { "name": "太阳帽" }, { "name": "沙滩裙" }, { "name": "运动背心" }, { "name": "休闲衬衫" }, { "name": "人字拖" }, { "name": "轻薄外套" } ] }
+    ],
+    "marketing_strategy": { "icon": "fa-lightbulb", "title": "营销策略建议", "suggestion": "暑期旅行与亲子主题联动；跨品类组合提升客单。" },
+    "platform_operations": { "icon": "fa-chart-line", "title": "平台运营重点", "points": [ { "platform": "OZON", "action": "暑期运动大促" }, { "platform": "Wildberries", "action": "露营热销榜单" }, { "platform": "Yandex Market", "action": "度假关键词投放" } ] }
+  },
+
+  "august": {
+    "month": "八月",
+    "weather": { "condition": "夏末", "temp": "21°C" },
+    "summary": "夏季尾声，返校季开始，为秋季做准备",
+    "festivals": [],
+    "recommended_categories": [
+      { "icon": "fa-shirt", "name": "夏季服装", "sales_growth": "夏装增长220%", "analysis": "六月到夏季正式开始，轻薄凉爽的夏季服装需求爆发。T恤销量最大，短裤因天气炎热需求增长。凉鞋透气舒适，泳装适合海滩度假。太阳帽防晒，沙滩裙适合度假穿着。人字拖居家外出皆宜，防晒衣保护皮肤。", "products": [ { "name": "T恤" }, { "name": "短裤", "hot": true }, { "name": "凉鞋" }, { "name": "泳装" }, { "name": "太阳帽" }, { "name": "沙滩裙" }, { "name": "人字拖" }, { "name": "防晒衣" }, { "name": "运动背心" }, { "name": "休闲衬衫", "hot": true } ] },
+      { "icon": "fa-sun", "name": "防晒护肤", "sales_growth": "防晒类增长250%", "analysis": "紫外线高企，防晒产品需求激增。关注SPF与持久性；太阳镜保护眼睛并搭配时尚；晒后修复缓解日晒损伤；遮阳伞与保湿喷雾适合外出补水。", "products": [ { "name": "防晒霜", "hot": true }, { "name": "太阳镜", "hot": true }, { "name": "晒后修复" }, { "name": "遮阳伞" }, { "name": "保湿喷雾" }, { "name": "面膜" }, { "name": "芦荟胶" }, { "name": "防晒唇膏" }, { "name": "清凉喷雾" }, { "name": "止汗露", "hot": true } ] },
+      { "icon": "fa-mountain-sun", "name": "野营装备", "sales_growth": "露营类增长180%", "analysis": "露营旺季，专业装备走俏。露营灯照明、户外炊具野炊、防潮垫舒适、多功能刀具用途广、指南针保障方向、净水器安全饮水、折叠桌椅便携。", "products": [ { "name": "露营灯" }, { "name": "户外炊具", "hot": true }, { "name": "防潮垫" }, { "name": "指南针" }, { "name": "多功能刀" }, { "name": "头灯" }, { "name": "净水器" }, { "name": "折叠桌" }, { "name": "充气垫" }, { "name": "户外电源", "hot": true } ] },
+      { "icon": "fa-person-swimming", "name": "水上运动装备", "sales_growth": "水上运动增长160%", "analysis": "气温高，水上运动装备需求旺盛。泳装/泳镜基础，浮潜设备适合海滩探索，冲浪板/皮划艇受欢迎，潜水装备面向进阶用户，水上相机与滑板记录与进阶。", "products": [ { "name": "泳镜", "hot": true }, { "name": "浮潜设备", "hot": true }, { "name": "冲浪板" }, { "name": "皮划艇" }, { "name": "水上玩具" }, { "name": "潜水装备" }, { "name": "救生衣" }, { "name": "水上相机" }, { "name": "沙滩球" }, { "name": "水上滑板", "hot": true } ] },
+      { "icon": "fa-school", "name": "返校用品", "sales_growth": "学生用品增长170%", "analysis": "返校季准备期，学生用品需求集中。书包/文具套装受欢迎，计算器/学生手表提升效率，运动鞋适合校园活动，午餐盒保证卫生。", "products": [ { "name": "书包" }, { "name": "文具套装", "hot": true }, { "name": "笔记本" }, { "name": "计算器" }, { "name": "学生手表" }, { "name": "校服" }, { "name": "运动鞋" }, { "name": "午餐盒" }, { "name": "水壶" }, { "name": "平板电脑", "hot": true } ] },
+      { "icon": "fa-user", "name": "秋季服装", "sales_growth": "秋装增长150%", "analysis": "天气转凉，秋季服装需求上升。风衣经典百搭，针织衫保暖舒适，长裤替代短裤，鞋子准备秋季穿着；围巾/帽子开始有需求，皮衣体现时尚感。", "products": [ { "name": "风衣", "hot": true }, { "name": "针织衫", "hot": true }, { "name": "长裤" }, { "name": "鞋子" }, { "name": "围巾" }, { "name": "皮衣" }, { "name": "毛呢大衣" }, { "name": "保暖内衣" }, { "name": "手套" }, { "name": "帽子", "hot": true } ] }
+    ],
+    "marketing_strategy": { "icon": "fa-lightbulb", "title": "营销策略建议", "suggestion": "返校季营销，重点推广学生用品和秋季新品；设置学生认证优惠/校园活动，提供一站式购买方案。" },
+    "platform_operations": { "icon": "fa-chart-line", "title": "平台运营重点", "points": [ { "platform": "OZON", "action": "设置返校季专题" }, { "platform": "Wildberries", "action": "推广学生电子产品" }, { "platform": "Yandex Market", "action": "投放秋季新品广告" } ] }
+  },
+  "september": { "month": "九月", "weather": { "condition": "初秋", "temp": "15°C" }, "summary": "秋季开始，开学季，天气转凉催生换季需求", "festivals": [ { "date": "9月1日", "name": "知识日", "description": "开学第一天，学生用品和教育产品采购高峰", "tag": "返校季" } ], "recommended_categories": [ { "icon": "fa-school", "name": "返校用品", "sales_growth": "学生用品增长170%", "analysis": "返校季需求集中爆发，书包与文具套装受欢迎，计算器与学生手表提升效率，运动鞋与午餐盒满足校园场景。", "products": [ { "name": "书包" }, { "name": "文具套装", "hot": true }, { "name": "笔记本" }, { "name": "计算器" }, { "name": "学生手表" }, { "name": "校服" }, { "name": "运动鞋" }, { "name": "午餐盒" }, { "name": "水壶" }, { "name": "平板电脑", "hot": true } ] }, { "icon": "fa-user", "name": "秋季服装", "sales_growth": "秋装增长150%", "analysis": "天气转凉，秋季服装需求上升。风衣与针织衫受欢迎，长裤替代短裤，皮衣与帽子为秋季搭配选择。", "products": [ { "name": "风衣", "hot": true }, { "name": "针织衫", "hot": true }, { "name": "长裤" }, { "name": "鞋子" }, { "name": "围巾" }, { "name": "皮衣" }, { "name": "毛呢大衣" }, { "name": "保暖内衣" }, { "name": "手套" }, { "name": "帽子", "hot": true } ] }, { "icon": "fa-laptop", "name": "学习电子产品", "sales_growth": "电子类增长140%", "analysis": "开学季带动学习电子需求。笔记本/平板刚需，智能手表辅助时间管理，移动电源保障续航，打印机/扫描仪用于课业与资料。", "products": [ { "name": "笔记本电脑", "hot": true }, { "name": "平板电脑", "hot": true }, { "name": "智能手表" }, { "name": "耳机" }, { "name": "移动电源" }, { "name": "电子书阅读器" }, { "name": "打印机" }, { "name": "扫描仪" }, { "name": "数码相机" }, { "name": "U盘", "hot": true } ] } ], "marketing_strategy": { "icon": "fa-lightbulb", "title": "营销策略建议", "suggestion": "秋季上新营销，推广换季服装和家居用品；设置换季清仓折扣与新款预售；营造温馨场景。"}, "platform_operations": { "icon": "fa-chart-line", "title": "平台运营重点", "points": [ { "platform": "OZON", "action": "开展秋季上新活动" }, { "platform": "Wildberries", "action": "重点推广学习用品" }, { "platform": "Yandex Market", "action": "设置电子产品专区" } ] } },
+  "october": {
+    "month": "十月",
+    "weather": { "condition": "秋季", "temp": "8°C" },
+    "summary": "深秋时节，冬季准备期，保暖和家居用品需求上升",
+    "festivals": [],
+    "recommended_categories": [
+      { "icon": "fa-user", "name": "秋季服装", "sales_growth": "秋装增长150%", "analysis": "天气持续转凉，秋季服装需求上升。风衣、针织衫保暖舒适，长裤替换短裤，围巾/帽子普及，皮衣体现时尚质感。", "products": [ { "name": "风衣", "hot": true }, { "name": "针织衫", "hot": true }, { "name": "长裤" }, { "name": "鞋子" }, { "name": "围巾" }, { "name": "皮衣" }, { "name": "毛呢大衣" }, { "name": "保暖内衣" }, { "name": "手套" }, { "name": "帽子", "hot": true } ] },
+      { "icon": "fa-fire-flame-simple", "name": "取暖设备", "sales_growth": "取暖类增长200%", "analysis": "气温下降，取暖设备需求激增。电暖器、暖手宝、电热毯/热水袋提供不同取暖场景；加湿器缓解干燥，暖风机快速升温，保温杯维持饮水温度。", "products": [ { "name": "电暖器", "hot": true }, { "name": "暖手宝", "hot": true }, { "name": "电热毯" }, { "name": "保温杯" }, { "name": "加湿器" }, { "name": "暖风机" }, { "name": "电热垫" }, { "name": "保暖被" }, { "name": "热水袋" }, { "name": "取暖器配件", "hot": true } ] },
+      { "icon": "fa-car-side", "name": "汽车配件", "sales_growth": "汽配类增长180%", "analysis": "冬季轮胎更换期，汽配需求集中。防冻液防结冰，雪铲/除冰剂应对冰雪，防滑链增强抓地力；雨刮器与车用充电器等提升行车安全与舒适。", "products": [ { "name": "冬季轮胎", "hot": true }, { "name": "防冻液", "hot": true }, { "name": "雪铲" }, { "name": "车用保暖套" }, { "name": "除冰剂" }, { "name": "车载加热器" }, { "name": "防滑链" }, { "name": "雨刮器" }, { "name": "车用充电器" }, { "name": "行车记录仪", "hot": true } ] }
+    ],
+    "marketing_strategy": { "icon": "fa-lightbulb", "title": "营销策略建议", "suggestion": "冬季准备期营销，提前布局保暖与汽配品类；设置早鸟优惠与套餐；结合降温预告推广防寒护肤与取暖设备。" },
+    "platform_operations": { "icon": "fa-chart-line", "title": "平台运营重点", "points": [ { "platform": "OZON", "action": "打造冬季准备季专题" }, { "platform": "Wildberries", "action": "推广取暖设备" }, { "platform": "Yandex Market", "action": "优化汽车配件类目" } ] }
+  },
+  "november": {
+    "month": "十一月",
+    "weather": { "condition": "秋末", "temp": "0°C" },
+    "summary": "冬季前夕，黑色星期五大促，新年购物季开始",
+    "festivals": [ { "date": "11月4日", "name": "人民团结日", "description": "爱国节日，民族特色商品和传统工艺品热销", "tag": "节日" } ],
+    "recommended_categories": [
+      { "icon": "fa-fire-flame-simple", "name": "取暖设备", "sales_growth": "取暖类增长200%", "analysis": "气温下降，取暖设备需求激增。电暖器、暖手宝便携取暖；电热毯/热水袋睡眠与局部保暖；加湿器缓解干燥，暖风机快速升温，保温杯维持饮水温度。", "products": [ { "name": "电暖器", "hot": true }, { "name": "暖手宝", "hot": true }, { "name": "电热毯" }, { "name": "保温杯" }, { "name": "加湿器" }, { "name": "暖风机" }, { "name": "电热垫" }, { "name": "保暖被" }, { "name": "热水袋" }, { "name": "取暖器配件", "hot": true } ] },
+      { "icon": "fa-car-side", "name": "汽车配件", "sales_growth": "汽配类增长180%", "analysis": "冬季轮胎更换集中期，汽配需求上升。防冻液防结冰，雪铲/除冰剂应对冰雪，防滑链增强抓地力；雨刮器、车载加热器与充电器提升行车安全与舒适。", "products": [ { "name": "冬季轮胎", "hot": true }, { "name": "防冻液", "hot": true }, { "name": "雪铲" }, { "name": "车用保暖套" }, { "name": "除冰剂" }, { "name": "车载加热器" }, { "name": "防滑链" }, { "name": "雨刮器" }, { "name": "车用充电器" }, { "name": "行车记录仪", "hot": true } ] },
+      { "icon": "fa-mobile-screen-button", "name": "电子产品", "sales_growth": "电子类增长300%", "analysis": "黑五推动电子消费。智能手机换代需求旺盛，平板/笔记本受欢迎；智能手表健康监测受重视；耳机、游戏机与智能音箱娱乐属性强。", "products": [ { "name": "智能手机", "hot": true }, { "name": "平板电脑", "hot": true }, { "name": "笔记本电脑" }, { "name": "智能手表" }, { "name": "耳机" }, { "name": "游戏机" }, { "name": "相机" }, { "name": "智能音箱" }, { "name": "移动电源" }, { "name": "数据线", "hot": true } ] },
+      { "icon": "fa-tree", "name": "家居装饰", "sales_growth": "装饰类增长280%", "analysis": "新年装饰需求抬升。圣诞树与彩灯营造节日氛围；装饰球与花环适合布置；蜡烛温馨感；桌布焕新迎接节庆。", "products": [ { "name": "圣诞树", "hot": true }, { "name": "彩灯", "hot": true }, { "name": "装饰球" }, { "name": "花环" }, { "name": "蜡烛" }, { "name": "桌布" }, { "name": "抱枕" }, { "name": "墙贴" }, { "name": "香薰" }, { "name": "摆件", "hot": true } ] }
+    ],
+    "marketing_strategy": { "icon": "fa-lightbulb", "title": "营销策略建议", "suggestion": "黑五全品类参与，重点电子产品；阶梯优惠与限时秒杀；提前预热，邮件营销触达；优化产品页与包邮门槛提升转化。" },
+    "platform_operations": { "icon": "fa-chart-line", "title": "平台运营重点", "points": [ { "platform": "OZON", "action": "全面备战黑色星期五" }, { "platform": "Wildberries", "action": "设置电子产品大促" }, { "platform": "Yandex Market", "action": "投放节日礼品广告" } ] }
+  },
+  "december": {
+    "month": "十二月",
+    "weather": { "condition": "初冬", "temp": "-5°C" },
+    "summary": "新年购物高峰，礼品和冬季必需品需求达到顶峰",
+    "festivals": [],
+    "recommended_categories": [
+      { "icon": "fa-snowflake", "name": "冬季保暖装备", "sales_growth": "销量增长200%", "analysis": "冬季最冷阶段，保暖用品需求强。消费者关注材质舒适与保暖效能，围巾/帽子/手套与发热内衣、加厚羽绒服等为刚需。雪地靴防滑防水，保暖家居服提升居家舒适。", "products": [ { "name": "加厚羽绒服", "hot": true }, { "name": "发热内衣", "hot": true }, { "name": "羊毛毛衣" }, { "name": "滑雪手套" }, { "name": "毛线帽" }, { "name": "雪地靴", "hot": true }, { "name": "触屏手套" }, { "name": "保温水壶" }, { "name": "保暖家居服" }, { "name": "加热马甲" } ] },
+      { "icon": "fa-gift", "name": "新年礼品套装", "sales_growth": "礼品类增长300%", "analysis": "俄罗斯新年假期长达10天，礼品需求集中。高端礼盒、香薰蜡烛与彩灯营造氛围，定制相册/电子贺卡体现个性化；进口巧克力与红酒礼盒受欢迎，派对用品走量。", "products": [ { "name": "新年装饰套装", "hot": true }, { "name": "高端礼品盒", "hot": true }, { "name": "进口巧克力" }, { "name": "香薰蜡烛" }, { "name": "生肖毛绒玩具" }, { "name": "红酒礼盒" }, { "name": "定制相册" }, { "name": "节日餐具" }, { "name": "派对用品" }, { "name": "电子贺卡", "hot": true } ] },
+      { "icon": "fa-person-skiing", "name": "冬季运动装备", "sales_growth": "运动品增长150%", "analysis": "冬季运动文化深厚，滑雪是国民运动。12月滑雪旺季，专业雪装备走俏，防雾滑雪镜与防水透气滑雪服为重点；冰刀鞋在湖泊与室内场馆需求稳定。社媒分享带动增长。", "products": [ { "name": "专业滑雪板", "hot": true }, { "name": "防雾滑雪镜", "hot": true }, { "name": "滑雪服套装" }, { "name": "花样冰刀鞋" }, { "name": "雪地摩托服" }, { "name": "登山杖" }, { "name": "触屏手套" }, { "name": "运动护具" }, { "name": "保温水壶" }, { "name": "运动相机", "hot": true } ] },
+      { "icon": "fa-fire-flame-simple", "name": "取暖设备", "sales_growth": "取暖类增长200%", "analysis": "气温继续走低，取暖设备持续热销。电暖器/暖手宝/电热毯/热水袋覆盖多场景；加湿器缓解干燥，暖风机快速升温，电热垫与保暖被补充居家取暖。", "products": [ { "name": "电暖器", "hot": true }, { "name": "暖手宝", "hot": true }, { "name": "电热毯" }, { "name": "保温杯" }, { "name": "加湿器" }, { "name": "暖风机" }, { "name": "电热垫" }, { "name": "保暖被" }, { "name": "热水袋" }, { "name": "取暖器配件", "hot": true } ] },
+      { "icon": "fa-mobile-screen-button", "name": "电子产品", "sales_growth": "电子类增长300%", "analysis": "黑五后延与新年购物季带动电子品。智能手机、平板与笔记本仍为高需求；智能手表与智能音箱增长显著；耳机/游戏机与配件满足娱乐与送礼场景。", "products": [ { "name": "智能手机", "hot": true }, { "name": "平板电脑", "hot": true }, { "name": "笔记本电脑" }, { "name": "智能手表" }, { "name": "耳机" }, { "name": "游戏机" }, { "name": "相机" }, { "name": "智能音箱" }, { "name": "移动电源" }, { "name": "数据线", "hot": true } ] },
+      { "icon": "fa-tree", "name": "家居装饰", "sales_growth": "装饰类增长280%", "analysis": "新年装饰达顶峰，圣诞树/彩灯/装饰球/花环为主；蜡烛增温馨感，桌布焕新迎节庆；抱枕/墙贴等软装走量。", "products": [ { "name": "圣诞树", "hot": true }, { "name": "彩灯", "hot": true }, { "name": "装饰球" }, { "name": "花环" }, { "name": "蜡烛" }, { "name": "桌布" }, { "name": "抱枕" }, { "name": "墙贴" }, { "name": "香薰" }, { "name": "摆件", "hot": true } ] }
+    ],
+    "marketing_strategy": { "icon": "fa-lightbulb", "title": "营销策略建议", "suggestion": "新年购物季全面营销，打造节日氛围；礼品类突出精美包装，冬季必需品强调保暖需求；设置限时优惠与礼品推荐专区；开展社媒互动活动提升参与度。" },
+    "platform_operations": { "icon": "fa-chart-line", "title": "平台运营重点", "points": [ { "platform": "OZON", "action": "打造新年购物狂欢" }, { "platform": "Wildberries", "action": "推广节日装饰品" }, { "platform": "Yandex Market", "action": "设置礼品推荐专区" } ] }
+  }
+}
