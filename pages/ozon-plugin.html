@@ -373,16 +373,23 @@
         }
         
         .info-card .icon {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             background: var(--plugin-gradient);
-            border-radius: 12px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             animation: float 3s ease-in-out infinite;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            transition: var(--transition);
+        }
+        
+        .info-card:hover .icon {
+            transform: translateY(-5px) rotate(5deg);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
         }
         
         .feature-list {
@@ -394,10 +401,11 @@
         .feature-list li {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 0.75rem 0;
+            gap: 15px;
+            padding: 1rem 0.5rem;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             transition: var(--transition);
+            font-size: 1.05rem;
         }
         
         .feature-list li:last-child {
@@ -405,15 +413,28 @@
         }
         
         .feature-list li:hover {
-            background: rgba(102, 126, 234, 0.05);
-            padding-left: 0.5rem;
-            border-radius: 8px;
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.08) 0%, rgba(102, 126, 234, 0.02) 100%);
+            padding-left: 1rem;
+            border-radius: 10px;
+            transform: translateX(3px);
         }
         
         .feature-list i {
             color: #4CAF50;
-            width: 20px;
-            font-size: 1rem;
+            width: 24px;
+            height: 24px;
+            font-size: 1.1rem;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .feature-list li:hover i {
+            background: rgba(76, 175, 80, 0.2);
+            transform: scale(1.2);
         }
         
         /* 下载区域 */
@@ -475,13 +496,27 @@
         }
         
         .trial-version {
-            background: var(--success-gradient);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
         
         .premium-version {
-            background: var(--secondary-gradient);
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
+            position: relative;
+        }
+        
+        .premium-version::after {
+            content: '🔥 热销';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 2;
         }
         
         .version-card::before {
@@ -520,20 +555,24 @@
         .download-btn {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
             color: white;
-            padding: 1rem 2rem;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 1.2rem 2.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.4);
             border-radius: var(--border-radius);
             font-size: 1.1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             text-decoration: none;
             transition: var(--transition);
             position: relative;
             z-index: 1;
             overflow: hidden;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 0.95rem;
         }
         
         .download-btn::before {
@@ -543,7 +582,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             transition: left 0.5s;
         }
         
@@ -552,25 +591,49 @@
         }
         
         .download-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            border-color: rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-3px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+        
+        .download-btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+        
+        .download-btn i {
+            font-size: 1.2rem;
         }
         
         .premium-price {
-            font-size: 2rem;
-            font-weight: 800;
-            margin: 1rem 0;
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin: 1.5rem 0;
             position: relative;
             z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
         
         .premium-price .original {
             text-decoration: line-through;
-            font-size: 1.2rem;
-            opacity: 0.7;
-            margin-right: 10px;
+            font-size: 1.3rem;
+            opacity: 0.6;
+            position: relative;
+        }
+        
+        .premium-price .original::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 2px;
+            background: white;
+            transform: translateY(-50%) rotate(-5deg);
         }
         
         .code-input-section {
@@ -663,62 +726,89 @@
         .step {
             display: flex;
             align-items: flex-start;
-            gap: 1rem;
+            gap: 1.5rem;
             margin-bottom: 1.5rem;
-            padding: 1.5rem;
+            padding: 2rem;
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-radius: var(--border-radius);
-            border-left: 4px solid #667eea;
+            border-left: 5px solid #667eea;
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .step::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: var(--plugin-gradient);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .step:hover::before {
+            transform: scaleY(1);
         }
         
         .step:hover {
-            transform: translateX(5px);
-            box-shadow: var(--shadow-md);
+            transform: translateX(8px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         }
         
         .step-number {
             background: var(--plugin-gradient);
             color: white;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
+            font-weight: 800;
             flex-shrink: 0;
-            font-size: 1.1rem;
-            box-shadow: var(--shadow-sm);
+            font-size: 1.3rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: var(--transition);
+        }
+        
+        .step:hover .step-number {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
         
         .step-content h4 {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1.2rem;
+            font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.01em;
         }
         
         .step-content p {
             color: var(--text-secondary);
-            line-height: 1.6;
+            line-height: 1.8;
             margin: 0;
+            font-size: 1.05rem;
         }
         
         /* 联系信息 */
         .contact-info {
-            background: var(--success-gradient);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-radius: var(--border-radius-lg);
-            padding: 2rem;
+            padding: 2.5rem;
             text-align: center;
             position: sticky;
             top: 100px;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
             animation: slideInRight 1.6s ease-out;
-            position: relative;
             overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
         
         .contact-info::before {
@@ -750,17 +840,30 @@
         }
         
         .wechat-contact {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.25);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            padding: 1rem;
+            padding: 1.2rem 1.5rem;
             border-radius: var(--border-radius);
-            margin: 1rem 0;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin: 1.5rem 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border: 2px solid rgba(255, 255, 255, 0.4);
             position: relative;
             z-index: 1;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .wechat-contact:hover {
+            background: rgba(255,255,255,0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .wechat-contact i {
+            margin-right: 8px;
+            font-size: 1.3rem;
         }
         
         .qr-code-section {
@@ -774,18 +877,19 @@
         }
         
         .qr-code-image {
-            width: 150px;
-            height: 150px;
+            width: 180px;
+            height: 180px;
             border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             background: white;
-            padding: 10px;
+            padding: 12px;
             transition: var(--transition);
+            border: 3px solid rgba(255, 255, 255, 0.5);
         }
         
         .qr-code-image:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-lg);
+            transform: scale(1.08) rotate(2deg);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
         
         .qr-code-text h5 {
@@ -1031,9 +1135,9 @@
                         <li><i class="fas fa-check"></i> 实时数据监控与分析</li>
                         <li><i class="fas fa-check"></i> 销售趋势可视化展示</li>
                         <li><i class="fas fa-check"></i> 商品表现深度分析</li>
-                        <li><i class="fas fa-check"></i> 竞争对手数据追踪</li>
-                        <li><i class="fas fa-check"></i> 智能报表生成</li>
-                        <li><i class="fas fa-check"></i> 多维度数据对比</li>
+                        <li><i class="fas fa-check"></i> 无需额外软件安装</li>
+                        <li><i class="fas fa-check"></i> 数据安全加密传输</li>
+
                     </ul>
                 </div>
                 
@@ -1046,8 +1150,6 @@
                     </h3>
                     <ul class="feature-list">
                         <li><i class="fas fa-check"></i> 轻量级浏览器插件</li>
-                        <li><i class="fas fa-check"></i> 无需额外软件安装</li>
-                        <li><i class="fas fa-check"></i> 数据安全加密传输</li>
                         <li><i class="fas fa-check"></i> 支持多浏览器兼容</li>
                         <li><i class="fas fa-check"></i> 自动更新功能</li>
                         <li><i class="fas fa-check"></i> 24/7技术支持</li>
@@ -1061,21 +1163,24 @@
                     <!-- 下载区域 -->
                     <div class="download-section">
                         <h3>
-                            <i class="fas fa-download"></i>
-                            立即下载体验
+                            <i class="fas fa-rocket"></i>
+                            获取插件
                         </h3>
+                        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.05rem;">
+                            选择最适合您的方式，开启数据分析之旅
+                        </p>
                         
                         <div class="versions-container">
                             <div class="version-card trial-version">
                                 <h4 class="version-title">
-                                    <i class="fas fa-gift"></i>
-                                    30天免费试用
+                                    <i class="fas fa-eye"></i>
+                                    查看效果演示
                                 </h4>
-                                <p class="version-description">完整功能体验，无任何限制，让您充分了解插件的强大功能</p>
-                                <a href="../ozon-sales-assistant-30day-trial-fixed.zip" class="download-btn" download>
-                                    <i class="fas fa-download"></i>
-                                    下载试用版
-                                </a>
+                                <p class="version-description">想要了解插件的强大功能？联系客服获取详细演示和功能介绍</p>
+                                <button class="download-btn" onclick="showCustomerServiceContact()">
+                                    <i class="fas fa-headset"></i>
+                                    联系客服查看效果
+                                </button>
                             </div>
                             
                             <div class="version-card premium-version">
@@ -1088,13 +1193,10 @@
                                     <span class="original">¥99.9</span>
                                     <span>限时特惠 ¥29.9</span>
                                 </div>
-                                <div class="code-input-section">
-                                    <p>请输入提取码下载永久版：</p>
-                                    <input type="text" class="code-input" id="extractCode" placeholder="请输入提取码">
-                                    <br>
-                                    <button class="premium-download-btn" onclick="validateAndDownload()">验证并下载</button>
-                                    <div class="error-message" id="errorMessage" style="display: none;"></div>
-                                </div>
+                                <a href="https://pay.ldxp.cn/shop/WVO6FOTW" target="_blank" class="download-btn" style="margin-top: 1.5rem;">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    立即购买
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -1165,7 +1267,7 @@
                         </h3>
                         <p>如果您在使用过程中遇到任何问题，请随时联系我们的技术支持团队</p>
                         <div class="wechat-contact">
-                            <i class="fab fa-weixin"></i> 微信：ZQF13532538910
+                            <i class="fab fa-weixin"></i> QQ:1423984443
                         </div>
                         <div class="qr-code-section">
                             <img src="../images/buy.jpg" alt="联系二维码" class="qr-code-image">
@@ -1226,6 +1328,11 @@
             showToast('联系我们：邮箱：zouqifeng@jiawae-commerce.com\n工作时间：周一至周五 9:00-18:00', 4000);
         }
         
+        // 显示客服联系方式
+        function showCustomerServiceContact() {
+            showToast('请联系客服,获取插件演示和详细介绍', 4000);
+        }
+        
         // Toast 提示功能
         function showToast(message, duration = 3000) {
             const toast = document.getElementById('toast');
@@ -1241,64 +1348,6 @@
         function toggleMobileMenu() {
             showToast('移动端菜单功能开发中...', 2000);
         }
-        
-        // 验证提取码并下载
-        function validateAndDownload() {
-            const extractCode = document.getElementById('extractCode').value.trim();
-            const errorMessage = document.getElementById('errorMessage');
-            const downloadBtn = document.querySelector('.premium-download-btn');
-            
-            // 清除之前的错误信息
-            errorMessage.style.display = 'none';
-            
-            // 验证提取码
-            if (extractCode === 'ozon-sales-assistant by nicole') {
-                // 提取码正确，开始下载
-                downloadBtn.textContent = '下载中...';
-                downloadBtn.disabled = true;
-                
-                // 创建下载链接
-                const link = document.createElement('a');
-                link.href = '../ozon-sales-assistant-by-nicole-permanent.zip';
-                link.download = 'ozon-sales-assistant-by-nicole-permanent.zip';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                // 显示成功提示
-                showToast('下载成功！感谢您的支持！', 3000);
-                
-                // 重置按钮状态
-                setTimeout(() => {
-                    downloadBtn.textContent = '验证并下载';
-                    downloadBtn.disabled = false;
-                    document.getElementById('extractCode').value = '';
-                }, 2000);
-                
-            } else {
-                // 提取码错误
-                errorMessage.textContent = '提取码错误，请检查后重新输入';
-                errorMessage.style.display = 'block';
-                
-                // 添加输入框错误样式
-                const codeInput = document.getElementById('extractCode');
-                codeInput.style.borderColor = '#ff4444';
-                codeInput.style.backgroundColor = '#ffe6e6';
-                
-                // 3秒后清除错误样式
-                setTimeout(() => {
-                    codeInput.style.borderColor = '';
-                    codeInput.style.backgroundColor = '';
-                }, 3000);
-            }
-        }
-        
-        // 回车键触发验证
-        document.getElementById('extractCode').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                validateAndDownload();
-            }
-        });
         
         // 平滑滚动
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
