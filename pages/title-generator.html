@@ -972,6 +972,7 @@
             <a href="ozon-plugin.html" class="sidebar-menu-item"><i class="fas fa-puzzle-piece"></i> OZON插件</a>
             <a href="selection-manual.html" class="sidebar-menu-item"><i class="fas fa-book"></i> 选品手册</a>
             <a href="size-chart.html" class="sidebar-menu-item"><i class="fas fa-ruler"></i> 中俄尺码对照表</a>
+            <a href="volumetric-check.html" class="sidebar-menu-item"><i class="fas fa-calculator"></i> 计抛检查工具</a>
             
         </div>
     </div>
@@ -1166,7 +1167,6 @@
             <div class="button-group">
                 <button class="btn" onclick="generatePrompt()">生成【标题、简介、标签】AI提问词</button>
                 <button class="btn btn-secondary" onclick="clearForm()">清空</button>
-                <button class="btn btn-view" onclick="showDemo()">查看视频演示</button>
             </div>
             
             <!-- AI提问词结果区域 -->
@@ -1295,6 +1295,7 @@
             <div class="button-group">
                 <button class="btn" onclick="copyScenePrompt()" style="background: linear-gradient(135deg, #4169e1, #6a5acd);">复制场景图提示词</button>
                 <button class="btn btn-view" onclick="goToDouBao()">前往豆包</button>
+                <button class="btn" onclick="goToBaiduAI()" style="background: linear-gradient(135deg, #d32f2f, #f44336);">百度AI去除水印|变高清</button>
             </div>
             
             <!-- 商品图使用教程 -->
@@ -3096,6 +3097,11 @@
         // 跳转到豆包
         function goToDouBao() {
             window.open('https://www.doubao.com/', '_blank');
+        }
+        
+        // 跳转到百度AI去除水印
+        function goToBaiduAI() {
+            window.open('https://chat.baidu.com/search?enter_type=a_60674&imgFrom=image_search&sa=re_dl_60674&word=-1&wsData=%7B%22fr%22%3A%22alawise_60674%22%2C%22toolType%22%3A%22-1%22%7D&wsName=image', '_blank');
         }
         
         // AI模型选择处理函数

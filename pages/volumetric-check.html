@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计抛检查助手 - OZON工具盒子</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon.svg">
+    <link rel="apple-touch-icon" href="../images/favicon.svg">
+    <meta name="theme-color" content="#667eea">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="performance-fix.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
+
+        :root {
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --border-color: rgba(102, 126, 234, 0.25);
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --accent: #667eea;
+            --accent-soft: rgba(102, 126, 234, 0.12);
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --radius-lg: 20px;
+            --shadow: 0 20px 45px rgba(102, 126, 234, 0.18);
+            --transition: all 0.25s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            letter-spacing: -0.01em;
+        }
+
+        .page-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            position: relative;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: -12px;
+            left: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.18);
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+        }
+
+        .card {
+            margin-top: 48px;
+            background: var(--card-bg);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: var(--shadow);
+            padding: 40px;
+        }
+
+        .card-header {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .card-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(2rem, 3vw, 2.6rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #4338ca, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .mode-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(102, 126, 234, 0.12);
+            padding: 6px;
+            border-radius: 999px;
+            margin-top: 6px;
+            width: fit-content;
+        }
+
+        .mode-btn {
+            border: none;
+            background: transparent;
+            color: var(--accent);
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .mode-btn:hover {
+            background: rgba(255, 255, 255, 0.45);
+        }
+
+        .mode-btn.active {
+            background: #ffffff;
+            color: #111827;
+            box-shadow: 0 12px 20px rgba(102, 126, 234, 0.20);
+        }
+
+        .mode-btn:focus-visible {
+            outline: 2px solid rgba(102, 126, 234, 0.35);
+            outline-offset: 2px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: var(--accent-soft);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid rgba(102, 126, 234, 0.15);
+        }
+
+        .form-field label {
+            font-weight: 600;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-field label span {
+            background: rgba(102, 126, 234, 0.15);
+            color: var(--accent);
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .form-field input, .form-field select {
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-field input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+            outline: none;
+        }
+
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 28px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.25);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 35px rgba(102, 126, 234, 0.30);
+        }
+
+        .hint {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .summary-card {
+            border-radius: 18px;
+            padding: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            background: white;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .summary-card h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-card strong {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .badge-success { background: rgba(16, 185, 129, 0.12); color: #047857; }
+        .badge-warning { background: rgba(245, 158, 11, 0.12); color: #b45309; }
+        .badge-danger { background: rgba(239, 68, 68, 0.12); color: #b91c1c; }
+
+        .divider {
+            height: 1px;
+            background: rgba(148, 163, 184, 0.2);
+            margin: 32px 0;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: var(--accent);
+        }
+
+        .methods-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        .methods-table thead {
+            background: rgba(102, 126, 234, 0.08);
+        }
+
+        .methods-table th,
+        .methods-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .methods-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .price-strong {
+            font-weight: 700;
+            color: #111827;
+            font-size: 1rem;
+        }
+
+        .price-muted {
+            color: rgba(55, 65, 81, 0.8);
+            font-size: 0.85rem;
+        }
+
+        .tips {
+            margin-top: 32px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .tip-card {
+            padding: 18px;
+            border-radius: 16px;
+            background: rgba(249, 250, 251, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .card { padding: 28px 20px; }
+            .back-btn { position: static; margin-bottom: 12px; }
+            .page-wrapper { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <a class="back-btn" href="tools.html">
+            <i class="fas fa-arrow-left"></i>
+            返回实用工具
+        </a>
+
+        <section class="card">
+            <header class="card-header">
+                <h1 id="pageTitle">Premium Big 计抛运费测算</h1>
+                <p id="pageDescription">
+                    根据 OZON 官方 Premium Big 计抛规则，自动计算体积重量与实际重量，判断是否需要按体积计费，并比较空运、陆空联运与陆运三种 Premium Big 配送方案的费用差异。
+                </p>
+                <div class="mode-toggle" role="group" aria-label="模式选择">
+                    <button type="button" class="mode-btn active" data-mode="big">Big</button>
+                    <button type="button" class="mode-btn" data-mode="premiumBig">Premium Big</button>
+                </div>
+            </header>
+
+            <form id="calculatorForm">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="length"><i class="fas fa-ruler-combined"></i> 长度 (cm) <span>必填</span></label>
+                        <input type="number" id="length" min="0" step="0.1" placeholder="请输入最长边">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="width"><i class="fas fa-ruler-horizontal"></i> 宽度 (cm) <span>必填</span></label>
+                        <input type="number" id="width" min="0" step="0.1" placeholder="请输入次长边">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="height"><i class="fas fa-ruler-vertical"></i> 高度 (cm) <span>必填</span></label>
+                        <input type="number" id="height" min="0" step="0.1" placeholder="请输入最短边">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="actualWeight"><i class="fas fa-weight-hanging"></i> 实际重量 (g) <span>必填</span></label>
+                        <input type="number" id="actualWeight" min="5001" step="1" placeholder="≥ 5001 g" data-mode-min="5001">
+                    </div>
+
+                </div>
+
+                <div class="action-row">
+                    <button type="submit" class="primary-btn">
+                        <i class="fas fa-calculator"></i>
+                        计算运费
+                    </button>
+                    <span class="hint">注：体积重量 = 长 × 宽 × 高 ÷ 12（单位：cm → g，历史规则用 12000）</span>
+                </div>
+            </form>
+
+            <div class="summary-grid" id="summaryCards">
+                <div class="summary-card">
+                    <h3><i class="fas fa-balance-scale"></i> 实际重量</h3>
+                    <strong id="actualWeightDisplay">--</strong>
+                    <span id="weightRangeDisplay" class="price-muted">范围要求：5001 g - 25000 g</span>
+                </div>
+                <div class="summary-card">
+                    <h3><i class="fas fa-cube"></i> 体积重量</h3>
+                    <strong id="volumetricWeightDisplay">--</strong>
+                    <span class="price-muted">计算因子：/ 12（结果单位：g）</span>
+                </div>
+                <div class="summary-card">
+                    <h3><i class="fas fa-weight"></i> 计费重量</h3>
+                    <strong id="chargeableWeightDisplay">--</strong>
+                    <span id="chargeTypeBadge" class="badge badge-warning">等待输入</span>
+                </div>
+                <div class="summary-card">
+                    <h3><i class="fas fa-ruler"></i> 尺寸校验</h3>
+                    <strong id="dimensionCheckDisplay">--</strong>
+                    <span id="dimensionDetail" class="price-muted">三边之和 ≤ 310 cm，最长边 ≤ 150 cm</span>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h2 class="section-title">
+                <i class="fas fa-shipping-fast"></i>
+                配送方式费用对比
+            </h2>
+
+            <table class="methods-table" id="methodsTable">
+                <thead>
+                    <tr>
+                        <th>配送方式</th>
+                        <th>代码</th>
+                        <th>参考时效</th>
+                        <th>起步价</th>
+                        <th>克价</th>
+                        <th>总价</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 24px; color: #9ca3af;">请先填写完整的尺寸与重量信息</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="tips">
+                <div class="tip-card">
+                    <strong id="ruleTitle">UNI Premium Big 规则</strong>
+                    <ul id="rulesList" style="margin: 12px 0 0 18px; line-height: 1.8;">
+                        <li>重量范围：5001 g - 25000 g</li>
+                        <li>最长边 ≤ 150 cm，三边之和 ≤ 310 cm</li>
+                        <li>设备内电池功率 ≤ 100W，不需要提供 MSDS</li>
+                    </ul>
+                </div>
+                <div class="tip-card">
+                    <strong>计抛判定说明</strong>
+                    <p style="margin-top: 10px;">
+                        若体积重量 &gt; 实际重量，则需要计抛，计费重量按体积重量计算；反之按实际重量。费用 = 起步价 + 每克费用 × 计费重量（克）。
+                    </p>
+                </div>
+                <div class="tip-card">
+                    <strong>配送方式参考</strong>
+                    <ul id="methodSummaryList" style="margin: 12px 0 0 18px; line-height: 1.8;">
+                        <li>UNI Express Premium Big：空运，5-10 天（62元 + 0.033元/克）</li>
+                        <li>UNI Standard Premium Big：陆空联运，10-15 天（62元 + 0.028元/克）</li>
+                        <li>UNI Economy Premium Big：陆运，20-25 天（62元 + 0.023元/克）</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const form = document.getElementById('calculatorForm');
+        const modeButtons = Array.from(document.querySelectorAll('.mode-btn'));
+        const pageTitle = document.getElementById('pageTitle');
+        const pageDescription = document.getElementById('pageDescription');
+        const weightInput = document.getElementById('actualWeight');
+        const weightRangeDisplay = document.getElementById('weightRangeDisplay');
+        const rulesList = document.getElementById('rulesList');
+        const ruleTitle = document.getElementById('ruleTitle');
+        const methodSummaryList = document.getElementById('methodSummaryList');
+
+        const actualWeightDisplay = document.getElementById('actualWeightDisplay');
+        const volumetricWeightDisplay = document.getElementById('volumetricWeightDisplay');
+        const chargeableWeightDisplay = document.getElementById('chargeableWeightDisplay');
+        const chargeTypeBadge = document.getElementById('chargeTypeBadge');
+        const dimensionCheckDisplay = document.getElementById('dimensionCheckDisplay');
+        const dimensionDetail = document.getElementById('dimensionDetail');
+        const methodsTableBody = document.querySelector('#methodsTable tbody');
+
+        const modePresets = {
+            big: {
+                title: 'Big 计抛运费测算',
+                description: '根据 OZON 官方 Big 计抛规则，自动计算体积重量与实际重量，判断是否需要按体积计费，并比较空运、陆空联运与陆运三种 Big 配送方案的费用差异。',
+                weightRangeText: '范围要求：2001 g - 25000 g',
+                dimensionText: '三边之和 ≤ 250 cm，最长边 ≤ 150 cm',
+                weightMin: 2001,
+                methods: [
+                    {
+                        id: 'express',
+                        name: 'Express Big（大件空运）',
+                        code: 'UND',
+                        eta: '5-10 天',
+                        basePrice: 36,
+                        ratePerGram: 0.033
+                    },
+                    {
+                        id: 'standard',
+                        name: 'Standard Big（陆空联运）',
+                        code: 'UNQ',
+                        eta: '10-15 天',
+                        basePrice: 36,
+                        ratePerGram: 0.025
+                    },
+                    {
+                        id: 'economy',
+                        name: 'Economy Big（陆运）',
+                        code: 'UNZ',
+                        eta: '20-25 天',
+                        basePrice: 36,
+                        ratePerGram: 0.017
+                    }
+                ],
+                ruleTitle: 'Big 规则',
+                methodSummaryHtml: `
+                    <li>Express Big（UND）：空运，5-10 天（36元 + 0.033元/克）</li>
+                    <li>Standard Big（UNQ）：陆空联运，10-15 天（36元 + 0.025元/克）</li>
+                    <li>Economy Big（UNZ）：陆运，20-25 天（36元 + 0.017元/克）</li>
+                `,
+                rulesHtml: `
+                    <li>重量范围：2001 g - 25000 g</li>
+                    <li>最长边 ≤ 150 cm，三边之和 ≤ 250 cm</li>
+                    <li>默认不需要 MSDS，内部电池功率 ≤ 100W</li>
+                `
+            },
+            premiumBig: {
+                title: 'Premium Big 计抛运费测算',
+                description: '根据 OZON 官方 Premium Big 计抛规则，自动计算体积重量与实际重量，判断是否需要按体积计费，并比较空运、陆空联运与陆运三种 Premium Big 配送方案的费用差异。',
+                weightRangeText: '范围要求：5001 g - 25000 g',
+                dimensionText: '三边之和 ≤ 310 cm，最长边 ≤ 150 cm',
+                weightMin: 5001,
+                methods: [
+                    {
+                        id: 'express',
+                        name: 'Express Premium Big（高客单大件空运）',
+                        code: 'UND',
+                        eta: '5-10 天',
+                        basePrice: 62,
+                        ratePerGram: 0.033
+                    },
+                    {
+                        id: 'standard',
+                        name: 'Standard Premium Big（陆空联运）',
+                        code: 'UNQ',
+                        eta: '10-15 天',
+                        basePrice: 62,
+                        ratePerGram: 0.028
+                    },
+                    {
+                        id: 'economy',
+                        name: 'Economy Premium Big（陆运）',
+                        code: 'UNZ',
+                        eta: '20-25 天',
+                        basePrice: 62,
+                        ratePerGram: 0.023
+                    }
+                ],
+                ruleTitle: 'Premium Big 规则',
+                methodSummaryHtml: `
+                    <li>Express Premium Big（UND）：空运，5-10 天（62元 + 0.033元/克）</li>
+                    <li>Standard Premium Big（UNQ）：陆空联运，10-15 天（62元 + 0.028元/克）</li>
+                    <li>Economy Premium Big（UNZ）：陆运，20-25 天（62元 + 0.023元/克）</li>
+                `,
+                rulesHtml: `
+                    <li>重量范围：5001 g - 25000 g</li>
+                    <li>最长边 ≤ 150 cm，三边之和 ≤ 310 cm</li>
+                    <li>设备内电池功率 ≤ 100W，不需要提供 MSDS</li>
+                `
+            }
+        };
+
+        let currentMode = 'big';
+        let methods = modePresets[currentMode].methods;
+
+        function formatGrams(value) {
+            if (!Number.isFinite(value)) return '--';
+            const rounded = Math.round(value);
+            return rounded.toLocaleString('zh-CN') + ' g';
+        }
+
+        function formatPrice(value) {
+            if (!Number.isFinite(value)) return '--';
+            return value.toFixed(2) + ' 元';
+        }
+
+        function validateInputs(length, width, height, weightGram) {
+            const minWeight = modePresets[currentMode].weightMin;
+            return [length, width, height, weightGram].every(value => Number.isFinite(value) && value > 0) && weightGram >= minWeight;
+        }
+
+        function calculate() {
+            const length = parseFloat(document.getElementById('length').value);
+            const width = parseFloat(document.getElementById('width').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const actualWeightGram = parseFloat(document.getElementById('actualWeight').value);
+
+            if (!validateInputs(length, width, height, actualWeightGram)) {
+                methodsTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px; color: #9ca3af;">请完整填写尺寸与重量后再计算</td></tr>';
+                actualWeightDisplay.textContent = '--';
+                volumetricWeightDisplay.textContent = '--';
+                chargeableWeightDisplay.textContent = '--';
+                chargeTypeBadge.className = 'badge badge-warning';
+                chargeTypeBadge.textContent = '等待输入';
+                dimensionCheckDisplay.textContent = '--';
+                dimensionDetail.className = 'price-muted';
+                dimensionDetail.textContent = modePresets[currentMode].dimensionText;
+                return;
+            }
+
+            const volumetricWeightGram = (length * width * height) / 12;
+            const chargeableWeightGram = Math.max(volumetricWeightGram, actualWeightGram);
+
+            actualWeightDisplay.textContent = formatGrams(actualWeightGram);
+            volumetricWeightDisplay.textContent = formatGrams(volumetricWeightGram);
+            chargeableWeightDisplay.textContent = formatGrams(chargeableWeightGram);
+
+            const isVolumetric = volumetricWeightGram > actualWeightGram;
+            chargeTypeBadge.className = 'badge ' + (isVolumetric ? 'badge-warning' : 'badge-success');
+            chargeTypeBadge.innerHTML = isVolumetric ? '<i class="fas fa-exclamation-circle"></i> 按体积计费' : '<i class="fas fa-check-circle"></i> 按实际重量计费';
+
+            // Dimension rule check
+            const longestSide = Math.max(length, width, height);
+            const perimeter = length + width + height;
+            const dimensionLimit = currentMode === 'premiumBig' ? 310 : 250;
+            const dimensionOk = longestSide <= 150 && perimeter <= dimensionLimit;
+            dimensionCheckDisplay.textContent = dimensionOk ? '符合要求' : '超出限制';
+            dimensionCheckDisplay.style.color = dimensionOk ? '#059669' : '#dc2626';
+            dimensionDetail.className = 'price-muted' + (dimensionOk ? '' : ' badge-danger');
+            
+            if (dimensionOk) {
+                dimensionDetail.textContent = `最长边：${longestSide.toFixed(1)} cm，三边之和：${perimeter.toFixed(1)} cm`;
+            } else {
+                let violationDetails = [];
+                if (longestSide > 150) {
+                    violationDetails.push(`最长边 ${longestSide.toFixed(1)} cm > 规定 150 cm`);
+                }
+                if (perimeter > dimensionLimit) {
+                    violationDetails.push(`三边之和 ${perimeter.toFixed(1)} cm > 规定 ${dimensionLimit} cm`);
+                }
+                dimensionDetail.textContent = `超出限制：${violationDetails.join('，')}`;
+            }
+
+            methodsTableBody.innerHTML = methods.map(method => {
+                const total = method.basePrice + method.ratePerGram * chargeableWeightGram;
+
+                return `
+                    <tr>
+                        <td>
+                            <strong>${method.name}</strong>
+                            <div class="price-muted">计费重量：${formatGrams(chargeableWeightGram)}</div>
+                        </td>
+                        <td>${method.code}</td>
+                        <td>${method.eta}</td>
+                        <td>${method.basePrice.toFixed(2)} 元</td>
+                        <td>${method.ratePerGram.toFixed(3)} 元 / g</td>
+                        <td>
+                            <div class="price-strong">${formatPrice(total)}</div>
+                            <div class="price-muted">统一价格（自提/上门）</div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function resetSummary() {
+            actualWeightDisplay.textContent = '--';
+            volumetricWeightDisplay.textContent = '--';
+            chargeableWeightDisplay.textContent = '--';
+            chargeTypeBadge.className = 'badge badge-warning';
+            chargeTypeBadge.textContent = '等待输入';
+            dimensionCheckDisplay.textContent = '--';
+            dimensionDetail.className = 'price-muted';
+            dimensionDetail.textContent = modePresets[currentMode].dimensionText;
+            methodsTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px; color: #9ca3af;">请完整填写尺寸与重量后再计算</td></tr>';
+        }
+
+        function updateMode(mode) {
+            if (!modePresets[mode]) return;
+            currentMode = mode;
+            const preset = modePresets[mode];
+            methods = preset.methods;
+
+            pageTitle.textContent = preset.title;
+            pageDescription.textContent = preset.description;
+            weightRangeDisplay.textContent = preset.weightRangeText;
+            weightInput.min = preset.weightMin;
+            weightInput.placeholder = `≥ ${preset.weightMin} g`;
+            ruleTitle.textContent = preset.ruleTitle;
+            rulesList.innerHTML = preset.rulesHtml;
+            methodSummaryList.innerHTML = preset.methodSummaryHtml;
+            dimensionDetail.textContent = preset.dimensionText;
+
+            modeButtons.forEach(button => {
+                button.classList.toggle('active', button.dataset.mode === mode);
+            });
+
+            resetSummary();
+            calculate();
+        }
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            calculate();
+        });
+
+        // Auto recalc on change for responsiveness
+        ['length', 'width', 'height', 'actualWeight'].forEach(id => {
+            document.getElementById(id).addEventListener('input', calculate);
+            document.getElementById(id).addEventListener('change', calculate);
+        });
+
+        modeButtons.forEach(button => {
+            button.addEventListener('click', () => updateMode(button.dataset.mode));
+        });
+
+        // initialize preset on load
+        updateMode('big');
+    </script>
+</body>
+</html>
