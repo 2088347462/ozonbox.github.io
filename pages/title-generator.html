@@ -1177,6 +1177,7 @@
                 <div class="button-group">
                     <button class="btn" onclick="copyPrompt()">复制AI提问词</button>
                     <button class="btn btn-view" onclick="goToDeepseek()">前往Deepseek</button>
+                    <button class="btn btn-view" onclick="goToDouBao()">前往豆包</button>
                 </div>
             </div>
             
@@ -1855,6 +1856,9 @@
         function goToDeepseek() {
             window.open('https://chat.deepseek.com/', '_blank');
         }
+        function goToDouBao(){
+            window.open('https://doubao.com/', '_blank');
+        }
         
         function showDemo() {
             alert('视频演示功能正在开发中');
@@ -2028,7 +2032,7 @@
                 showToast(`✅ 成功分析了${links.length}个产品的卖点信息！`);
             } catch (error) {
                 hideLoadingAnimation();
-                showToast('❌ 产品分析失败: ' + error.message + '\n💡 建议：切换到模拟卖点分析（免费）');
+                showToast('❌ 产品分析失败: ' + error.message + '\n💡 建议：重新购买API');
                 console.error('产品分析API调用失败:', error);
             }
         }
