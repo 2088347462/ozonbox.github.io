@@ -992,6 +992,69 @@
             transform: translateX(-50%) translateY(-10px);
         }
         
+        /* 免责声明 */
+        .disclaimer-section {
+            margin-top: 2rem;
+            padding: 2rem 0;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .disclaimer-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #f5576c;
+        }
+        
+        .disclaimer-content h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .disclaimer-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .disclaimer-content li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .disclaimer-content li:last-child {
+            border-bottom: none;
+        }
+        
+        .disclaimer-content li:before {
+            content: "!";
+            color: #f5576c;
+            font-weight: bold;
+            display: inline-block;
+            width: 1.2rem;
+            height: 1.2rem;
+            background: rgba(245, 87, 108, 0.1);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 1.2rem;
+            position: absolute;
+            left: 0;
+            top: 0.8rem;
+        }
+        
         /* 响应式设计 */
         @media (max-width: 1024px) {
             .content-layout {
@@ -1277,6 +1340,23 @@
                                 <p>获取技术支持与购买咨询</p>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 免责声明 -->
+            <div class="disclaimer-section">
+                <div class="container">
+                    <div class="disclaimer-content glass">
+                        <h3><i class="fas fa-exclamation-triangle"></i> 免责声明</h3>
+                        <ul>
+                            <li>本平台所有资源均来自互联网整合以及自主研发，仅提供数据展示及分析功能。</li>
+                            <li>用户在使用本平台时应遵守相关法律法规及 OZON 平台规则。</li>
+                            <li>本平台不保证任何商业收益或效果，不承担因使用本平台而产生的任何直接或间接损失。</li>
+                            <li>本平台的所有权和解释权归开发者所有。</li>
+                            <li>开发者保留随时修改或终止服务的权利，恕不另行通知。</li>
+                            <li>平台收费为数据收集及维护辛苦费，用户使用本平台即视为同意以上免责声明，如有异议请勿使用。</li>
+                        </ul>
                     </div>
                 </div>
             </div>
