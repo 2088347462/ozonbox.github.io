@@ -3,323 +3,444 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>俄罗斯电商大促日历</title>
-  <link rel="icon" type="image/svg+xml" href="../images/favicon.svg" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <title>俄罗斯电商大促日历 - OZON工具盒子</title>
+  
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+  
   <style>
     :root {
-      --primary-color: #4f46e5;
-      --primary-color-light: #6366f1;
-      --primary-color-dark: #7c3aed;
-      --text-primary: #1e293b;
-      --text-secondary: #64748b;
-      --bg-primary: #f8fafc;
-      --bg-secondary: #fff;
-      --border-color: #e2e8f0;
+        /* === [配色] 旗舰级流光白金 === */
+        --bg-body: #F8F9FC; 
+        --bg-glass: rgba(255, 255, 255, 0.65);
+        --bg-glass-heavy: rgba(255, 255, 255, 0.95);
+        
+        /* 品牌色 */
+        --primary: #2563EB; 
+        --accent: #F97316;
+        --gradient-text: linear-gradient(135deg, #2563EB 0%, #3B82F6 50%, #F97316 100%);
+        --gradient-header: linear-gradient(135deg, #FFEF9F 0%, #FFD54F 100%); /* 月份头部专用 */
+        
+        /* 文本 */
+        --text-main: #0F172A; 
+        --text-sub: #64748B;
+        
+        /* 阴影与圆角 */
+        --shadow-float: 0 20px 40px -10px rgba(15, 23, 42, 0.05);
+        --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+        
+        --radius-xl: 32px;
+        --radius-lg: 24px;
+        --radius-md: 16px;
+        
+        --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+        
+        --container-width: 1200px;
     }
-    * { 
-      box-sizing: border-box;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      will-change: auto !important;
-    }
-    body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: var(--text-primary); }
-    .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-    .back-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; text-decoration: none; color: #fff; border: 1px solid rgba(255,255,255,.35); background: rgba(255,255,255,.18); transition: .2s ease; }
-    .back-btn:hover { background: rgba(255,255,255,.28); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     
-    .month-header {
-      background: #ffc107;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-      color: #333;
-      text-align: center;
-    }
-    .month-title {
-      font-size: 3rem;
-      font-weight: bold;
-      margin: 0;
-    }
-    .month-summary {
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 12px;
-      padding: 15px;
-      margin-top: 15px;
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-main);
+        line-height: 1.6;
+        overflow-x: hidden;
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.03) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(249, 115, 22, 0.03) 0px, transparent 50%);
+        background-attachment: fixed;
+        min-height: 100vh;
     }
 
-    .section-title {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 1.5rem;
-        font-weight: 800;
-        margin: 30px 0 15px;
-        color: #fff;
+    /* 动画定义 */
+    @keyframes flowIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pendulum { 0% { transform: rotate(0deg); } 25% { transform: rotate(2deg); } 75% { transform: rotate(-2deg); } 100% { transform: rotate(0deg); } }
+
+    /* === 1. 悬浮岛屿导航栏 === */
+    .navbar {
+        position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+        width: 95%; max-width: 1400px;
+        height: 80px;
+        background: var(--bg-glass-heavy);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.6);
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        display: flex; align-items: center; justify-content: space-between;
+        /* 右侧增加巨大内边距，给吊坠留出绝对安全区 */
+        padding-left: 32px; padding-right: 140px; 
+        z-index: 1000;
+        transition: all 0.4s var(--ease-out);
     }
 
-    .panel { background: var(--bg-secondary); border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,.08); padding: 18px; margin-bottom: 16px; }
+    .navbar.scrolled {
+        top: 0; width: 100%; max-width: 100%; border-radius: 0;
+        background: rgba(255,255,255,0.98);
+        height: 72px;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding-right: 140px; 
+    }
+
+    .navbar-brand {
+        display: flex; align-items: center; gap: 14px;
+        font-size: 1.4rem; font-weight: 800; color: var(--text-main);
+        text-decoration: none; letter-spacing: -0.5px; flex-shrink: 0;
+    }
+    .navbar-logo {
+        width: 42px; height: 42px; border-radius: 12px;
+        background: #fff; display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 1.2rem; color: var(--primary);
+    }
+
+    .navbar-nav {
+        display: flex; align-items: center; gap: 6px; list-style: none;
+        /* 关键：右侧留白防止遮挡 */
+        margin-right: 200px; 
+    }
+
+    .nav-link {
+        padding: 8px 14px; border-radius: 10px;
+        color: var(--text-sub); text-decoration: none; font-weight: 600;
+        font-size: 0.9rem; transition: all 0.3s; white-space: nowrap;
+    }
+    .nav-link:hover { color: var(--text-main); background: rgba(0,0,0,0.03); }
+    .nav-link.active { color: var(--primary); background: #EFF6FF; }
+
+    /* 广告胶囊：强制不收缩 */
+    .ad-pill {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 0.8rem; color: var(--text-sub);
+        border: 1px solid rgba(0,0,0,0.08);
+        padding: 8px 16px; border-radius: 100px;
+        background: rgba(255,255,255,0.5);
+        transition: 0.3s;
+        /* 关键属性：防止文字被压缩 */
+        white-space: nowrap; 
+        flex-shrink: 0; 
+        max-width: 500px; 
+        overflow: visible;
+    }
+    .ad-pill:hover { background: #fff; border-color: var(--accent); color: var(--text-main); }
     
-    .festival-list .item {
-        display: flex;
-        align-items: flex-start; /* 顶部对齐，支持多行 */
-        gap: 15px;
-        padding: 15px;
-        background: var(--bg-primary);
-        border-radius: 12px;
-        margin-bottom: 10px;
+    .qr-wrapper { position: relative; cursor: pointer; display: flex; align-items: center; gap: 4px; font-weight: 600; color: var(--text-main); margin-left: 8px; padding-left: 8px; border-left: 1px solid #ddd; }
+    .qr-popup {
+        position: absolute; top: 160%; left: 50%; transform: translateX(-50%) scale(0.9);
+        width: 140px; background: #fff; padding: 10px; border-radius: 16px;
+        box-shadow: var(--shadow-float); opacity: 0; visibility: hidden;
+        transition: 0.3s var(--ease-elastic); z-index: 1100;
     }
-    .festival-list .date {
-        background: #333;
-        color: #fff;
-        padding: 10px 15px;
-        border-radius: 8px;
-        font-weight: bold;
-        text-align: center;
-    }
-    .festival-list .details h3 {
-        margin: 0 0 5px;
-        font-size: 1.1rem;
-    }
-    .festival-list .details { 
-        flex: 1;               /* 占满剩余宽度 */
-        min-width: 0;          /* 允许内容正常换行 */
-        word-break: break-word;/* 长词断行，避免溢出 */
-    }
-    .festival-list .details p {
-        margin: 0;
-        color: var(--text-secondary);
-        white-space: normal;   /* 正常换行 */
-        overflow: visible;     /* 不裁剪 */
-    }
-    .festival-list .tag {
-        margin-left: auto;
-        background: #ffc107;
-        color: #333;
-        padding: 5px 10px;
-        border-radius: 6px;
-        font-weight: bold;
-    }
+    .qr-wrapper:hover .qr-popup { opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); top: 140%; }
+    .qr-popup img { width: 100%; border-radius: 8px; display: block; }
 
-    .category-card {
-        background: var(--bg-secondary);
-        border-radius: 16px;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 16px rgba(0,0,0,.08);
-    }
-    .category-header {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        padding: 15px;
-        border-bottom: 1px solid var(--border-color);
-    }
-    .category-header .icon {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        display: grid;
-        place-items: center;
-        font-size: 1.2rem;
-        color: #fff;
-        background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark));
-    }
-    .category-header h3 { margin: 0; font-size: 1.2rem; }
-    .category-header .sales-growth { color: #e53935; font-weight: bold; }
+    /* 移动端菜单按钮 */
+    .menu-toggle { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; }
 
-    .category-body {
-        display: flex;
-        gap: 20px;
-        padding: 20px;
+    /* === ★★★ 旗舰吊坠 (全息铭牌) ★★★ === */
+    .pendant-container {
+        position: fixed; 
+        top: 24px; 
+        right: 40px; /* 固定在视窗最右侧 */
+        z-index: 1002;
+        display: flex; flex-direction: column; align-items: center;
+        transform-origin: top center;
+        animation: pendulum 6s ease-in-out infinite;
+        transition: top 0.4s;
     }
-    .analysis {
-        flex: 1;
-        background: #e3f2fd;
-        border: 2px solid #90caf9;
-        border-radius: 12px;
-        padding: 15px;
+    
+    .pendant-rope {
+        width: 2px; height: 35px;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4));
+        margin-top: -10px;
     }
-    .analysis h4 { margin: 0 0 10px; }
-    .analysis p { margin: 0; color: #1e88e5; }
-    .product-list {
-        flex: 1;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-    .product-item {
-        background: var(--bg-primary);
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 10px 15px;
-        text-align: center;
+    
+    .pendant-badge {
+        width: 150px; 
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,1);
+        border-radius: 20px;
+        padding: 16px;
+        text-decoration: none;
+        display: flex; flex-direction: column; align-items: center; gap: 8px;
+        box-shadow: 
+            0 15px 35px -5px rgba(0, 0, 0, 0.1),
+            inset 0 0 0 1px rgba(255,255,255,0.5);
+        transition: transform 0.3s var(--ease-out);
         position: relative;
+        overflow: hidden;
     }
-    .product-item.hot::after {
-        content: '爆款';
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        background: #e53935;
-        color: #fff;
-        font-size: 10px;
-        padding: 2px 5px;
-        border-radius: 4px;
-    }
-    .strategy-card {
-        background: var(--bg-secondary);
-        border-radius: 16px;
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-    .strategy-card h3 {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin: 0 0 15px;
-        font-size: 1.3rem;
-        color: #333;
-    }
-    .strategy-card h3 i {
-        color: var(--primary-color);
-    }
-    .strategy-card .content {
-        background: #e3f2fd;
-        border-radius: 12px;
-        padding: 15px;
-        color: #1e88e5;
-    }
-    .platform-ops .ops-item {
-        background: #e3f2fd;
-        border-radius: 12px;
-        padding: 15px;
-        margin-bottom: 10px;
-    }
-    /* 全局排版优化 */
-    body { line-height: 1.6; }
-    .container { max-width: 1024px; }
 
-    /* 统一按钮样式（覆盖内联基础） */
+    .pendant-badge::before {
+        content:''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .badge-icon {
+        width: 48px; height: 48px;
+        background: linear-gradient(135deg, #EFF6FF 0%, #FFF7ED 100%);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; color: var(--primary);
+        box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
+    }
+
+    .badge-text { font-size: 14px; font-weight: 700; color: var(--text-main); }
+    .badge-sub { font-size: 10px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+    .pendant-container:hover { animation-play-state: paused; }
+    .pendant-container:hover .pendant-badge { transform: translateY(5px) scale(1.03); background: #fff; }
+    body.is-scrolled .pendant-container { top: 0; }
+
+    /* === 页面内容 === */
+    .main-content {
+        padding-top: 220px; 
+        padding-bottom: 80px;
+        min-height: 100vh;
+    }
+    
+    .container {
+        max-width: var(--container-width);
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+
+    /* 返回按钮 */
+    .back-nav {
+        position: absolute; top: 140px; left: 0; right: 0;
+        max-width: var(--container-width); margin: 0 auto; padding: 0 24px;
+        z-index: 10;
+    }
+    .back-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        color: var(--text-sub); text-decoration: none; font-size: 0.95rem; font-weight: 600;
+        padding: 10px 20px; background: #fff; border-radius: 100px;
+        box-shadow: var(--shadow-card); transition: all 0.3s var(--ease-out);
+    }
+    .back-btn:hover {
+        transform: translateX(-5px); color: var(--primary);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+    }
+
+    /* 月份切换器 */
+    .month-picker {
+        background: #fff; border-radius: var(--radius-xl); padding: 16px;
+        box-shadow: var(--shadow-card); margin-bottom: 32px;
+        display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+        animation: flowIn 0.8s var(--ease-out);
+    }
+    
     .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      border-radius: 999px;
-      text-decoration: none;
-      border: 1px solid var(--border-color);
-      background: #f8fafc;
-      color: #0f172a;
-      transition: all .2s ease;
+        display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px;
+        border-radius: 100px; text-decoration: none; font-weight: 600; font-size: 0.95rem;
+        background: #F8FAFC; color: var(--text-sub); border: 1px solid transparent;
+        transition: all 0.3s;
     }
     .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 18px rgba(0,0,0,.08);
-      border-color: #cbd5e1;
-      background: #fff;
+        background: #fff; border-color: var(--primary); color: var(--primary);
+        transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
     }
     .btn.primary {
-      background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark));
-      color: #fff;
-      border: none;
-      box-shadow: 0 8px 22px rgba(79, 70, 229, .35);
+        background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
-    .btn.primary:hover {
-      filter: brightness(1.05);
-      box-shadow: 0 10px 26px rgba(79, 70, 229, .45);
-    }
+    .btn.primary:hover { background: #1D4ED8; box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4); }
 
-    /* 月份头部强化 */
+    /* 月份头部 */
     .month-header {
-      background: linear-gradient(135deg, #ffef9f 0%, #ffd54f 100%);
-      box-shadow: 0 10px 28px rgba(0,0,0,.12);
+        background: var(--gradient-header);
+        border-radius: var(--radius-xl); padding: 40px; text-align: center;
+        margin-bottom: 40px; box-shadow: var(--shadow-float);
+        position: relative; overflow: hidden; animation: flowIn 1s var(--ease-out);
     }
     .month-title {
-      letter-spacing: .5px;
-      line-height: 1.15;
-      text-shadow: 0 2px 6px rgba(0,0,0,.06);
+        font-size: 4rem; font-weight: 800; color: #78350F; margin: 0 0 16px;
+        letter-spacing: -2px; line-height: 1;
     }
+    .month-weather { font-size: 1.2rem; font-weight: 600; color: #92400E; margin-bottom: 24px; }
     .month-summary {
-      line-height: 1.7;
-      color: #374151;
+        background: rgba(255,255,255,0.6); backdrop-filter: blur(10px);
+        padding: 24px; border-radius: 20px; color: #451A03; font-size: 1.1rem;
+        max-width: 800px; margin: 0 auto; line-height: 1.6;
     }
 
-    /* 节日列表可读性增强 */
-    .festival-list .item {
-      gap: 16px;
-      box-shadow: 0 6px 18px rgba(0,0,0,.06);
+    /* 内容区块 */
+    .section-title {
+        font-size: 1.8rem; font-weight: 800; color: var(--text-main);
+        margin: 60px 0 32px; display: flex; align-items: center; gap: 12px;
     }
-    .festival-list .date {
-      min-width: 88px;
-      padding: 10px 14px;
-      line-height: 1.2;
-      background: #0f172a;
-    }
-    .festival-list .details h3 {
-      font-weight: 700;
-      color: #0f172a;
-    }
-    .festival-list .details p {
-      line-height: 1.7;
-    }
-    .festival-list .tag {
-      align-self: flex-start;
-      background: #fde68a;
-      border: 1px solid #f59e0b;
-      padding: 6px 10px;
-      box-shadow: 0 4px 12px rgba(245, 158, 11, .18);
+    .section-title::before {
+        content: ''; width: 6px; height: 32px; background: var(--accent); border-radius: 4px;
     }
 
-    /* 品类卡片优化与移动端适配 */
+    /* 节日列表 */
+    .festival-list { display: grid; gap: 20px; }
+    .festival-item {
+        background: #fff; border-radius: var(--radius-lg); padding: 24px;
+        display: flex; gap: 24px; align-items: flex-start;
+        box-shadow: var(--shadow-card); transition: 0.3s; border: 1px solid rgba(0,0,0,0.03);
+    }
+    .festival-item:hover { transform: translateY(-4px); box-shadow: var(--shadow-float); }
+    
+    .festival-date {
+        background: #0F172A; color: #fff; padding: 12px 20px; border-radius: 12px;
+        font-weight: 700; font-size: 1.1rem; min-width: 100px; text-align: center;
+    }
+    .festival-content h3 { margin: 0 0 8px; font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
+    .festival-content p { margin: 0; color: var(--text-sub); line-height: 1.6; }
+    .festival-tag {
+        margin-left: auto; background: #FEF3C7; color: #D97706; padding: 6px 12px;
+        border-radius: 8px; font-weight: 700; font-size: 0.9rem; white-space: nowrap;
+    }
+
+    /* 品类卡片 */
     .category-card {
-      overflow: hidden;
+        background: #fff; border-radius: var(--radius-xl); overflow: hidden;
+        box-shadow: var(--shadow-card); margin-bottom: 32px; border: 1px solid rgba(0,0,0,0.03);
     }
     .category-header {
-      background: #f9fafb;
+        background: #F8FAFC; padding: 24px 32px; border-bottom: 1px solid #E2E8F0;
+        display: flex; align-items: center; gap: 20px;
     }
-    .category-body {
-      gap: 16px;
+    .cat-icon {
+        width: 56px; height: 56px; background: var(--primary); color: #fff;
+        border-radius: 16px; display: grid; place-items: center; font-size: 1.8rem;
     }
+    .cat-title { margin: 0; font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+    .cat-growth { color: #DC2626; font-weight: 700; font-size: 1.1rem; background: #FEF2F2; padding: 4px 12px; border-radius: 100px; }
+
+    .category-body { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding: 32px; }
+    
+    .analysis-box {
+        background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 20px; padding: 24px;
+    }
+    .analysis-title { color: #1E40AF; font-weight: 700; margin-bottom: 12px; font-size: 1.1rem; }
+    .analysis-text { color: #1E3A8A; line-height: 1.7; }
+
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; }
     .product-item {
-      line-height: 1.5;
+        background: #fff; border: 1px solid #E2E8F0; border-radius: 12px;
+        padding: 16px; text-align: center; position: relative; font-weight: 600; color: var(--text-main);
+        transition: 0.3s;
     }
-    @media (max-width: 640px) {
-      .section-title { font-size: 1.25rem; }
-      .category-body { flex-direction: column; }
-      .product-list { grid-template-columns: 1fr; }
-      .festival-list .item { flex-direction: column; }
-      .festival-list .date { align-self: flex-start; }
+    .product-item:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+    .product-item.hot::after {
+        content: '🔥'; position: absolute; top: -8px; right: -8px;
+        background: #fff; border-radius: 50%; padding: 2px; font-size: 1.2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    /* 平台与策略卡片微调 */
-    .strategy-card .content { line-height: 1.7; }
-    .platform-ops .ops-item { line-height: 1.6; }
+    /* 策略卡片 */
+    .strategy-card {
+        background: #fff; border-radius: var(--radius-xl); padding: 40px;
+        box-shadow: var(--shadow-card); margin-bottom: 32px; border: 1px solid rgba(0,0,0,0.03);
+    }
+    .strategy-head { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+    .strategy-head i { color: var(--accent); }
+    .strategy-content {
+        background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 16px;
+        padding: 24px; color: #9A3412; line-height: 1.7; font-size: 1.05rem;
+    }
 
+    .ops-grid { display: grid; gap: 16px; }
+    .ops-item {
+        background: #F0F9FF; border-left: 4px solid #0EA5E9; border-radius: 12px;
+        padding: 20px; color: #0C4A6E; line-height: 1.6;
+    }
+    .ops-item b { color: #0284C7; margin-right: 8px; }
+
+    @media (max-width: 1300px) {
+        .navbar-nav { display: none; }
+        .menu-toggle { display: block; }
+        .pendant-container { display: none; }
+        .navbar { padding-right: 24px; }
+        .category-body { grid-template-columns: 1fr; }
+        .festival-item { flex-direction: column; gap: 16px; }
+        .festival-date { align-self: flex-start; }
+        .festival-tag { margin-left: 0; align-self: flex-start; }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <a href="selection-manual.html" class="back-btn"><i class="fas fa-arrow-left"></i> 返回选品手册</a>
-    
-    <div class="panel" style="margin-top:12px; background:#fff; border-radius:12px; padding:10px;">
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <a id="btn-jan" class="btn primary" style="padding:8px 12px; border-radius:999px; text-decoration:none;" href="ozon-calendar.html?month=january">一月</a>
-        <a id="btn-feb" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=february">二月</a>
-        <a id="btn-mar" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=march">三月</a>
-        <a id="btn-apr" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=april">四月</a>
-        <a id="btn-may" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=may">五月</a>
-        <a id="btn-jun" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=june">六月</a>
-        <a id="btn-jul" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=july">七月</a>
-        <a id="btn-aug" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=august">八月</a>
-        <a id="btn-sep" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=september">九月</a>
-        <a id="btn-oct" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=october">十月</a>
-        <a id="btn-nov" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=november">十一月</a>
-        <a id="btn-dec" class="btn" style="padding:8px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; text-decoration:none;" href="ozon-calendar.html?month=december">十二月</a>
-      </div>
-    </div>
-    <div id="calendar-content"></div>
 
+  <nav class="navbar" id="navbar">
+    <a href="../index.html" class="navbar-brand">
+        <div class="navbar-logo">
+            <i class="fas fa-cube"></i>
+        </div>
+        OZON工具盒子
+    </a>
+    
+    <div class="ad-pill">
+        <i class="fas fa-shipping-fast" style="color:var(--accent)"></i>
+        <span>OZON专业货代 | UNI、GUOO物流 | 当天核验，24h内上网 | 价格实惠</span>
+        <div class="qr-wrapper">
+            <i class="fas fa-qrcode"></i>
+            <div class="qr-popup">
+                <img src="../images/wang.png" alt="QR">
+            </div>
+        </div>
+    </div>
+
+    <ul class="navbar-nav">
+        <li><a href="../index.html" class="nav-link">首页</a></li>
+        <li><a href="ai-tools.html" class="nav-link">AI工具</a></li>
+        <li><a href="tools.html" class="nav-link active">实用工具</a></li>
+        <li><a href="auxiliary-tools.html" class="nav-link">辅助工具</a></li>
+        <li><a href="ozon-plugin.html" class="nav-link">数据插件</a></li>
+        <li><a href="volumetric-check.html" class="nav-link">计抛检查</a></li>
+    </ul>
+    
+    <button class="menu-toggle" onclick="alert('移动端菜单开发中...')">
+        <i class="fas fa-bars"></i>
+    </button>
+  </nav>
+  
+  <div class="pendant-container">
+    <div class="pendant-rope"></div>
+    <a href="https://ozonbox.top/pages/ozon_editor.html" target="_blank" class="pendant-badge">
+        <div class="badge-icon">
+            <i class="fas fa-layer-group"></i>
+        </div>
+        <div style="text-align:center;">
+            <div class="badge-text">图形编辑器</div>
+            <div class="badge-sub">Pro Tools</div>
+        </div>
+    </a>
   </div>
+
+  <main class="main-content">
+    <div class="container">
+      <div class="back-nav">
+        <a href="selection-manual.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> 返回选品手册
+        </a>
+      </div>
+
+      <div class="month-picker">
+        <a id="btn-jan" class="btn" href="ozon-calendar.html?month=january">一月</a>
+        <a id="btn-feb" class="btn" href="ozon-calendar.html?month=february">二月</a>
+        <a id="btn-mar" class="btn" href="ozon-calendar.html?month=march">三月</a>
+        <a id="btn-apr" class="btn" href="ozon-calendar.html?month=april">四月</a>
+        <a id="btn-may" class="btn" href="ozon-calendar.html?month=may">五月</a>
+        <a id="btn-jun" class="btn" href="ozon-calendar.html?month=june">六月</a>
+        <a id="btn-jul" class="btn" href="ozon-calendar.html?month=july">七月</a>
+        <a id="btn-aug" class="btn" href="ozon-calendar.html?month=august">八月</a>
+        <a id="btn-sep" class="btn" href="ozon-calendar.html?month=september">九月</a>
+        <a id="btn-oct" class="btn" href="ozon-calendar.html?month=october">十月</a>
+        <a id="btn-nov" class="btn" href="ozon-calendar.html?month=november">十一月</a>
+        <a id="btn-dec" class="btn" href="ozon-calendar.html?month=december">十二月</a>
+      </div>
+
+      <div id="calendar-content"></div>
+    </div>
+  </main>
 
   <script>
     const DATA_URL = './data/ozon-calendar-data.json';
@@ -327,27 +448,21 @@
     function getMonthFromQuery() {
       const p = new URLSearchParams(location.search);
       const m = (p.get('month') || '').toLowerCase();
-      if (m === 'february' || m === 'feb') return 'february';
-      if (m === 'march' || m === 'mar') return 'march';
-      if (m === 'april' || m === 'apr') return 'april';
-      if (m === 'may') return 'may';
-      if (m === 'june' || m === 'jun') return 'june';
-      if (m === 'july' || m === 'jul') return 'july';
-      if (m === 'august' || m === 'aug') return 'august';
-      if (m === 'september' || m === 'sep') return 'september';
-      if (m === 'october' || m === 'oct') return 'october';
-      if (m === 'november' || m === 'nov') return 'november';
-      if (m === 'december' || m === 'dec') return 'december';
-      return 'january';
+      const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+      const shortMonths = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+      
+      if (months.includes(m)) return m;
+      const idx = shortMonths.indexOf(m);
+      return idx > -1 ? months[idx] : 'january';
     }
 
     function renderMonth(monthData) {
       const container = document.getElementById('calendar-content');
-      // 一次性渲染，减少DOM操作
+      
       const html = `
         <div class="month-header">
           <h1 class="month-title">${monthData.month}</h1>
-          <div>${monthData.weather.condition} ${monthData.weather.temp}</div>
+          <div class="month-weather"><i class="fas fa-cloud-sun"></i> ${monthData.weather.condition} ${monthData.weather.temp}</div>
           <div class="month-summary">${monthData.summary}</div>
         </div>
 
@@ -355,13 +470,13 @@
           <h2 class="section-title">重要节日与消费特点</h2>
           <div class="festival-list">
             ${monthData.festivals.map(f => `
-              <div class="item">
-                <div class="date">${f.date}</div>
-                <div class="details">
+              <div class="festival-item">
+                <div class="festival-date">${f.date}</div>
+                <div class="festival-content">
                   <h3>${f.name}</h3>
                   <p>${f.description}</p>
                 </div>
-                ${f.tag ? `<div class="tag">${f.tag}</div>` : ''}
+                ${f.tag ? `<div class="festival-tag">${f.tag}</div>` : ''}
               </div>
             `).join('')}
           </div>
@@ -372,16 +487,16 @@
           ${monthData.recommended_categories.map(cat => `
             <div class="category-card">
               <div class="category-header">
-                <span class="icon"><i class="fas ${cat.icon}"></i></span>
-                <h3>${cat.name}</h3>
-                <span class="sales-growth">${cat.sales_growth}</span>
+                <span class="cat-icon"><i class="fas ${cat.icon}"></i></span>
+                <h3 class="cat-title">${cat.name}</h3>
+                <span class="cat-growth">${cat.sales_growth}</span>
               </div>
               <div class="category-body">
-                <div class="analysis">
-                  <h4>推广理由分析:</h4>
-                  <p>${cat.analysis}</p>
+                <div class="analysis-box">
+                  <div class="analysis-title"><i class="fas fa-lightbulb"></i> 推广理由分析</div>
+                  <div class="analysis-text">${cat.analysis}</div>
                 </div>
-                <div class="product-list">
+                <div class="product-grid">
                   ${cat.products.map(p => `<div class="product-item ${p.hot ? 'hot' : ''}">${p.name}</div>`).join('')}
                 </div>
               </div>
@@ -390,13 +505,13 @@
         </div>
 
         <div class="strategy-card">
-          <h3><i class="fas ${monthData.marketing_strategy.icon}"></i> ${monthData.marketing_strategy.title}</h3>
-          <div class="content">${monthData.marketing_strategy.suggestion}</div>
+          <div class="strategy-head"><i class="fas ${monthData.marketing_strategy.icon}"></i> ${monthData.marketing_strategy.title}</div>
+          <div class="strategy-content">${monthData.marketing_strategy.suggestion}</div>
         </div>
 
-        <div class="strategy-card platform-ops">
-          <h3><i class="fas ${monthData.platform_operations.icon}"></i> ${monthData.platform_operations.title}</h3>
-          <div class="ops-list">
+        <div class="strategy-card">
+          <div class="strategy-head"><i class="fas ${monthData.platform_operations.icon}"></i> ${monthData.platform_operations.title}</div>
+          <div class="ops-grid">
             ${monthData.platform_operations.points.map(p => `<div class="ops-item"><b>${p.platform}:</b> ${p.action}</div>`).join('')}
           </div>
         </div>
@@ -404,54 +519,39 @@
       container.innerHTML = html;
     }
 
+    // 导航栏滚动逻辑
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        const body = document.body;
+        if (window.scrollY > 50) {
+            nav.classList.add('scrolled');
+            body.classList.add('is-scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+            body.classList.remove('is-scrolled');
+        }
+    });
+
     fetch(DATA_URL)
       .then(r => r.json())
       .then(data => {
         const m = getMonthFromQuery();
         renderMonth(data[m] || data.january);
-        // 激活按钮样式（无重渲染）
-        const janBtn = document.getElementById('btn-jan');
-        const febBtn = document.getElementById('btn-feb');
-        const marBtn = document.getElementById('btn-mar');
-        const aprBtn = document.getElementById('btn-apr');
-        const mayBtn = document.getElementById('btn-may');
-        const junBtn = document.getElementById('btn-jun');
-        const julBtn = document.getElementById('btn-jul');
-        const augBtn = document.getElementById('btn-aug');
-        const sepBtn = document.getElementById('btn-sep');
-        const octBtn = document.getElementById('btn-oct');
-        const novBtn = document.getElementById('btn-nov');
-        const decBtn = document.getElementById('btn-dec');
-        if (janBtn && febBtn && marBtn && aprBtn && mayBtn && junBtn && julBtn && augBtn && sepBtn && octBtn && novBtn && decBtn) {
-          janBtn.className = 'btn';
-          febBtn.className = 'btn';
-          marBtn.className = 'btn';
-          aprBtn.className = 'btn';
-          mayBtn.className = 'btn';
-          junBtn.className = 'btn';
-          julBtn.className = 'btn';
-          augBtn.className = 'btn';
-          sepBtn.className = 'btn';
-          octBtn.className = 'btn';
-          novBtn.className = 'btn';
-          decBtn.className = 'btn';
-          if (m === 'february') febBtn.className = 'btn primary';
-          else if (m === 'march') marBtn.className = 'btn primary';
-          else if (m === 'april') aprBtn.className = 'btn primary';
-          else if (m === 'may') mayBtn.className = 'btn primary';
-          else if (m === 'june') junBtn.className = 'btn primary';
-          else if (m === 'july') julBtn.className = 'btn primary';
-          else if (m === 'august') augBtn.className = 'btn primary';
-          else if (m === 'september') sepBtn.className = 'btn primary';
-          else if (m === 'october') octBtn.className = 'btn primary';
-          else if (m === 'november') novBtn.className = 'btn primary';
-          else if (m === 'december') decBtn.className = 'btn primary';
-          else janBtn.className = 'btn primary';
-        }
+        
+        // 激活按钮样式
+        const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+        const fullMonths = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+        
+        months.forEach((short, idx) => {
+            const btn = document.getElementById(`btn-${short}`);
+            if(btn) {
+                btn.className = fullMonths[idx] === m ? 'btn primary' : 'btn';
+            }
+        });
       })
       .catch(err => {
         const root = document.getElementById('calendar-content');
-        root.innerHTML = '<div class="panel" style="color: red; text-align: center;">加载日历数据失败，请检查数据文件或网络连接。</div>';
+        root.innerHTML = '<div style="background:#FEF2F2; color:#DC2626; padding:20px; border-radius:12px; text-align:center;">加载日历数据失败，请检查数据文件或网络连接。</div>';
         console.error(err);
       });
   </script>

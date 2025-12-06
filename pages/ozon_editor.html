@@ -1,0 +1,5139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OzonBox V11 - ozonbox图形编辑器</title>
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon.svg">
+    <link rel="apple-touch-icon" href="../images/favicon.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js"></script>
+
+    <style>
+        /* --- 基础样式变量 --- */
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-dark: #0f172a;
+            --text-main: #334155;
+            --text-sub: #64748b;
+            --border: #e2e8f0;
+            --sidebar-w: 280px;
+            --header-h: 50px;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f8fafc;
+            color: var(--text-main);
+        }
+
+        /* --- 布局结构 --- */
+        .app-shell {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 左侧侧边栏 */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: #fff;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+
+        .header {
+            height: var(--header-h);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-weight: 800;
+            font-size: 18px;
+            color: var(--bg-dark);
+            background: #fff;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f1f5f9;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            color: var(--text-sub);
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            border-color: var(--primary);
+            background: #fff;
+            font-weight: 600;
+        }
+
+        .panel-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: none;
+        }
+
+        .panel-scroll.active {
+            display: block;
+        }
+
+        /* 中间工作区 */
+        .workspace {
+            flex: 1;
+            position: relative;
+            background: #e2e8f0;
+            /* 棋盘格背景 */
+            background-image: radial-gradient(#94a3b8 1px, transparent 1px);
+            background-size: 20px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .toolbar-top {
+            height: 44px;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            z-index: 10;
+        }
+
+        .canvas-wrapper {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 右侧属性面板 */
+        .properties {
+            width: 280px;
+            background: #fff;
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+        }
+
+        .prop-header {
+            height: var(--header-h);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            font-weight: 600;
+            font-size: 14px;
+            background: #f8fafc;
+        }
+
+        .prop-body {
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* --- UI 组件样式 --- */
+        h5 {
+            margin: 20px 0 10px;
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        h5:first-child {
+            margin-top: 0;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background: white;
+            border-color: #cbd5e1;
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            border-color: #94a3b8;
+            background: #f8fafc;
+        }
+
+        .btn-tool {
+            min-width: 32px;
+            height: 32px;
+            padding: 0 8px;
+            border-radius: 4px;
+            border: none;
+            background: transparent;
+            color: var(--text-sub);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-tool:hover {
+            background: #f1f5f9;
+            color: var(--bg-dark);
+        }
+        
+        .divider {
+            width: 1px;
+            height: 20px;
+            background: #cbd5e1;
+            margin: 0 6px;
+        }
+
+        /* 控件样式 */
+        .control-group {
+            margin-bottom: 15px;
+            background: #fff;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            appearance: none;
+            -webkit-appearance: none;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 36px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 2px;
+            background: #fff;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 13px;
+            box-sizing: border-box;
+            color: var(--text-main);
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-sub);
+            pointer-events: none;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 60px;
+        }
+        
+
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+    
+    <aside class="sidebar">
+        <div class="header">OzonBox <span style="font-weight:400; font-size:12px; margin-left:8px; color:#64748b;">V11 Pro</span></div>
+        <div class="nav-tabs">
+            <div class="nav-item active" onclick="setTab('canvas')">画布</div>
+            <div class="nav-item" onclick="setTab('assets')">素材</div>
+            <div class="nav-item" onclick="setTab('batch')">批量</div>
+        </div>
+
+        <div id="panel-canvas" class="panel-scroll active">
+            <h5>📐 画布尺寸</h5>
+            <div class="grid-2">
+                <button class="btn btn-outline" onclick="setArtboard(900, 1200, '3:4')"> 3:4 (900x1200)</button>
+                <button class="btn btn-outline" onclick="setArtboard(1200, 1200, '1:1')">1:1 (1200x1200)</button>
+            </div>
+            
+            <h5>画布背景颜色</h5>
+            <input type="color" value="#ffffff" oninput="updateBg(this.value)">
+            
+            <h5>画布渐变背景</h5>
+            <div style="display:flex; gap:5px; margin-bottom:10px;">
+                <select onchange="applyGradientPreset(this.value)" style="flex:1; font-size:12px; padding:5px;">
+                    <option value="">常用渐变...</option>
+                    <option value="sky">天空蓝</option>
+                    <option value="sunset">日落橙</option>
+                    <option value="ocean">海洋绿</option>
+                    <option value="lavender">薰衣草紫</option>
+                    <option value="fire">烈火红</option>
+                </select>
+                <button class="btn btn-outline" style="padding:5px 10px; font-size:12px;" onclick="resetGradientColors()">↺ 重置</button>
+            </div>
+            <div class="grid-2">
+                <button class="btn btn-outline" onclick="applyGradient('linear-top-bottom')">↕️ 上到下</button>
+                <button class="btn btn-outline" onclick="applyGradient('linear-left-right')">↔️ 左到右</button>
+                <button class="btn btn-outline" onclick="applyGradient('linear-topleft-bottomright')">↘️ 左上到右下</button>
+                <button class="btn btn-outline" onclick="applyGradient('linear-topright-bottomleft')">↙️ 右上到左下</button>
+                <button class="btn btn-outline" onclick="applyGradient('radial-center')">◎ 中心径向</button>
+                <button class="btn btn-outline" onclick="applyGradient('radial-corner')">◉ 角落径向</button>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <input type="color" id="gradient-color1" value="#ffffff" title="起始颜色" oninput="previewGradient()">
+                <input type="color" id="gradient-color2" value="#e0f2fe" title="结束颜色" oninput="previewGradient()">
+            </div>
+
+            <hr style="border:0; border-top:1px solid #f1f5f9; margin:20px 0;">
+
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h5>智能边框设置</h5>
+                <label style="font-size:12px; cursor:pointer; display:flex; align-items:center; gap:5px;">
+                    <input type="checkbox" id="border-toggle" onchange="toggleBorder(this.checked)"> 启用
+                </label>
+            </div>
+
+            <div id="border-controls" style="opacity:0.5; pointer-events:none; transition:0.3s; margin-top:10px;">
+                <div class="control-group">
+                    <div class="control-header"><span>边框颜色</span></div>
+                    <input type="color" id="bd-color" value="#ef4444" oninput="updateBorderParam('color', this.value)">
+                </div>
+                <div class="control-group">
+                    <div class="control-header"><span>内边距 (Inset)</span><span id="val-padding">10px</span></div>
+                    <input type="range" min="0" max="100" value="10" oninput="updateBorderParam('padding', parseInt(this.value))">
+                </div>
+                <div class="control-group">
+                    <div class="control-header"><span>边框粗细</span><span id="val-width">20px</span></div>
+                    <input type="range" min="1" max="100" value="20" oninput="updateBorderParam('width', parseInt(this.value))">
+                </div>
+                <div class="control-group">
+                    <div class="control-header"><span>透明度</span><span id="val-opacity">100%</span></div>
+                    <input type="range" min="0" max="1" step="0.1" value="1" oninput="updateBorderParam('opacity', parseFloat(this.value))">
+                </div>
+                <div class="control-group">
+                    <div class="control-header"><span>圆角半径</span><span id="val-border-radius">0px</span></div>
+                    <input type="range" min="0" max="50" value="0" oninput="updateBorderParam('borderRadius', parseInt(this.value))">
+                </div>
+            </div>
+        </div>
+
+        <div id="panel-assets" class="panel-scroll">
+            <h5>文本工具 (自动换行)</h5>
+            <button class="btn" style="background:#fef2f2; color:#b91c1c; border-color:#fecaca;" onclick="addTextBox('🔥 ХИТ', '#b91c1c')">🔥 热销 (ХИТ)</button>
+            <button class="btn" style="background:#f0fdf4; color:#15803d; border-color:#bbf7d0;" onclick="addTextBox('✨ НОВИНКА', '#15803d')">✨ 新品 (НОВИНКА)</button>
+            <button class="btn btn-primary" onclick="addTextBox('双击编辑内容', '#334155')">添加文本框</button>
+            
+
+            
+            <h5>电商图标</h5>
+            <div class="grid-2">
+                <button class="btn btn-outline" onclick="addBadge('sale')">SALE</button>
+                <button class="btn btn-outline" onclick="addBadge('new')">NEW</button>
+                <button class="btn btn-outline" onclick="addBadge('best')">BEST</button>
+                <button class="btn btn-outline" onclick="addBadge('fast')">FAST</button>
+            </div>
+
+            <h5>上传底图</h5>
+            <button class="btn btn-outline" onclick="document.getElementById('up-prev').click()">📂 上传预览图片</button>
+            <input type="file" id="up-prev" hidden accept="image/*" onchange="loadPreview(this)">
+            
+            <h5>上传素材</h5>
+            <button class="btn btn-outline" onclick="document.getElementById('up-asset').click()">📁 上传素材图片</button>
+            <input type="file" id="up-asset" hidden accept="image/*" multiple onchange="loadAsset(this)">
+            <div style="font-size:12px; color:#64748b; margin:8px 0;">可一次选择多张图片进行批量上传，选中图片后可在属性面板中进行裁剪操作，点击右上角×删除素材</div>
+            
+            <h5>图形素材</h5>
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:15px;">
+                <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; padding:8px; text-align:center; cursor:pointer;" onclick="addShapeToCanvas('rectangle')">
+                    <div style="width:40px; height:40px; background:#3b82f6; margin:0 auto 5px;"></div>
+                    <div style="font-size:11px;">矩形</div>
+                </div>
+                <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; padding:8px; text-align:center; cursor:pointer;" onclick="addShapeToCanvas('circle')">
+                    <div style="width:40px; height:40px; background:#3b82f6; border-radius:50%; margin:0 auto 5px;"></div>
+                    <div style="font-size:11px;">圆形</div>
+                </div>
+                <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; padding:8px; text-align:center; cursor:pointer;" onclick="addShapeToCanvas('triangle')">
+                    <div style="width:0; height:0; border-left:20px solid transparent; border-right:20px solid transparent; border-bottom:35px solid #3b82f6; margin:0 auto 5px;"></div>
+                    <div style="font-size:11px;">三角形</div>
+                </div>
+               
+            </div>
+            
+            <h5>标注素材</h5>
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:15px;">
+                <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; padding:8px; text-align:center; cursor:pointer;" onclick="addDimensionLine('horizontal')">
+                    <div style="width:40px; height:40px; position:relative; margin:0 auto 5px;">
+                        <div style="position:absolute; top:15px; left:0; width:40px; height:2px; background:#3b82f6; border-top:1px dashed #3b82f6;"></div>
+                        <div style="position:absolute; top:10px; left:0; width:0; height:0; border-top:5px solid transparent; border-bottom:5px solid transparent; border-right:10px solid #3b82f6;"></div>
+                        <div style="position:absolute; top:10px; right:0; width:0; height:0; border-top:5px solid transparent; border-bottom:5px solid transparent; border-left:10px solid #3b82f6;"></div>
+                        <div style="position:absolute; top:0; left:15px; width:2px; height:10px; background:#3b82f6;"></div>
+                        <div style="position:absolute; top:0; right:15px; width:2px; height:10px; background:#3b82f6;"></div>
+                        <div style="position:absolute; top:-15px; left:10px; font-size:10px; color:#3b82f6;">横</div>
+                    </div>
+                    <div style="font-size:11px;">横向标注</div>
+                </div>
+               
+                <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; padding:8px; text-align:center; cursor:pointer;" onclick="addAnnotationToCanvas('arrow')">
+                    <div style="width:40px; height:40px; position:relative; margin:0 auto 5px;">
+                        <div style="position:absolute; top:15px; left:5px; width:20px; height:10px; background:#3b82f6;"></div>
+                        <div style="position:absolute; top:10px; right:5px; width:0; height:0; border-top:10px solid transparent; border-bottom:10px solid transparent; border-left:15px solid #3b82f6;"></div>
+                    </div>
+                    <div style="font-size:11px;">箭头</div>
+                </div>
+                <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; padding:8px; text-align:center; cursor:pointer;" onclick="addImprovedCallout()">
+                    <div style="width:40px; height:40px; position:relative; margin:0 auto 5px;">
+                        <div style="position:absolute; top:5px; left:5px; width:30px; height:20px; background:#3b82f6; border-radius:10px;"></div>
+                        <div style="position:absolute; top:25px; left:15px; width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent; border-top:10px solid #3b82f6;"></div>
+                        <div style="position:absolute; top:10px; left:15px; width:10px; height:2px; background:white;"></div>
+                        <div style="position:absolute; top:15px; left:15px; width:10px; height:2px; background:white;"></div>
+                    </div>
+                    <div style="font-size:11px;">标注气泡</div>
+                </div>
+                <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; padding:8px; text-align:center; cursor:pointer;" onclick="addAnnotationToCanvas('highlight')">
+                    <div style="width:40px; height:40px; background:linear-gradient(to right, transparent 45%, rgba(59, 130, 246, 0.3) 45%, rgba(59, 130, 246, 0.3) 55%, transparent 55%); margin:0 auto 5px;"></div>
+                    <div style="font-size:11px;">高亮</div>
+                </div>
+                <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; padding:8px; text-align:center; cursor:pointer;" onclick="addNumberMarker()">
+                    <div style="width:40px; height:40px; position:relative; margin:0 auto 5px;">
+                        <div style="position:absolute; top:5px; left:10px; width:20px; height:20px; background:#3b82f6; border-radius:50%;"></div>
+                        <div style="position:absolute; top:10px; left:17px; color:white; font-size:12px; font-weight:bold;">1</div>
+                    </div>
+                    <div style="font-size:11px;">数字标记</div>
+                </div>
+                <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; padding:8px; text-align:center; cursor:pointer;" onclick="addBraceAnnotation()">
+                    <div style="width:40px; height:40px; position:relative; margin:0 auto 5px;">
+                        <div style="position:absolute; top:5px; left:15px; width:2px; height:30px; background:#3b82f6;"></div>
+                        <div style="position:absolute; top:5px; left:5px; width:10px; height:2px; background:#3b82f6;"></div>
+                        <div style="position:absolute; top:33px; left:5px; width:10px; height:2px; background:#3b82f6;"></div>
+                        <div style="position:absolute; top:15px; left:20px; font-size:10px; color:#3b82f6;">{</div>
+                        <div style="position:absolute; top:15px; left:25px; font-size:10px; color:#3b82f6;">}</div>
+                    </div>
+                    <div style="font-size:11px;">大括号</div>
+                </div>
+                <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; padding:8px; text-align:center; cursor:pointer;" onclick="addStarMarker()">
+                    <div style="width:40px; height:40px; position:relative; margin:0 auto 5px;">
+                        <div style="position:absolute; top:5px; left:10px; width:20px; height:20px; background:#3b82f6; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);"></div>
+                    </div>
+                    <div style="font-size:11px;">星标</div>
+                </div>
+            </div>
+
+            
+            <div id="asset-list" style="margin-top:10px; max-height:200px; overflow-y:auto;"></div>
+        </div>
+
+        <div id="panel-batch" class="panel-scroll">
+            <div style="padding:15px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; font-size:12px; color:#1e40af; line-height:1.6; margin-bottom:15px;">
+                <b>批量生成模式：</b><br>
+                1. 在画布设计好水印、边框。<br>
+                2. 上传多张图片，自动合成并打包。<br>
+                * 您的自定义边框和文字都会完美保留。
+            </div>
+            <button class="btn btn-primary" onclick="document.getElementById('up-batch').click()">⚡ 选择多图并导出 ZIP</button>
+            <input type="file" id="up-batch" hidden multiple accept="image/*" onchange="runBatch(this)">
+            <div id="batch-status" style="margin-top:10px; font-size:12px; text-align:center; color:#64748b;"></div>
+        </div>
+    </aside>
+
+    <main class="workspace">
+        <div class="toolbar-top">
+            <button class="btn-tool" onclick="undo()" title="撤回 (Ctrl+Z)" id="undo-btn" disabled>↩️</button>
+            <button class="btn-tool" onclick="redo()" title="恢复 (Ctrl+Y)" id="redo-btn" disabled>↪️</button>
+            <div class="divider"></div>
+            <button class="btn-tool" onclick="align('left')" title="左对齐">⇤</button>
+            <button class="btn-tool" onclick="align('centerH')" title="水平居中">⇹</button>
+            <button class="btn-tool" onclick="align('right')" title="右对齐">⇥</button>
+            <div class="divider"></div>
+            <button class="btn-tool" onclick="align('top')" title="顶对齐">⤒</button>
+            <button class="btn-tool" onclick="align('centerV')" title="垂直居中">⇕</button>
+            <button class="btn-tool" onclick="align('bottom')" title="底对齐">⤓</button>
+            
+            <div class="divider" style="margin-left:auto;"></div>
+
+            <button class="btn-tool" onclick="layerMove('up')" title="上移图层">🔼</button>
+            <button class="btn-tool" onclick="layerMove('down')" title="下移图层">🔽</button>
+            <button class="btn-tool" style="color:#ef4444;" onclick="deleteActive()" title="删除 (Delete)">🗑️</button>
+            <div class="divider"></div>
+            <button class="btn-tool" onclick="resetView()" title="归位">🔍归位</button>
+            <a href="https://ozonbox.top/" target="_blank" class="btn btn-outline" style="width:auto; height:32px; padding:0 15px; text-decoration:none; display:flex; align-items:center; margin-right:10px;">返回OzonBox</a>
+            <button class="btn btn-primary" style="width:auto; height:32px; padding:0 15px;" onclick="exportCurrentCanvas()">导出图片</button>
+        </div>
+        
+        <div class="canvas-wrapper" id="canvas-container">
+            <canvas id="c"></canvas>
+        </div>
+
+        <div class="status-bar">
+            <span id="size-txt">900 x 1200</span>
+            <span style="margin:0 5px; opacity:0.3">|</span>
+            <span id="zoom-txt">100%</span>
+            <span style="margin:0 5px; opacity:0.3">|</span>
+            <span>滚轮缩放 / Alt+拖拽 / 键盘微调</span>
+        </div>
+    </main>
+
+    <aside class="properties">
+        <div class="prop-header">属性面板</div>
+        <div class="prop-body" id="prop-body">
+            <div class="empty-state">请选中元素</div>
+        </div>
+    </aside>
+    
+
+
+</div>
+
+<script>
+    // ==========================================
+    // 1. Fabric Canvas 初始化
+    // ==========================================
+    const wrapper = document.getElementById('canvas-container');
+    const canvas = new fabric.Canvas('c', {
+        width: wrapper.offsetWidth,
+        height: wrapper.offsetHeight,
+        backgroundColor: null, // 透明背景以显示CSS网格
+        preserveObjectStacking: true, // 保持选中对象的层级
+        selection: true,
+        snapThreshold: 10, // 吸附阈值
+        snapToGrid: true // 启用网格吸附
+    });
+
+    // Fabric 对象全局配置
+    fabric.Object.prototype.transparentCorners = false;
+    fabric.Object.prototype.cornerStyle = 'circle';
+    fabric.Object.prototype.cornerColor = '#2563eb';
+    fabric.Object.prototype.borderColor = '#2563eb';
+    fabric.Object.prototype.cornerSize = 10;
+    // 禁止缓存以提高导出清晰度
+    fabric.Object.prototype.objectCaching = false;
+
+    // 全局状态管理
+    let artboard = { w: 900, h: 1200, rect: null, bgFill: '#ffffff', bgGradient: null };
+    
+    // 边框状态管理
+    let borderState = {
+        visible: false,
+        color: '#ef4444',
+        padding: 10,
+        width: 20,
+        opacity: 1,
+        borderRadius: 0, // 圆角半径
+        obj: null
+    };
+    
+    // 初始化画布系统
+    function initMultiCanvas() {
+        // 单画布模式，不需要初始化多画布系统
+    }
+    
+    // 更新画布列表UI
+    function updateCanvasListUI() {
+        // 单画布模式，不需要画布列表UI
+    }
+    
+    // 切换画布
+    function switchCanvas(index) {
+        // 单画布模式，不需要切换画布
+    }
+    
+    // 添加新画布
+    function addNewCanvas() {
+        // 单画布模式，不需要添加新画布
+    }
+    
+    // 删除画布
+    function deleteCanvas(index) {
+        // 单画布模式，不需要删除画布
+    }
+    
+    // 保存当前画布状态
+    function saveCurrentCanvasState() {
+        // 单画布模式，不需要保存画布状态
+    }
+    
+    // 保存所有画布到本地存储
+    function saveCanvasesToLocalStorage() {
+        // 单画布模式，不需要保存多个画布到本地存储
+    }
+    
+    // 从本地存储加载画布
+    function loadCanvasesFromLocalStorage() {
+        // 单画布模式，不需要从本地存储加载多个画布
+        return false;
+    }
+    
+    // 重命名画布
+    function renameCanvas(index) {
+        // 单画布模式，不需要重命名画布
+    }
+
+    // ==========================================
+    // 2. 核心：白纸 (Artboard) 逻辑
+    // ==========================================
+    function initArtboard() {
+        // 创建白纸矩形
+        artboard.rect = new fabric.Rect({
+            left: 0, top: 0, width: artboard.w, height: artboard.h,
+            fill: artboard.bgFill,
+            selectable: false, evented: false,
+            shadow: { color: 'rgba(0,0,0,0.1)', blur: 20, offsetX: 0, offsetY: 5 }
+        });
+        canvas.add(artboard.rect);
+        canvas.sendToBack(artboard.rect);
+        
+        // 设置剪裁区域，确保内容不溢出
+        updateClipPath();
+        resetView();
+    }
+    
+    function updateClipPath() {
+        canvas.clipPath = new fabric.Rect({
+            left: 0, top: 0, width: artboard.w, height: artboard.h,
+            absolutePositioned: true
+        });
+    }
+
+    // ==========================================
+    // 3. 核心：自定义边框渲染 (V11 修正版 - 完美内缩)
+    // ==========================================
+    function renderBorder() {
+        // 1. 先移除旧边框
+        if (borderState.obj) {
+            canvas.remove(borderState.obj);
+            borderState.obj = null;
+        }
+
+        if (!borderState.visible) return;
+
+        // 2. 获取基础参数
+        const pad = borderState.padding;
+        const borderWidth = borderState.width;
+        const borderRadius = borderState.borderRadius;
+
+        // 3. 计算外轮廓尺寸 (想要固定的外边界大小)
+        // 这是边框最外侧应该到达的位置所围成的尺寸
+        const outerW = artboard.w - (pad * 2);
+        const outerH = artboard.h - (pad * 2);
+
+        // 安全检查：如果边框太粗超过了整体宽度，设为0防止报错
+        if (outerW <= 0 || outerH <= 0) return;
+
+        // 4. 计算 Fabric 矩形的实际路径尺寸
+        // Fabric 渲染逻辑：实际视觉大小 = width + strokeWidth
+        // 所以：pathWidth = 视觉外宽 - 边框粗细
+        const pathW = Math.max(0, outerW - borderWidth);
+        const pathH = Math.max(0, outerH - borderWidth);
+
+        // 5. 创建矩形对象
+        borderState.obj = new fabric.Rect({
+            // 【关键修改】使用中心定位，确保缩放时绝对居中
+            originX: 'center', 
+            originY: 'center',
+            left: artboard.w / 2, 
+            top: artboard.h / 2,
+            
+            // 尺寸设置
+            width: pathW,
+            height: pathH,
+            
+            // 圆角设置
+            rx: borderRadius,
+            ry: borderRadius,
+            
+            // 样式设置
+            fill: 'transparent',
+            stroke: borderState.color,
+            strokeWidth: borderWidth,
+            opacity: borderState.opacity,
+            
+            // 交互设置
+            selectable: false,
+            evented: false,
+            strokeUniform: true, // 保持缩放时线条比例（虽然此处不缩放，但建议保留）
+            strokeLineJoin: 'miter', // 使用直角连接，使边缘更锐利，视觉定位更准（如果喜欢圆角可改为 round）
+            strokeMiterLimit: 10
+        });
+
+        // 6. 添加到画布
+        canvas.add(borderState.obj);
+        canvas.requestRenderAll();
+    }
+    // 边框UI控制函数
+    window.toggleBorder = function(isChecked) {
+        borderState.visible = isChecked;
+        const controls = document.getElementById('border-controls');
+        controls.style.opacity = isChecked ? '1' : '0.5';
+        controls.style.pointerEvents = isChecked ? 'auto' : 'none';
+        renderBorder();
+        
+        // 单画布模式，无需保存到本地存储
+    }
+
+    window.updateBorderParam = function(key, val) {
+        borderState[key] = val;
+        
+        // 更新显示数值
+        if(key === 'padding') document.getElementById('val-padding').innerText = val + 'px';
+        if(key === 'width') document.getElementById('val-width').innerText = val + 'px';
+        if(key === 'opacity') document.getElementById('val-opacity').innerText = Math.round(val*100) + '%';
+        if(key === 'borderRadius') document.getElementById('val-border-radius').innerText = val + 'px';
+        
+        renderBorder();
+        
+        // 单画布模式，无需保存到本地存储
+    }
+
+    // ==========================================
+    // 4. 核心：文本自动换行 (Textbox)
+    // ==========================================
+    window.addTextBox = function(text, color) {
+        const t = new fabric.Textbox(text, {
+            left: artboard.w / 2,
+            top: artboard.h / 2,
+            originX: 'center',
+            originY: 'center',
+            width: 400, // 初始宽度，决定何时换行
+            fontSize: 60,
+            fill: color,
+            fontFamily: 'Arial',
+            textAlign: 'center',
+            splitByGrapheme: true // 支持中文/长单词强制换行
+        });
+        canvas.add(t);
+        canvas.setActiveObject(t);
+        
+        // 单画布模式，无需处理画布引用
+    };
+    
+    // 添加带特效的文本
+    window.addTextWithEffect = function(effectType) {
+        let text = '特效文本';
+        let config = {
+            left: artboard.w / 2,
+            top: artboard.h / 2,
+            originX: 'center',
+            originY: 'center',
+            width: 400,
+            fontSize: 60,
+            fontFamily: 'Arial',
+            textAlign: 'center',
+            splitByGrapheme: true
+        };
+        
+        switch(effectType) {
+            case 'highlight':
+                text = '重点内容';
+                config.fill = '#333333';
+                config.fontWeight = 'bold';
+                config.backgroundColor = 'rgba(255, 255, 0, 0.3)';
+                config.underline = true;
+                break;
+            case 'skew':
+                text = '变形文字';
+                config.fill = '#1e40af';
+                config.skewX = 15;
+                config.angle = -5;
+                break;
+            case 'gradient':
+                text = '渐变文字';
+                config.stroke = '#000000';
+                config.strokeWidth = 1;
+                // 渐变填充将在创建对象后设置
+                break;
+            case 'mixed':
+                text = '混合特效';
+                config.fill = '#8b5cf6';
+                config.fontWeight = 'bold';
+                config.skewX = 15;
+                config.angle = -5;
+                config.backgroundColor = 'rgba(255, 255, 0, 0.3)';
+                config.stroke = '#ff0000';
+                config.strokeWidth = 1;
+                // 添加阴影效果
+                config.shadow = new fabric.Shadow({
+                    color: 'rgba(0,0,0,0.4)',
+                    blur: 8,
+                    offsetX: 4,
+                    offsetY: 4
+                });
+                break;
+            case 'outline':
+                text = '描边文字';
+                config.fill = '#000000';
+                config.stroke = '#ff0000';
+                config.strokeWidth = 2;
+                break;
+            case 'shadow':
+                text = '阴影文字';
+                config.fill = '#333333';
+                // 阴影将在创建对象后设置
+                break;
+            case 'glow':
+                text = '发光文字';
+                config.fill = '#00ffff';
+                // 发光效果将在创建对象后设置
+                break;
+            case '3d':
+                text = '3D文字';
+                config.fill = '#333333';
+                config.fontWeight = 'bold';
+                // 3D效果将在创建对象后设置
+                break;
+        }
+        
+        const t = new fabric.Textbox(text, config);
+        
+        // 特殊处理渐变效果
+        if (effectType === 'gradient') {
+            const gradient = new fabric.Gradient({
+                type: 'linear',
+                coords: {
+                    x1: 0,
+                    y1: 0,
+                    x2: t.width,
+                    y2: 0
+                },
+                colorStops: [
+                    { offset: 0, color: '#ff00cc' },
+                    { offset: 0.25, color: '#3333ff' },
+                    { offset: 0.5, color: '#00ccff' },
+                    { offset: 0.75, color: '#00ff00' },
+                    { offset: 1, color: '#ffff00' }
+                ]
+            });
+            t.set('fill', gradient);
+            // 添加描边使渐变更明显
+            t.set({
+                stroke: '#000000',
+                strokeWidth: 1
+            });
+        }
+        
+        // 特殊处理阴影效果
+        if (effectType === 'shadow') {
+            t.set('shadow', new fabric.Shadow({
+                color: 'rgba(0,0,0,0.4)',
+                blur: 8,
+                offsetX: 4,
+                offsetY: 4
+            }));
+        }
+        
+        // 特殊处理发光效果
+        if (effectType === 'glow') {
+            t.set('shadow', new fabric.Shadow({
+                color: '#00ffff',
+                blur: 20,
+                offsetX: 0,
+                offsetY: 0
+            }));
+        }
+        
+        // 特殊处理3D效果
+        if (effectType === '3d') {
+            t.set({
+                shadow: new fabric.Shadow({
+                    color: 'rgba(0,0,0,0.2)',
+                    blur: 0,
+                    offsetX: 3,
+                    offsetY: 3
+                }),
+                stroke: '#cccccc',
+                strokeWidth: 1
+            });
+        }
+        
+        canvas.add(t);
+        canvas.setActiveObject(t);
+    }
+    
+    // 添加电商图标（图形素材版本）
+    window.addBadge = function(type) {
+        let text, color, bgColor;
+        switch(type) {
+            case 'sale': text = 'SALE'; color = '#ffffff'; bgColor = '#dc2626'; break;
+            case 'new': text = 'NEW'; color = '#ffffff'; bgColor = '#059669'; break;
+            case 'best': text = 'BEST'; color = '#ffffff'; bgColor = '#d97706'; break;
+            case 'fast': text = 'FAST'; color = '#ffffff'; bgColor = '#2563eb'; break;
+        }
+        
+        // 创建组合对象（图形+文字）
+        const group = new fabric.Group([
+            // 背景矩形
+            new fabric.Rect({
+                width: 120,
+                height: 50,
+                fill: bgColor,
+                rx: 6,
+                ry: 6,
+                originX: 'center',
+                originY: 'center'
+            }),
+            // 文字
+            new fabric.Text(text, {
+                originX: 'center',
+                originY: 'center',
+                fontSize: 24,
+                fontWeight: 'bold',
+                fill: color,
+                fontFamily: 'Arial'
+            })
+        ], {
+            left: artboard.w / 2,
+            top: artboard.h / 2,
+            originX: 'center',
+            originY: 'center',
+            // 添加自定义属性，标识这是图形素材版本的电商图标
+            isBadge: true,
+            isBadgeShape: true,
+            badgeType: type,
+            textContent: text,
+            badgeColor: color,
+            badgeBgColor: bgColor
+        });
+        
+        canvas.add(group);
+        canvas.setActiveObject(group);
+        
+        // 确保画布交互正常
+        enableCanvasInteractions();
+    };    
+    // 加载预览图片
+    window.loadPreview = function(input) {
+        if (!input.files || !input.files[0]) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            fabric.Image.fromURL(e.target.result, function(img) {
+                img.set({
+                    left: artboard.w / 2,
+                    top: artboard.h / 2,
+                    originX: 'center',
+                    originY: 'center',
+                    scaleX: 0.5,
+                    scaleY: 0.5
+                });
+                img.isPreview = true; // 标记为预览图
+                canvas.add(img);
+                canvas.setActiveObject(img);
+                
+                // 确保画布交互正常
+                enableCanvasInteractions();
+                
+                // 单画布模式，无需处理画布引用
+            });
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    // ==========================================
+    // 5. 交互：对齐、快捷键、视图
+    // ==========================================
+    
+    // 画布尺寸设置
+    window.setArtboard = function(w, h, label) {
+        artboard.w = w; artboard.h = h;
+        artboard.rect.set({width: w, height: h});
+        updateClipPath();
+        renderBorder(); // 尺寸变了，边框也要重绘
+        resetView();
+        document.getElementById('size-txt').innerText = `${w} x ${h}`;
+        
+        // 单画布模式，无需保存到本地存储
+    }
+    
+    // 背景色
+    window.updateBg = function(val) {
+        artboard.bgFill = val;
+        artboard.rect.set('fill', val);
+        canvas.requestRenderAll();
+        
+        // 单画布模式，无需保存到本地存储
+    }
+    
+    // 应用渐变背景
+    window.applyGradient = function(type) {
+        // 获取用户选择的颜色
+        const color1 = document.getElementById('gradient-color1').value;
+        const color2 = document.getElementById('gradient-color2').value;
+        
+        let gradient;
+        
+        // 根据不同类型创建渐变
+        switch(type) {
+            case 'linear-top-bottom':
+                // 从上到下的线性渐变
+                gradient = new fabric.Gradient({
+                    type: 'linear',
+                    coords: {
+                        x1: 0,
+                        y1: 0,
+                        x2: 0,
+                        y2: artboard.h
+                    },
+                    colorStops: [
+                        { offset: 0, color: color1 },
+                        { offset: 1, color: color2 }
+                    ]
+                });
+                break;
+            case 'linear-left-right':
+                // 从左到右的线性渐变
+                gradient = new fabric.Gradient({
+                    type: 'linear',
+                    coords: {
+                        x1: 0,
+                        y1: 0,
+                        x2: artboard.w,
+                        y2: 0
+                    },
+                    colorStops: [
+                        { offset: 0, color: color1 },
+                        { offset: 1, color: color2 }
+                    ]
+                });
+                break;
+            case 'linear-topleft-bottomright':
+                // 从左上到右下的线性渐变
+                gradient = new fabric.Gradient({
+                    type: 'linear',
+                    coords: {
+                        x1: 0,
+                        y1: 0,
+                        x2: artboard.w,
+                        y2: artboard.h
+                    },
+                    colorStops: [
+                        { offset: 0, color: color1 },
+                        { offset: 1, color: color2 }
+                    ]
+                });
+                break;
+            case 'linear-topright-bottomleft':
+                // 从右上到左下的线性渐变
+                gradient = new fabric.Gradient({
+                    type: 'linear',
+                    coords: {
+                        x1: artboard.w,
+                        y1: 0,
+                        x2: 0,
+                        y2: artboard.h
+                    },
+                    colorStops: [
+                        { offset: 0, color: color1 },
+                        { offset: 1, color: color2 }
+                    ]
+                });
+                break;
+            case 'radial-center':
+                // 中心径向渐变
+                gradient = new fabric.Gradient({
+                    type: 'radial',
+                    coords: {
+                        x1: artboard.w / 2,
+                        y1: artboard.h / 2,
+                        r1: 0,
+                        x2: artboard.w / 2,
+                        y2: artboard.h / 2,
+                        r2: Math.max(artboard.w, artboard.h) / 2
+                    },
+                    colorStops: [
+                        { offset: 0, color: color1 },
+                        { offset: 1, color: color2 }
+                    ]
+                });
+                break;
+            case 'radial-corner':
+                // 角落径向渐变
+                gradient = new fabric.Gradient({
+                    type: 'radial',
+                    coords: {
+                        x1: 0,
+                        y1: 0,
+                        r1: 0,
+                        x2: 0,
+                        y2: 0,
+                        r2: Math.sqrt(artboard.w * artboard.w + artboard.h * artboard.h)
+                    },
+                    colorStops: [
+                        { offset: 0, color: color1 },
+                        { offset: 1, color: color2 }
+                    ]
+                });
+                break;
+            default:
+                // 默认为从左上到右下的线性渐变
+                gradient = new fabric.Gradient({
+                    type: 'linear',
+                    coords: {
+                        x1: 0,
+                        y1: 0,
+                        x2: artboard.w,
+                        y2: artboard.h
+                    },
+                    colorStops: [
+                        { offset: 0, color: color1 },
+                        { offset: 1, color: color2 }
+                    ]
+                });
+        }
+        
+        artboard.rect.set('fill', gradient);
+        canvas.requestRenderAll();
+        
+        // 单画布模式，无需保存渐变设置到特定画布
+        
+        // 单画布模式，无需保存到本地存储
+    }
+    
+    // 应用预设渐变
+    window.applyGradientPreset = function(preset) {
+        if (!preset) return;
+        
+        // 预设颜色组合
+        const presets = {
+            sky: ['#ffffff', '#bae6fd'],
+            sunset: ['#fffbeb', '#fdba74'],
+            ocean: ['#ecfdf5', '#6ee7b7'],
+            lavender: ['#faf5ff', '#d8b4fe'],
+            fire: ['#fef2f2', '#fecaca']
+        };
+        
+        // 设置颜色
+        const [color1, color2] = presets[preset];
+        document.getElementById('gradient-color1').value = color1;
+        document.getElementById('gradient-color2').value = color2;
+        
+        // 应用默认渐变（左上到右下）
+        applyGradient('linear-topleft-bottomright');
+    }
+    
+    // 重置渐变颜色
+    window.resetGradientColors = function() {
+        document.getElementById('gradient-color1').value = '#ffffff';
+        document.getElementById('gradient-color2').value = '#e0f2fe';
+        
+        // 应用重置后的颜色
+        applyGradient('linear-topleft-bottomright');
+    }
+    
+    // 实时预览渐变
+    window.previewGradient = function() {
+        // 应用默认渐变（左上到右下）进行预览
+        applyGradient('linear-topleft-bottomright');
+    }
+
+    // 对齐工具
+    window.align = function(type) {
+        const o = canvas.getActiveObject(); if(!o) return;
+        const w = o.getScaledWidth(); 
+        const h = o.getScaledHeight();
+        
+        // 获取对象的 originX 和 originY 属性
+        const originX = o.originX || 'left';
+        const originY = o.originY || 'top';
+        
+        // 根据 origin 计算对象的实际边界位置（这部分代码仅作注释说明，不实际使用）
+        // if (originX === 'center') {
+        //     actualLeft = o.left - w / 2;
+        //     actualRight = o.left + w / 2;
+        // } else if (originX === 'right') {
+        //     actualLeft = o.left - w;
+        //     actualRight = o.left;
+        // } else {
+        //     actualLeft = o.left;
+        //     actualRight = o.left + w;
+        // }
+        
+        // 计算新的位置
+        let newLeft = o.left;
+        let newTop = o.top;
+        
+        // 注意：这里的坐标系是以 (0,0) 为白纸左上角
+        switch(type) {
+            case 'left': 
+                // 左对齐：对象的左侧边界应该在 0 位置
+                newLeft = (originX === 'center') ? w/2 : (originX === 'right') ? w : 0;
+                break;
+            case 'centerH': 
+                // 水平居中：对象的中心应该在画布中心
+                const centerX = artboard.w / 2;
+                newLeft = (originX === 'left') ? centerX - w/2 : 
+                         (originX === 'center') ? centerX : 
+                         centerX + w/2;
+                break;
+            case 'right': 
+                // 右对齐：对象的右侧边界应该在画布右侧
+                newLeft = (originX === 'left') ? artboard.w - w : 
+                         (originX === 'center') ? artboard.w - w/2 : 
+                         artboard.w;
+                break;
+            case 'top': 
+                // 顶对齐：对象的顶部边界应该在 0 位置
+                newTop = (originY === 'center') ? h/2 : (originY === 'bottom') ? h : 0;
+                break;
+            case 'centerV': 
+                // 垂直居中：对象的中心应该在画布中心
+                const centerY = artboard.h / 2;
+                newTop = (originY === 'top') ? centerY - h/2 : 
+                        (originY === 'center') ? centerY : 
+                        centerY + h/2;
+                break;
+            case 'bottom': 
+                // 底对齐：对象的底部边界应该在画布底部
+                newTop = (originY === 'top') ? artboard.h - h : 
+                        (originY === 'center') ? artboard.h - h/2 : 
+                        artboard.h;
+                break;
+        }
+        
+        o.set({left: newLeft, top: newTop});
+        o.setCoords();
+        canvas.requestRenderAll();
+    }
+
+    // 键盘快捷键
+    document.addEventListener('keydown', (e) => {
+        if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+        
+        const o = canvas.getActiveObject();
+        // 删除
+        if((e.key === 'Delete' || e.key === 'Backspace') && o) {
+            deleteActive();
+        }
+        // 微调
+        if(o && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
+            e.preventDefault();
+            const s = e.shiftKey ? 10 : 1; // Shift加速
+            if(e.key==='ArrowUp') o.top -= s;
+            if(e.key==='ArrowDown') o.top += s;
+            if(e.key==='ArrowLeft') o.left -= s;
+            if(e.key==='ArrowRight') o.left += s;
+            o.setCoords();
+            canvas.requestRenderAll();
+        }
+    });
+
+    // 删除选中
+    window.deleteActive = function() {
+        const o = canvas.getActiveObjects();
+        canvas.discardActiveObject();
+        o.forEach(x => canvas.remove(x));
+        canvas.requestRenderAll();
+    }
+
+    // 图层移动
+    window.layerMove = function(d) {
+        const o = canvas.getActiveObject(); if(!o) return;
+        d === 'up' ? canvas.bringForward(o) : canvas.sendBackwards(o);
+        canvas.requestRenderAll();
+    }
+
+    // 视图控制：归位
+    window.resetView = function() {
+        const p = 50; // padding
+        const r = Math.min((wrapper.offsetWidth - p)/artboard.w, (wrapper.offsetHeight - p)/artboard.h);
+        const x = (wrapper.offsetWidth - artboard.w * r) / 2;
+        const y = (wrapper.offsetHeight - artboard.h * r) / 2;
+        canvas.setViewportTransform([r, 0, 0, r, x, y]);
+        document.getElementById('zoom-txt').innerText = Math.round(r * 100) + '%';
+    }
+    
+    // 滚轮缩放
+    canvas.on('mouse:wheel', opt => {
+        let z = canvas.getZoom();
+        z *= 0.999 ** opt.e.deltaY;
+        if(z > 5) z = 5; 
+        if(z < 0.1) z = 0.1;
+        canvas.zoomToPoint({x: opt.e.offsetX, y: opt.e.offsetY}, z);
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
+        document.getElementById('zoom-txt').innerText = Math.round(z * 100) + '%';
+    });
+    
+    // Alt + 拖拽平移
+    let isDrag = false, lx, ly;
+    canvas.on('mouse:down', o => {
+        // 只有在没有选中对象且按住Alt键或鼠标中键时才允许拖拽
+        if((o.e.altKey || o.e.button === 1) && !canvas.getActiveObject()) {
+            isDrag = true;
+            canvas.selection = false;
+            lx = o.e.clientX; ly = o.e.clientY;
+            document.body.style.cursor = 'grab';
+        }
+    });
+    canvas.on('mouse:move', o => {
+        if(isDrag) {
+            const v = canvas.viewportTransform;
+            v[4] += o.e.clientX - lx;
+            v[5] += o.e.clientY - ly;
+            canvas.requestRenderAll();
+            lx = o.e.clientX; ly = o.e.clientY;
+        }
+    });
+    canvas.on('mouse:up', () => {
+        isDrag = false;
+        canvas.selection = true;
+        document.body.style.cursor = 'default';
+    });
+    
+    // 窗口大小变化
+    window.addEventListener('resize', () => {
+        canvas.setWidth(wrapper.offsetWidth);
+        canvas.setHeight(wrapper.offsetHeight);
+        resetView();
+    });
+
+    // ==========================================
+    // 6. 素材添加逻辑
+    // ==========================================
+    // 添加电商图标（图形素材版本）
+    window.addBadge = function(type) {
+        let text, color, bgColor;
+        switch(type) {
+            case 'sale': text = 'SALE'; color = '#ffffff'; bgColor = '#dc2626'; break;
+            case 'new': text = 'NEW'; color = '#ffffff'; bgColor = '#059669'; break;
+            case 'best': text = 'BEST'; color = '#ffffff'; bgColor = '#d97706'; break;
+            case 'fast': text = 'FAST'; color = '#ffffff'; bgColor = '#2563eb'; break;
+        }
+        
+        // 创建组合对象（图形+文字）
+        const group = new fabric.Group([
+            // 背景矩形
+            new fabric.Rect({
+                width: 120,
+                height: 50,
+                fill: bgColor,
+                rx: 6,
+                ry: 6,
+                originX: 'center',
+                originY: 'center'
+            }),
+            // 文字
+            new fabric.Text(text, {
+                originX: 'center',
+                originY: 'center',
+                fontSize: 24,
+                fontWeight: 'bold',
+                fill: color,
+                fontFamily: 'Arial'
+            })
+        ], {
+            left: artboard.w / 2,
+            top: artboard.h / 2,
+            originX: 'center',
+            originY: 'center',
+            // 添加自定义属性，标识这是图形素材版本的电商图标
+            isBadge: true,
+            isBadgeShape: true,
+            badgeType: type,
+            textContent: text,
+            badgeColor: color,
+            badgeBgColor: bgColor
+        });
+        
+        canvas.add(group);
+        canvas.setActiveObject(group);
+        
+        // 确保画布交互正常
+        enableCanvasInteractions();
+    }
+
+    window.loadPreview = function(ipt) {
+        if(!ipt.files[0]) return;
+        const r = new FileReader();
+        r.onload = e => {
+            fabric.Image.fromURL(e.target.result, img => {
+                // 移除旧预览
+                canvas.getObjects().forEach(o => { if(o.isPreview) canvas.remove(o); });
+                
+                // 缩放填充 (Contain)
+                const s = Math.min(artboard.w / img.width, artboard.h / img.height);
+                img.set({
+                    scaleX: s, scaleY: s,
+                    left: artboard.w/2, top: artboard.h/2,
+                    originX: 'center', originY: 'center',
+                    selectable: false, evented: false
+                });
+                img.isPreview = true;
+                
+                // 放在白纸之上，其他元素之下
+                canvas.add(img);
+                canvas.sendToBack(img);
+                canvas.sendToBack(artboard.rect);
+                ipt.value = '';
+            });
+        };
+        r.readAsDataURL(ipt.files[0]);
+    }
+    
+    // 上传素材图片
+    window.loadAsset = function(input) {
+        if (!input.files || input.files.length === 0) return;
+        
+        // 显示上传状态
+        const statusDiv = document.createElement('div');
+        statusDiv.id = 'upload-status';
+        statusDiv.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0,0,0,0.8); color:white; padding:20px; border-radius:8px; z-index:1000; text-align:center;';
+        statusDiv.innerHTML = '<div>正在上传素材...</div><div id="upload-progress">0 / ' + input.files.length + '</div>';
+        document.body.appendChild(statusDiv);
+        
+        // 处理所有选中的文件
+        const files = Array.from(input.files);
+        let processedCount = 0;
+        
+        files.forEach((file, index) => {
+            // 只处理图片文件
+            if (!file.type.match('image.*')) {
+                processedCount++;
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const imageDataUrl = e.target.result;
+                
+                // 保存到本地存储
+                saveAssetToFile(file.name, imageDataUrl);
+                
+                // 添加到画布（只将第一张图片添加到画布）
+                if (index === 0) {
+                    addImageToCanvas(imageDataUrl);
+                }
+                
+                processedCount++;
+                
+                // 更新进度显示
+                document.getElementById('upload-progress').textContent = processedCount + ' / ' + files.length;
+                
+                // 当所有文件都处理完毕时，更新素材列表并隐藏状态
+                if (processedCount === files.length) {
+                    updateAssetList();
+                    input.value = '';
+                    
+                    // 隐藏上传状态
+                    setTimeout(() => {
+                        document.body.removeChild(statusDiv);
+                    }, 1000);
+                }
+            };
+            
+            reader.readAsDataURL(file);
+        });
+    }
+    
+    // 保存素材到本地存储
+    function saveAssetToFile(name, dataUrl) {
+        // 获取现有的素材
+        let assets = JSON.parse(localStorage.getItem('ozonAssets') || '[]');
+        
+        // 添加新素材
+        assets.push({
+            id: Date.now(),
+            name: name,
+            dataUrl: dataUrl,
+            timestamp: new Date().toISOString()
+        });
+        
+        // 保存到本地存储
+        localStorage.setItem('ozonAssets', JSON.stringify(assets));
+    }
+    
+    // 添加图片到画布
+    function addImageToCanvas(dataUrl) {
+        fabric.Image.fromURL(dataUrl, function(img) {
+            // 计算合适的缩放比例，使图片不超过画布的80%
+            const maxWidth = artboard.w * 0.8;
+            const maxHeight = artboard.h * 0.8;
+            
+            let scaleX = 1;
+            let scaleY = 1;
+            
+            if (img.width > maxWidth) {
+                scaleX = maxWidth / img.width;
+                scaleY = scaleX;
+            }
+            
+            if (img.height * scaleY > maxHeight) {
+                scaleY = maxHeight / img.height;
+                scaleX = scaleY;
+            }
+            
+            img.set({
+                left: artboard.w / 2,
+                top: artboard.h / 2,
+                originX: 'center',
+                originY: 'center',
+                scaleX: scaleX,
+                scaleY: scaleY
+            });
+            canvas.add(img);
+            canvas.setActiveObject(img);
+            
+            // 确保画布交互正常
+            enableCanvasInteractions();
+        });
+    }
+    
+    // 添加图形到画布
+    function addShapeToCanvas(shapeType) {
+        let shape;
+        const size = 100; // 默认大小
+        
+        switch(shapeType) {
+            case 'rectangle':
+                shape = new fabric.Rect({
+                    width: size,
+                    height: size,
+                    fill: '#3b82f6',
+                    stroke: '#1d4ed8',
+                    strokeWidth: 1,
+                    left: artboard.w / 2,
+                    top: artboard.h / 2,
+                    originX: 'center',
+                    originY: 'center',
+                    // 添加自定义属性，标识这是图形素材
+                    isShape: true
+                });
+                break;
+            case 'circle':
+                shape = new fabric.Circle({
+                    radius: size / 2,
+                    fill: '#3b82f6',
+                    stroke: '#1d4ed8',
+                    strokeWidth: 1,
+                    left: artboard.w / 2,
+                    top: artboard.h / 2,
+                    originX: 'center',
+                    originY: 'center',
+                    // 添加自定义属性，标识这是图形素材
+                    isShape: true
+                });
+                break;
+            case 'triangle':
+                shape = new fabric.Triangle({
+                    width: size,
+                    height: size,
+                    fill: '#3b82f6',
+                    stroke: '#1d4ed8',
+                    strokeWidth: 1,
+                    left: artboard.w / 2,
+                    top: artboard.h / 2,
+                    originX: 'center',
+                    originY: 'center',
+                    // 添加自定义属性，标识这是图形素材
+                    isShape: true
+                });
+                break;
+            case 'star':
+                shape = new fabric.Star({
+                    radius: size / 2,
+                    fill: '#3b82f6',
+                    stroke: '#1d4ed8',
+                    strokeWidth: 1,
+                    left: artboard.w / 2,
+                    top: artboard.h / 2,
+                    originX: 'center',
+                    originY: 'center',
+                    points: 5,
+                    // 添加自定义属性，标识这是图形素材
+                    isShape: true
+                });
+                break;
+            default:
+                return;
+        }
+        
+        canvas.add(shape);
+        canvas.setActiveObject(shape);
+        
+        // 确保画布交互正常
+        enableCanvasInteractions();
+    }
+    
+    // 在图形上添加文字
+    window.addTextToShape = function() {
+        const activeObject = canvas.getActiveObject();
+        
+        // 检查是否选中了图形
+        if (!activeObject || !activeObject.isShape) {
+            alert('请先选择一个图形素材');
+            return;
+        }
+        
+        // 添加文字到画布
+        const text = new fabric.Textbox('双击编辑文字', {
+            left: activeObject.left,
+            top: activeObject.top,
+            originX: 'center',
+            originY: 'center',
+            width: Math.min(activeObject.width || 100, 200),
+            fontSize: 20,
+            fill: '#ffffff',
+            fontFamily: 'Arial',
+            textAlign: 'center',
+            splitByGrapheme: true
+        });
+        
+        // 添加文字到画布
+        canvas.add(text);
+        canvas.setActiveObject(text);
+        
+        // 重新渲染画布
+        canvas.requestRenderAll();
+    }
+    
+    // 添加标注到画布
+    window.addAnnotationToCanvas = function(annotationType) {
+        let annotation;
+        const size = 100; // 默认大小
+        
+        switch(annotationType) {
+            case 'arrow':
+                // 创建箭头标注
+                annotation = new fabric.Path('M 0 0 L 50 0 L 50 -10 L 70 5 L 50 20 L 50 10 L 0 10 Z', {
+                    left: artboard.w / 2,
+                    top: artboard.h / 2,
+                    originX: 'center',
+                    originY: 'center',
+                    fill: '#3b82f6',
+                    stroke: '#1d4ed8',
+                    strokeWidth: 1,
+                    // 添加自定义属性，标识这是标注素材
+                    isAnnotation: true
+                });
+                break;
+            case 'callout':
+                // 创建标注气泡
+                annotation = new fabric.Group([
+                    new fabric.Ellipse({
+                        rx: 50,
+                        ry: 30,
+                        fill: '#3b82f6',
+                        stroke: '#1d4ed8',
+                        strokeWidth: 1
+                    }),
+                    new fabric.Triangle({
+                        width: 20,
+                        height: 20,
+                        fill: '#3b82f6',
+                        stroke: '#1d4ed8',
+                        strokeWidth: 1,
+                        left: 0,
+                        top: 35
+                    })
+                ], {
+                    left: artboard.w / 2,
+                    top: artboard.h / 2,
+                    originX: 'center',
+                    originY: 'center',
+                    // 添加自定义属性，标识这是标注素材
+                    isAnnotation: true
+                });
+                break;
+            case 'line':
+                // 创建线条标注
+                annotation = new fabric.Group([
+                    new fabric.Line([0, 0, 100, 0], {
+                        stroke: '#3b82f6',
+                        strokeWidth: 2
+                    }),
+                    new fabric.Triangle({
+                        width: 10,
+                        height: 10,
+                        fill: '#3b82f6',
+                        left: 100,
+                        top: -5,
+                        originX: 'center',
+                        originY: 'center'
+                    }),
+                    new fabric.Triangle({
+                        width: 10,
+                        height: 10,
+                        fill: '#3b82f6',
+                        left: 0,
+                        top: -5,
+                        originX: 'center',
+                        originY: 'center',
+                        angle: 180
+                    })
+                ], {
+                    left: artboard.w / 2,
+                    top: artboard.h / 2,
+                    originX: 'center',
+                    originY: 'center',
+                    // 添加自定义属性，标识这是标注素材
+                    isAnnotation: true
+                });
+                break;
+            case 'highlight':
+                // 创建高亮标注
+                annotation = new fabric.Rect({
+                    width: 150,
+                    height: 40,
+                    fill: 'rgba(59, 130, 246, 0.3)',
+                    stroke: '#3b82f6',
+                    strokeWidth: 1,
+                    left: artboard.w / 2,
+                    top: artboard.h / 2,
+                    originX: 'center',
+                    originY: 'center',
+                    // 添加自定义属性，标识这是标注素材
+                    isAnnotation: true
+                });
+                break;
+            default:
+                return;
+        }
+        
+        canvas.add(annotation);
+        canvas.setActiveObject(annotation);
+        
+        // 确保画布交互正常
+        enableCanvasInteractions();
+    }
+    
+    // 添加尺寸标注到画布
+    window.addDimensionLine = function(orientation = 'horizontal') {
+        // 创建尺寸标注线
+        const dimensionLine = new fabric.Group([
+            // 主线
+            new fabric.Line([0, 0, 150, 0], {
+                stroke: '#3b82f6',
+                strokeWidth: 2,
+                strokeDashArray: [5, 5]
+            }),
+            // 左侧延长线
+            new fabric.Line([-20, -10, -20, 10], {
+                stroke: '#3b82f6',
+                strokeWidth: 1
+            }),
+            // 右侧延长线
+            new fabric.Line([170, -10, 170, 10], {
+                stroke: '#3b82f6',
+                strokeWidth: 1
+            }),
+            // 左侧箭头
+            new fabric.Triangle({
+                width: 10,
+                height: 10,
+                fill: '#3b82f6',
+                left: -5,
+                top: -5,
+                originX: 'center',
+                originY: 'center'
+            }),
+            // 右侧箭头
+            new fabric.Triangle({
+                width: 10,
+                height: 10,
+                fill: '#3b82f6',
+                left: 155,
+                top: -5,
+                originX: 'center',
+                originY: 'center'
+            }),
+            // 尺寸文字
+            new fabric.Text('15cm', {
+                left: 75,
+                top: orientation === 'horizontal' ? -20 : 0,
+                originX: 'center',
+                originY: 'center',
+                fontSize: 14,
+                fill: '#3b82f6',
+                fontFamily: 'Arial',
+                // 根据方向设置文字旋转
+                angle: orientation === 'vertical' ? 90 : 0
+            })
+        ], {
+            left: artboard.w / 2,
+            top: artboard.h / 2,
+            originX: 'center',
+            originY: 'center',
+            // 添加自定义属性，标识这是尺寸标注
+            isDimension: true,
+            // 添加方向属性
+            dimensionOrientation: orientation
+        });
+        
+        canvas.add(dimensionLine);
+        canvas.setActiveObject(dimensionLine);
+        
+        // 确保画布交互正常
+        enableCanvasInteractions();
+    }
+    
+    // 添加改进的标注气泡
+    window.addImprovedCallout = function() {
+        // 创建改进的标注气泡的各个组件
+        // 气泡主体（圆角矩形）
+        const bubble = new fabric.Rect({
+            width: 120,
+            height: 60,
+            fill: '#3b82f6',
+            stroke: '#1d4ed8',
+            strokeWidth: 1,
+            rx: 15,
+            ry: 15,
+            left: artboard.w / 2 - 60,
+            top: artboard.h / 2 - 40,
+            // 添加自定义属性，标识这是改进的标注气泡的气泡部分
+            isImprovedCalloutBubble: true
+        });
+        
+        // 连接线
+        const line = new fabric.Line([0, 0, 30, 30], {
+            stroke: '#3b82f6',
+            strokeWidth: 2,
+            left: artboard.w / 2,
+            top: artboard.h / 2 + 20,
+            // 添加自定义属性，标识这是改进的标注气泡的连接线部分
+            isImprovedCalloutLine: true
+        });
+        
+        // 指示点
+        const dot = new fabric.Circle({
+            radius: 3,
+            fill: '#3b82f6',
+            left: artboard.w / 2 + 27,
+            top: artboard.h / 2 + 47,
+            // 添加自定义属性，标识这是改进的标注气泡的指示点部分
+            isImprovedCalloutDot: true
+        });
+        
+        // 文字
+        const text = new fabric.Text('标注内容', {
+            left: artboard.w / 2,
+            top: artboard.h / 2 - 15,
+            originX: 'center',
+            originY: 'center',
+            fontSize: 14,
+            fill: 'white',
+            fontFamily: 'Arial',
+            // 添加自定义属性，标识这是改进的标注气泡的文字部分
+            isImprovedCalloutText: true
+        });
+        
+        // 分别添加到画布
+        canvas.add(bubble);
+        canvas.add(line);
+        canvas.add(dot);
+        canvas.add(text);
+        
+        // 选中文字对象，让用户可以直接编辑
+        canvas.setActiveObject(text);
+        
+        // 确保画布交互正常
+        enableCanvasInteractions();
+    }
+    
+    // 添加数字标记
+    window.addNumberMarker = function() {
+        // 创建数字标记的各个组件
+        // 圆形背景
+        const circle = new fabric.Circle({
+            radius: 20,
+            fill: '#3b82f6',
+            stroke: '#1d4ed8',
+            strokeWidth: 1,
+            originX: 'center',
+            originY: 'center',
+            left: artboard.w / 2,
+            top: artboard.h / 2,
+            // 添加自定义属性，标识这是数字标记的圆形背景部分
+            isNumberMarkerCircle: true
+        });
+        
+        // 数字
+        const text = new fabric.Text('1', {
+            left: artboard.w / 2,
+            top: artboard.h / 2,
+            originX: 'center',
+            originY: 'center',
+            fontSize: 20,
+            fill: 'white',
+            fontFamily: 'Arial',
+            fontWeight: 'bold',
+            // 添加自定义属性，标识这是数字标记的数字部分
+            isNumberMarkerText: true
+        });
+        
+        // 分别添加到画布
+        canvas.add(circle);
+        canvas.add(text);
+        
+        // 选中文字对象，让用户可以直接编辑
+        canvas.setActiveObject(text);
+        
+        // 确保画布交互正常
+        enableCanvasInteractions();
+    }
+    
+    // 添加大括号标注
+    window.addBraceAnnotation = function() {
+        // 创建大括号标注的各个组件
+        // 左侧竖线
+        const verticalLine = new fabric.Line([0, 0, 0, 100], {
+            stroke: '#3b82f6',
+            strokeWidth: 2,
+            originX: 'center',
+            originY: 'center',
+            left: artboard.w / 2,
+            top: artboard.h / 2,
+            // 添加自定义属性，标识这是大括号标注的竖线部分
+            isBraceAnnotationLine: true
+        });
+        
+        // 左侧上横线
+        const topHorizontalLine = new fabric.Line([0, 0, 10, 0], {
+            stroke: '#3b82f6',
+            strokeWidth: 2,
+            originX: 'center',
+            originY: 'center',
+            left: artboard.w / 2,
+            top: artboard.h / 2 - 50,
+            // 添加自定义属性，标识这是大括号标注的上横线部分
+            isBraceAnnotationTopLine: true
+        });
+        
+        // 左侧下横线
+        const bottomHorizontalLine = new fabric.Line([0, 0, 10, 0], {
+            stroke: '#3b82f6',
+            strokeWidth: 2,
+            originX: 'center',
+            originY: 'center',
+            left: artboard.w / 2,
+            top: artboard.h / 2 + 50,
+            // 添加自定义属性，标识这是大括号标注的下横线部分
+            isBraceAnnotationBottomLine: true
+        });
+        
+        // 大括号符号
+        const braceSymbol = new fabric.Text('{', {
+            left: artboard.w / 2 + 15,
+            top: artboard.h / 2,
+            fontSize: 30,
+            fill: '#3b82f6',
+            fontFamily: 'Arial',
+            originX: 'left',
+            originY: 'center',
+            // 添加自定义属性，标识这是大括号标注的符号部分
+            isBraceAnnotationSymbol: true
+        });
+        
+        // 文字
+        const text = new fabric.Text('标注内容', {
+            left: artboard.w / 2 + 50,  // 文字在大括号右侧
+            top: artboard.h / 2,
+            fontSize: 14,
+            fill: '#3b82f6',
+            fontFamily: 'Arial',
+            originX: 'left',
+            originY: 'center',
+            // 添加自定义属性，标识这是大括号标注的文字部分
+            isBraceAnnotationText: true
+        });
+        
+        // 分别添加到画布
+        canvas.add(verticalLine);
+        canvas.add(topHorizontalLine);
+        canvas.add(bottomHorizontalLine);
+        canvas.add(braceSymbol);
+        canvas.add(text);
+        
+        // 选中文字对象，让用户可以直接编辑
+        canvas.setActiveObject(text);
+        
+        // 确保画布交互正常
+        enableCanvasInteractions();
+    }
+    
+    // 添加星标
+    window.addStarMarker = function() {
+        // 创建星标的各个组件
+        // 星形
+        const starShape = new fabric.Polygon([
+            {x: 0, y: -20},
+            {x: 5.88, y: -6.18},
+            {x: 19.02, y: -6.18},
+            {x: 9.51, y: 2.36},
+            {x: 11.76, y: 16.18},
+            {x: 0, y: 8},
+            {x: -11.76, y: 16.18},
+            {x: -9.51, y: 2.36},
+            {x: -19.02, y: -6.18},
+            {x: -5.88, y: -6.18}
+        ], {
+            fill: '#3b82f6',
+            stroke: '#1d4ed8',
+            strokeWidth: 1,
+            originX: 'center',
+            originY: 'center',
+            left: artboard.w / 2,
+            top: artboard.h / 2,
+            // 添加自定义属性，标识这是星标的星形部分
+            isStarMarkerStar: true
+        });
+        
+        // 文字
+        const text = new fabric.Text('!', {
+            left: artboard.w / 2,
+            top: artboard.h / 2,
+            originX: 'center',
+            originY: 'center',
+            fontSize: 16,
+            fill: 'white',
+            fontFamily: 'Arial',
+            fontWeight: 'bold',
+            // 添加自定义属性，标识这是星标的文字部分
+            isStarMarkerText: true
+        });
+        
+        // 分别添加到画布
+        canvas.add(starShape);
+        canvas.add(text);
+        
+        // 选中文字对象，让用户可以直接编辑
+        canvas.setActiveObject(text);
+        
+        // 确保画布交互正常
+        enableCanvasInteractions();
+    }
+    
+    // 更新素材列表显示
+    function updateAssetList() {
+        const assetList = document.getElementById('asset-list');
+        const assets = JSON.parse(localStorage.getItem('ozonAssets') || '[]');
+        
+        if (assets.length === 0) {
+            assetList.innerHTML = '<div style="font-size:12px; color:#94a3b8; text-align:center; padding:10px;">暂无素材，请上传</div>';
+            return;
+        }
+        
+        let html = '<div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;">';
+        
+        // 倒序显示，最新的在前面
+        assets.slice().reverse().forEach(asset => {
+            html += `
+                <div style="position:relative; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;" draggable="true" ondragstart="handleDragStart(event, '${asset.dataUrl}')">
+                    <img src="${asset.dataUrl}" style="width:100%; height:60px; object-fit:cover; display:block; cursor:pointer;" onclick="addImageToCanvas('${asset.dataUrl}')">
+                    <div style="position:absolute; top:0; right:0; background:rgba(0,0,0,0.5); color:white; font-size:10px; padding:2px 4px; cursor:pointer;" onclick="deleteAsset(${asset.id})">✕</div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        assetList.innerHTML = html;
+    }
+    
+    // 删除素材
+    function deleteAsset(assetId) {
+        // 获取现有的素材
+        let assets = JSON.parse(localStorage.getItem('ozonAssets') || '[]');
+        
+        // 过滤掉要删除的素材
+        assets = assets.filter(asset => asset.id !== assetId);
+        
+        // 保存到本地存储
+        localStorage.setItem('ozonAssets', JSON.stringify(assets));
+        
+        // 更新素材列表
+        updateAssetList();
+    }
+    
+    // 页面加载时初始化素材列表
+    window.addEventListener('load', function() {
+        updateAssetList();
+    });
+
+    // ==========================================
+    // 7. 属性面板渲染 (动态生成)
+    // ==========================================
+    canvas.on('selection:created', renderProp);
+    canvas.on('selection:updated', renderProp);
+    canvas.on('selection:cleared', () => {
+        // 在裁剪模式下，不清空面板，而是保持显示裁剪控制
+        if (isCropping) {
+            renderProp();
+        } else {
+            document.getElementById('prop-body').innerHTML = '<div class="empty-state">请选中元素</div>';
+        }
+    });
+    
+    function renderProp() {
+        let o = canvas.getActiveObject();
+        
+        // 在裁剪模式下，即使没有选中对象也要显示裁剪控制面板
+        if (isCropping) {
+            // 如果是裁剪模式，但没有选中对象，则使用原始图片对象
+            if (!o && originalImageObject) {
+                o = originalImageObject;
+            }
+        } else {
+            // 如果不是裁剪模式且没有选中对象，直接返回
+            if (!o) return;
+        }
+        
+        let h = '';
+
+        // 电商图标属性
+        if (o.isBadge) {
+            // 检查是否为图形素材版本的电商图标
+            if (o.isBadgeShape) {
+                // 获取文字对象
+                const textObj = o._objects[1];
+                // 获取背景对象
+                const bgObj = o._objects[0];
+                
+                h += `
+                <div class="control-group">
+                    <div class="control-header"><span>电商图标属性</span></div>
+                    
+                    <!-- 文字内容 -->
+                    <div class="control-group">
+                        <div class="control-header"><span>文字内容</span></div>
+                        <input type="text" value="${o.textContent || ''}" oninput="editBadgeText(this.value)" style="width:100%; padding:4px; font-size:12px; border:1px solid #cbd5e1; border-radius:3px;">
+                    </div>
+                    
+                    <!-- 字体大小 -->
+                    <div class="control-group">
+                        <div class="control-header"><span>字体大小</span></div>
+                        <input type="range" min="10" max="100" value="${textObj.fontSize || 24}" oninput="editBadgeTextProperty('fontSize', parseInt(this.value))">
+                        <div style="text-align:center; font-size:12px; color:#666;">${textObj.fontSize || 24}px</div>
+                    </div>
+                    
+                    <!-- 文字颜色 -->
+                    <div class="control-group">
+                        <div class="control-header"><span>文字颜色</span></div>
+                        <input type="color" value="${o.badgeColor || '#ffffff'}" oninput="editBadgeTextProperty('fill', this.value)">
+                    </div>
+                    
+                    <!-- 背景颜色 -->
+                    <div class="control-group">
+                        <div class="control-header"><span>背景颜色</span></div>
+                        <input type="color" value="${o.badgeBgColor || '#dc2626'}" oninput="editBadgeBackgroundProperty('fill', this.value)">
+                    </div>
+                    
+                    <!-- 透明度 -->
+                    <div class="control-group">
+                        <div class="control-header"><span>透明度</span></div>
+                        <input type="range" min="0" max="1" step="0.01" value="${o.opacity || 1}" oninput="edit('opacity', parseFloat(this.value))">
+                        <div style="text-align:center; font-size:12px; color:#666;">${Math.round((o.opacity || 1) * 100)}%</div>
+                    </div>
+                </div>`;
+            } else {
+                // 原来的文本版本电商图标
+                h += `
+                <div class="control-group">
+                    <div class="control-header"><span>电商图标属性</span></div>
+                    
+                    <!-- 文字内容 -->
+                    <div class="control-group">
+                        <div class="control-header"><span>文字内容</span></div>
+                        <input type="text" value="${o.text || ''}" oninput="edit('text', this.value)" style="width:100%; padding:4px; font-size:12px; border:1px solid #cbd5e1; border-radius:3px;">
+                    </div>
+                    
+                    <!-- 字体大小 -->
+                    <div class="control-group">
+                        <div class="control-header"><span>字体大小</span></div>
+                        <input type="range" min="10" max="100" value="${o.fontSize || 36}" oninput="edit('fontSize', parseInt(this.value))">
+                        <div style="text-align:center; font-size:12px; color:#666;">${o.fontSize || 36}px</div>
+                    </div>
+                    
+                    <!-- 颜色 -->
+                    <div class="control-group">
+                        <div class="control-header"><span>颜色</span></div>
+                        <input type="color" value="${o.fill || '#dc2626'}" oninput="edit('fill', this.value)">
+                    </div>
+                    
+                    <!-- 透明度 -->
+                    <div class="control-group">
+                        <div class="control-header"><span>透明度</span></div>
+                        <input type="range" min="0" max="1" step="0.01" value="${o.opacity || 1}" oninput="edit('opacity', parseFloat(this.value))">
+                        <div style="text-align:center; font-size:12px; color:#666;">${Math.round((o.opacity || 1) * 100)}%</div>
+                    </div>
+                </div>`;
+            }
+        } 
+        // 颜色控制 (排除电商图标)
+        else if(o.fill && typeof o.fill === 'string' && !o.isBadge) {
+            h += `
+            <div class="control-group">
+                <div class="control-header"><span>填充颜色</span></div>
+                <input type="color" value="${o.fill}" oninput="edit('fill',this.value)">
+            </div>`;
+        }
+        // 文本特有属性（排除电商图标）
+        else if((o.type === 'textbox' || o.type === 'text' || o.type === 'i-text') && !o.isBadge) {
+            h += `
+            <div class="control-group">
+                <div class="control-header"><span>文本内容</span></div>
+                <input type="text" value="${o.text}" oninput="edit('text',this.value)">
+            </div>
+            <div class="control-group">
+                <div class="control-header"><span>字体</span></div>
+                <select onchange="edit('fontFamily',this.value)">
+                    <option value="Arial" ${o.fontFamily==='Arial'?'selected':''}>Arial</option>
+                    <option value="Times New Roman" ${o.fontFamily==='Times New Roman'?'selected':''}>Times New Roman</option>
+                    <option value="Verdana" ${o.fontFamily==='Verdana'?'selected':''}>Verdana</option>
+                    <option value="Courier New" ${o.fontFamily==='Courier New'?'selected':''}>Courier New</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <div class="control-header"><span>字号 (${Math.round(o.fontSize)})</span></div>
+                <input type="range" min="10" max="400" value="${o.fontSize}" oninput="edit('fontSize',parseInt(this.value))">
+            </div>
+            <div class="control-group">
+                <div class="control-header"><span>行高 (${o.lineHeight})</span></div>
+                <input type="range" min="0.5" max="3" step="0.1" value="${o.lineHeight}" oninput="edit('lineHeight',parseFloat(this.value))">
+            </div>
+            <div class="control-group">
+                <div class="control-header"><span>对齐方式</span></div>
+                <select onchange="edit('textAlign',this.value)">
+                    <option value="left" ${o.textAlign==='left'?'selected':''}>左对齐</option>
+                    <option value="center" ${o.textAlign==='center'?'selected':''}>居中</option>
+                    <option value="right" ${o.textAlign==='right'?'selected':''}>右对齐</option>
+                </select>
+            </div>
+            
+            <!-- 文本特效控制 -->
+            <div class="control-group">
+                <div class="control-header"><span>文本特效</span></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-top:5px;">
+                    <button class="btn btn-outline" style="font-size:11px; padding:3px 6px;" onclick="applyTextEffect('highlight')" id="effect-highlight">划重点</button>
+                    <button class="btn btn-outline" style="font-size:11px; padding:3px 6px;" onclick="applyTextEffect('skew')" id="effect-skew">变形</button>
+                    <button class="btn btn-outline" style="font-size:11px; padding:3px 6px;" onclick="applyTextEffect('gradient')" id="effect-gradient">渐变</button>
+                    <button class="btn btn-outline" style="font-size:11px; padding:3px 6px;" onclick="applyTextEffect('outline')" id="effect-outline">描边</button>
+                    <button class="btn btn-outline" style="font-size:11px; padding:3px 6px;" onclick="applyTextEffect('shadow')" id="effect-shadow">阴影</button>
+                    <button class="btn btn-outline" style="font-size:11px; padding:3px 6px;" onclick="applyTextEffect('glow')" id="effect-glow">发光</button>
+                    <button class="btn btn-outline" style="font-size:11px; padding:3px 6px;" onclick="applyTextEffect('3d')" id="effect-3d">3D</button>
+                </div>
+                
+                <!-- 文本自定义选项 -->
+                <div style="margin-top:10px; padding-top:10px; border-top:1px solid #eee;">
+                
+                    
+                    <!-- 预设颜色选项 -->
+                    <div class="control-header" style="margin-top:10px;"><span>预设颜色</span></div>
+                    <div style="display:flex; gap:5px; flex-wrap:wrap; margin-top:5px;">
+                        <div style="width:20px; height:20px; border-radius:50%; background:#ff0000; cursor:pointer;" onclick="edit('fill', '#ff0000')" title="红色"></div>
+                        <div style="width:20px; height:20px; border-radius:50%; background:#00ff00; cursor:pointer;" onclick="edit('fill', '#00ff00')" title="绿色"></div>
+                        <div style="width:20px; height:20px; border-radius:50%; background:#0000ff; cursor:pointer;" onclick="edit('fill', '#0000ff')" title="蓝色"></div>
+                        <div style="width:20px; height:20px; border-radius:50%; background:#ffff00; cursor:pointer;" onclick="edit('fill', '#ffff00')" title="黄色"></div>
+                        <div style="width:20px; height:20px; border-radius:50%; background:#ff00ff; cursor:pointer;" onclick="edit('fill', '#ff00ff')" title="洋红色"></div>
+                        <div style="width:20px; height:20px; border-radius:50%; background:#00ffff; cursor:pointer;" onclick="edit('fill', '#00ffff')" title="青色"></div>
+                        <div style="width:20px; height:20px; border-radius:50%; background:#ffa500; cursor:pointer;" onclick="edit('fill', '#ffa500')" title="橙色"></div>
+                        <div style="width:20px; height:20px; border-radius:50%; background:#800080; cursor:pointer;" onclick="edit('fill', '#800080')" title="紫色"></div>
+                        <div style="width:20px; height:20px; border-radius:50%; background:#000000; cursor:pointer;" onclick="edit('fill', '#000000')" title="黑色"></div>
+                        <div style="width:20px; height:20px; border-radius:50%; background:#ffffff; border:1px solid #ccc; cursor:pointer;" onclick="edit('fill', '#ffffff')" title="白色"></div>
+                    </div>
+                    
+                    <div class="control-header" style="margin-top:10px;"><span>字体大小</span></div>
+                    <input type="range" min="10" max="100" value="${o.fontSize || 20}" oninput="edit('fontSize', parseInt(this.value))">
+                    <div style="text-align:center; font-size:12px; color:#666;">${o.fontSize || 20}px</div>
+                    
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <div style="flex:1;">
+                            <div class="control-header"><span>粗体</span></div>
+                            <label style="display:flex; align-items:center; gap:5px; font-size:12px;">
+                                <input type="checkbox" ${o.fontWeight === 'bold' ? 'checked' : ''} onchange="edit('fontWeight', this.checked ? 'bold' : 'normal')"> 启用
+                            </label>
+                        </div>
+                        <div style="flex:1;">
+                            <div class="control-header"><span>斜体</span></div>
+                            <label style="display:flex; align-items:center; gap:5px; font-size:12px;">
+                                <input type="checkbox" ${o.fontStyle === 'italic' ? 'checked' : ''} onchange="edit('fontStyle', this.checked ? 'italic' : 'normal')"> 启用
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+        // 图片裁剪功能
+        if (o.type === 'image') {
+            h += `
+            <div class="control-group">
+                <div class="control-header"><span>图片裁剪</span></div>
+                ${!isCropping ? `<button class="btn btn-outline" onclick="cropSelectedImage()" style="margin-bottom:10px;">开始裁剪</button>` : ''}
+                <div id="crop-controls" style="display:${isCropping ? 'block' : 'none'};">
+                    <div style="font-size:12px; color:#64748b; margin-bottom:10px; padding:8px; background:#f8fafc; border-radius:4px;">
+                        <strong>裁剪提示：</strong><br>
+                        1. 拖动裁剪框调整区域<br>
+                        2. 按回车键确认裁剪<br>
+                        3. 或再次选择图片点击裁剪按钮
+                    </div>
+                    <div style="display:flex; gap:5px; margin-bottom:10px;">
+                        <button class="btn btn-outline" style="flex:1; font-size:11px; padding:5px;" onclick="setCropRatio(1)">1:1</button>
+                        <button class="btn btn-outline" style="flex:1; font-size:11px; padding:5px;" onclick="setCropRatio(4/3)">4:3</button>
+                        <button class="btn btn-outline" style="flex:1; font-size:11px; padding:5px;" onclick="setCropRatio(16/9)">16:9</button>
+                        <button class="btn btn-outline" style="flex:1; font-size:11px; padding:5px;" onclick="setCropRatio(0)">自由</button>
+                    </div>
+                    
+                    <!-- 精确数值输入控制 -->
+                    <div style="margin:10px 0; padding:10px; background:#f8fafc; border-radius:4px;">
+                        <div style="font-size:12px; font-weight:bold; margin-bottom:8px;">精确控制</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+                            <div>
+                                <div style="font-size:11px; color:#64748b; margin-bottom:4px;">宽度 (W)</div>
+                                <input type="number" id="crop-width" style="width:100%; padding:4px; font-size:12px; border:1px solid #cbd5e1; border-radius:3px;" placeholder="宽度" onchange="updateCropSize()">
+                            </div>
+                            <div>
+                                <div style="font-size:11px; color:#64748b; margin-bottom:4px;">高度 (H)</div>
+                                <input type="number" id="crop-height" style="width:100%; padding:4px; font-size:12px; border:1px solid #cbd5e1; border-radius:3px;" placeholder="高度" onchange="updateCropSize()">
+                            </div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                            <div>
+                                <div style="font-size:11px; color:#64748b; margin-bottom:4px;">水平偏移 (X)</div>
+                                <input type="number" id="crop-x" style="width:100%; padding:4px; font-size:12px; border:1px solid #cbd5e1; border-radius:3px;" placeholder="X坐标" onchange="updateCropPosition()">
+                            </div>
+                            <div>
+                                <div style="font-size:11px; color:#64748b; margin-bottom:4px;">垂直偏移 (Y)</div>
+                                <input type="number" id="crop-y" style="width:100%; padding:4px; font-size:12px; border:1px solid #cbd5e1; border-radius:3px;" placeholder="Y坐标" onchange="updateCropPosition()">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; gap:5px; margin-bottom:10px;">
+                        <button class="btn btn-outline" style="flex:1; font-size:11px; padding:5px;" onclick="centerCropArea()">🖼️ 居中</button>
+                    </div>
+                    
+                    <div style="display:flex; gap:5px; margin-bottom:10px;">
+                        <button class="btn btn-outline" style="flex:1;" onclick="undoCrop()">撤销裁剪</button>
+                    </div>
+                    
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn btn-outline" style="flex:1;" onclick="cancelCrop()">取消</button>
+                        <button class="btn btn-primary" style="flex:1;" onclick="applyCrop()">应用裁剪</button>
+                    </div>
+                </div>
+            </div>`;
+        }
+        
+        // 图形素材属性
+        if (o.type === 'rect' || o.type === 'circle' || o.type === 'triangle' || o.type === 'polygon') {
+            h += `
+            <div class="control-group">
+                <div class="control-header"><span>图形属性</span></div>
+                
+                <!-- 填充颜色 -->
+                <div class="control-group">
+                    <div class="control-header"><span>填充颜色</span></div>
+                    <input type="color" value="${o.fill || '#3b82f6'}" oninput="edit('fill', this.value)">
+                </div>
+                
+                <!-- 描边颜色 -->
+                <div class="control-group">
+                    <div class="control-header"><span>描边颜色</span></div>
+                    <input type="color" value="${o.stroke || '#1d4ed8'}" oninput="edit('stroke', this.value)">
+                </div>
+                
+                <!-- 描边宽度 -->
+                <div class="control-group">
+                    <div class="control-header"><span>描边宽度</span></div>
+                    <input type="range" min="0" max="20" step="0.5" value="${o.strokeWidth || 1}" oninput="edit('strokeWidth', parseFloat(this.value))">
+                    <div style="text-align:center; font-size:12px; color:#666;">${o.strokeWidth || 1}px</div>
+                </div>
+                
+                <!-- 透明度 -->
+                <div class="control-group">
+                    <div class="control-header"><span>透明度</span></div>
+                    <input type="range" min="0" max="1" step="0.01" value="${o.opacity || 1}" oninput="edit('opacity', parseFloat(this.value))">
+                    <div style="text-align:center; font-size:12px; color:#666;">${Math.round((o.opacity || 1) * 100)}%</div>
+                </div>
+                
+                <!-- 圆角 (仅适用于矩形) -->
+                ${o.type === 'rect' ? `
+                <div class="control-group">
+                    <div class="control-header"><span>圆角半径</span></div>
+                    <input type="range" min="0" max="50" value="${o.rx || 0}" oninput="edit('rx', parseInt(this.value)); edit('ry', parseInt(this.value))">
+                    <div style="text-align:center; font-size:12px; color:#666;">${o.rx || 0}px</div>
+                </div>
+                ` : ''}
+                
+                <!-- 添加文字按钮 -->
+                <div class="control-group">
+                    <button class="btn btn-primary" onclick="addTextToShape()" style="width:100%;">在图形上添加文字</button>
+                </div>
+            </div>`;
+        }
+        
+        // 标注素材属性
+        if (o.isAnnotation) {
+            h += `
+            <div class="control-group">
+                <div class="control-header"><span>标注属性</span></div>
+                
+                <!-- 填充颜色 -->
+                <div class="control-group">
+                    <div class="control-header"><span>填充颜色</span></div>
+                    <input type="color" value="${o.fill || '#3b82f6'}" oninput="edit('fill', this.value)">
+                </div>
+                
+                <!-- 描边颜色 -->
+                <div class="control-group">
+                    <div class="control-header"><span>描边颜色</span></div>
+                    <input type="color" value="${o.stroke || '#1d4ed8'}" oninput="edit('stroke', this.value)">
+                </div>
+                
+                <!-- 描边宽度 -->
+                <div class="control-group">
+                    <div class="control-header"><span>描边宽度</span></div>
+                    <input type="range" min="0" max="20" step="0.5" value="${o.strokeWidth || 1}" oninput="edit('strokeWidth', parseFloat(this.value))">
+                    <div style="text-align:center; font-size:12px; color:#666;">${o.strokeWidth || 1}px</div>
+                </div>
+                
+                <!-- 透明度 -->
+                <div class="control-group">
+                    <div class="control-header"><span>透明度</span></div>
+                    <input type="range" min="0" max="1" step="0.01" value="${o.opacity || 1}" oninput="edit('opacity', parseFloat(this.value))">
+                    <div style="text-align:center; font-size:12px; color:#666;">${Math.round((o.opacity || 1) * 100)}%</div>
+                </div>
+            </div>`;
+        }
+        
+        // 改进的标注气泡属性
+        if (o.isImprovedCallout) {
+            h += `
+            <div class="control-group">
+                <div class="control-header"><span>标注气泡属性</span></div>
+                
+                <!-- 气泡颜色 -->
+                <div class="control-group">
+                    <div class="control-header"><span>气泡颜色</span></div>
+                    <input type="color" value="${getCalloutBubbleColor(o) || '#3b82f6'}" oninput="editCalloutBubbleProperty('fill', this.value)">
+                </div>
+                
+                <!-- 文字颜色 -->
+                <div class="control-group">
+                    <div class="control-header"><span>文字颜色</span></div>
+                    <input type="color" value="${getCalloutTextColor(o) || 'white'}" oninput="editCalloutTextProperty('fill', this.value)">
+                </div>
+                
+                <!-- 文字内容 -->
+                <div class="control-group">
+                    <div class="control-header"><span>文字内容</span></div>
+                    <input type="text" value="${getCalloutText(o)}" oninput="editCalloutTextProperty('text', this.value)" style="width:100%; padding:4px; font-size:12px; border:1px solid #cbd5e1; border-radius:3px;">
+                </div>
+            </div>`;
+        }
+        
+        // 数字标记属性
+        if (o.isNumberMarker) {
+            h += `
+            <div class="control-group">
+                <div class="control-header"><span>数字标记属性</span></div>
+                
+                <!-- 背景颜色 -->
+                <div class="control-group">
+                    <div class="control-header"><span>背景颜色</span></div>
+                    <input type="color" value="${getMarkerBackgroundColor(o) || '#3b82f6'}" oninput="editMarkerBackgroundProperty('fill', this.value)">
+                </div>
+                
+                <!-- 数字颜色 -->
+                <div class="control-group">
+                    <div class="control-header"><span>数字颜色</span></div>
+                    <input type="color" value="${getMarkerTextColor(o) || 'white'}" oninput="editMarkerTextProperty('fill', this.value)">
+                </div>
+                
+                <!-- 数字内容 -->
+                <div class="control-group">
+                    <div class="control-header"><span>数字内容</span></div>
+                    <input type="text" value="${getMarkerText(o)}" oninput="editMarkerTextProperty('text', this.value)" style="width:100%; padding:4px; font-size:12px; border:1px solid #cbd5e1; border-radius:3px;">
+                </div>
+            </div>`;
+        }
+        
+        // 大括号标注属性
+        if (o.isBraceAnnotation) {
+            h += `
+            <div class="control-group">
+                <div class="control-header"><span>大括号标注属性</span></div>
+                
+                <!-- 颜色 -->
+                <div class="control-group">
+                    <div class="control-header"><span>颜色</span></div>
+                    <input type="color" value="${getBraceColor(o) || '#3b82f6'}" oninput="editBraceProperty('stroke', this.value); editBraceTextProperty('fill', this.value)">
+                </div>
+                
+                <!-- 文字内容 -->
+                <div class="control-group">
+                    <div class="control-header"><span>文字内容</span></div>
+                    <input type="text" value="${getBraceText(o)}" oninput="editBraceTextProperty('text', this.value)" style="width:100%; padding:4px; font-size:12px; border:1px solid #cbd5e1; border-radius:3px;">
+                </div>
+            </div>`;
+        }
+        
+        // 星标属性
+        if (o.isStarMarker) {
+            h += `
+            <div class="control-group">
+                <div class="control-header"><span>星标属性</span></div>
+                
+                <!-- 星形颜色 -->
+                <div class="control-group">
+                    <div class="control-header"><span>星形颜色</span></div>
+                    <input type="color" value="${getStarColor(o) || '#3b82f6'}" oninput="editStarProperty('fill', this.value)">
+                </div>
+                
+                <!-- 文字颜色 -->
+                <div class="control-group">
+                    <div class="control-header"><span>文字颜色</span></div>
+                    <input type="color" value="${getStarTextColor(o) || 'white'}" oninput="editStarTextProperty('fill', this.value)">
+                </div>
+            </div>`;
+        }
+        
+        // 尺寸标注属性
+        if (o.isDimension) {
+            h += `
+            <div class="control-group">
+                <div class="control-header"><span>尺寸标注属性</span></div>
+                
+                <!-- 线条颜色 -->
+                <div class="control-group">
+                    <div class="control-header"><span>线条颜色</span></div>
+                    <input type="color" value="${o.stroke || '#3b82f6'}" oninput="editDimensionProperty('stroke', this.value)">
+                </div>
+                
+                <!-- 线条宽度 -->
+                <div class="control-group">
+                    <div class="control-header"><span>线条宽度</span></div>
+                    <input type="range" min="1" max="10" step="0.5" value="${o.strokeWidth || 2}" oninput="editDimensionProperty('strokeWidth', parseFloat(this.value))">
+                    <div style="text-align:center; font-size:12px; color:#666;">${o.strokeWidth || 2}px</div>
+                </div>
+                
+                <!-- 箭头颜色 -->
+                <div class="control-group">
+                    <div class="control-header"><span>箭头颜色</span></div>
+                    <input type="color" value="${o.fill || '#3b82f6'}" oninput="editDimensionProperty('fill', this.value)">
+                </div>
+                
+                <!-- 文字颜色 -->
+                <div class="control-group">
+                    <div class="control-header"><span>文字颜色</span></div>
+                    <input type="color" value="${getTextColorFromDimension(o) || '#3b82f6'}" oninput="editDimensionTextProperty('fill', this.value)">
+                </div>
+                
+                <!-- 文字大小 -->
+                <div class="control-group">
+                    <div class="control-header"><span>文字大小</span></div>
+                    <input type="range" min="10" max="30" step="1" value="${getTextSizeFromDimension(o) || 14}" oninput="editDimensionTextProperty('fontSize', parseInt(this.value))">
+                    <div style="text-align:center; font-size:12px; color:#666;">${getTextSizeFromDimension(o) || 14}px</div>
+                </div>
+                
+                <!-- 尺寸值 -->
+                <div class="control-group">
+                    <div class="control-header"><span>尺寸值</span></div>
+                    <input type="text" value="${getDimensionValue(o)}" oninput="updateDimensionValue(this.value)" style="width:100%; padding:4px; font-size:12px; border:1px solid #cbd5e1; border-radius:3px;">
+                </div>
+                
+                <!-- 方向选择 -->
+                <div class="control-group">
+                    <div class="control-header"><span>标注方向</span></div>
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn btn-outline" style="flex:1; font-size:11px; padding:5px; ${o.dimensionOrientation === 'horizontal' ? 'background:#3b82f6; color:white;' : ''}" onclick="changeDimensionOrientation('horizontal')">横向</button>
+                        <button class="btn btn-outline" style="flex:1; font-size:11px; padding:5px; ${o.dimensionOrientation === 'vertical' ? 'background:#3b82f6; color:white;' : ''}" onclick="changeDimensionOrientation('vertical')">纵向</button>
+                    </div>
+                </div>
+            </div>`;
+        }
+        
+        // 裁剪模式下的控制面板
+        if (isCropping) {
+            // 确保裁剪控制面板可见
+            setTimeout(() => {
+                const cropControls = document.getElementById('crop-controls');
+                if (cropControls) {
+                    cropControls.style.display = 'block';
+                }
+            }, 0);
+        }
+        
+        // 透明度 (排除电商图标)
+        if (!o.isBadge) {
+            h += `
+            <div class="control-group">
+                <div class="control-header"><span>透明度</span></div>
+                <input type="range" min="0" max="1" step="0.1" value="${o.opacity}" oninput="edit('opacity',parseFloat(this.value))">
+            </div>`;
+        }        
+
+        
+        // 阴影控制
+        const shadow = o.shadow || {};
+        h += `
+        <div class="control-group">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="control-header"><span>阴影效果</span></div>
+                <div style="display:flex; gap:5px;">
+                    <label style="font-size:12px; cursor:pointer; display:flex; align-items:center; gap:5px;">
+                        <input type="checkbox" ${shadow.color ? 'checked' : ''} onchange="toggleShadow(this.checked)"> 启用
+                    </label>
+                    <select onchange="applyShadowPreset(this.value)" style="font-size:12px; padding:2px;">
+                        <option value="">预设...</option>
+                        <option value="subtle">微妙</option>
+                        <option value="medium">中等</option>
+                        <option value="strong">强烈</option>
+                        <option value="glow">发光</option>
+                    </select>
+                </div>
+            </div>
+            <div id="shadow-controls" style="${shadow.color ? 'display:block' : 'display:none'}; margin-top:10px;">
+                <div class="control-group">
+                    <div class="control-header"><span>阴影颜色</span></div>
+                    <input type="color" id="shadow-color" value="${shadow.color || '#000000'}" oninput="updateShadow('color', this.value)">
+                </div>
+                <div class="control-group">
+                    <div class="control-header"><span>模糊度</span><span id="shadow-blur-val">${shadow.blur || 10}px</span></div>
+                    <input type="range" id="shadow-blur" min="0" max="50" value="${shadow.blur || 10}" oninput="updateShadow('blur', parseInt(this.value))">
+                </div>
+                <div class="control-group">
+                    <div class="control-header"><span>水平偏移</span><span id="shadow-offset-x-val">${shadow.offsetX || 5}px</span></div>
+                    <input type="range" id="shadow-offset-x" min="-30" max="30" value="${shadow.offsetX || 5}" oninput="updateShadow('offsetX', parseInt(this.value))">
+                </div>
+                <div class="control-group">
+                    <div class="control-header"><span>垂直偏移</span><span id="shadow-offset-y-val">${shadow.offsetY || 5}px</span></div>
+                    <input type="range" id="shadow-offset-y" min="-30" max="30" value="${shadow.offsetY || 5}" oninput="updateShadow('offsetY', parseInt(this.value))">
+                </div>
+            </div>
+        </div>`;
+        
+        document.getElementById('prop-body').innerHTML = h;
+        
+        // 更新特效按钮状态
+        setTimeout(() => {
+            const o = canvas.getActiveObject();
+            if (o && (o.type === 'textbox' || o.type === 'text' || o.type === 'i-text')) {
+                const objectId = o.__uid;
+                if (objectId && textEffectStates.has(objectId)) {
+                    updateEffectButtonStyles(objectId);
+                }
+            }
+        }, 0);
+    }
+
+    // 节流机制优化性能
+    let renderTimeout;
+    
+    window.edit = function(k, v) {
+        const o = canvas.getActiveObject(); if(!o) return;
+        if(o.type === 'group' && k === 'fill') {
+            o.getObjects().forEach(x => { if(x.type!=='text') x.set('fill', v) });
+        } else {
+            o.set(k, v);
+        }
+        
+        // 使用节流机制优化性能，避免频繁重绘
+        clearTimeout(renderTimeout);
+        renderTimeout = setTimeout(() => {
+            canvas.requestRenderAll();
+        }, 10); // 10ms节流
+    }
+    
+    // 编辑电商图标文字
+    window.editBadgeText = function(text) {
+        const o = canvas.getActiveObject(); if(!o || !o.isBadgeShape) return;
+        
+        // 更新文字对象
+        const textObj = o._objects[1];
+        if (textObj) {
+            textObj.set('text', text);
+            o.textContent = text;
+        }
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 编辑电商图标文字属性
+    window.editBadgeTextProperty = function(property, value) {
+        const o = canvas.getActiveObject(); if(!o || !o.isBadgeShape) return;
+        
+        // 更新文字对象
+        const textObj = o._objects[1];
+        if (textObj) {
+            textObj.set(property, value);
+            if (property === 'fill') {
+                o.badgeColor = value;
+            }
+        }
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 编辑电商图标背景属性
+    window.editBadgeBackgroundProperty = function(property, value) {
+        const o = canvas.getActiveObject(); if(!o || !o.isBadgeShape) return;
+        
+        // 更新背景对象
+        const bgObj = o._objects[0];
+        if (bgObj) {
+            bgObj.set(property, value);
+            if (property === 'fill') {
+                o.badgeBgColor = value;
+            }
+        }
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 获取电商图标文字对象
+    function getBadgeTextObject(badgeObj) {
+        if (!badgeObj || !badgeObj._objects) return null;
+        
+        // 查找文字对象（通常是第二个对象）
+        for (let i = 0; i < badgeObj._objects.length; i++) {
+            const obj = badgeObj._objects[i];
+            if (obj.type === 'text') {
+                return obj;
+            }
+        }
+        return null;
+    }
+    
+    // 获取电商图标背景对象
+    function getBadgeBackgroundObject(badgeObj) {
+        if (!badgeObj || !badgeObj._objects) return null;
+        
+        // 查找背景对象（通常是第一个对象）
+        for (let i = 0; i < badgeObj._objects.length; i++) {
+            const obj = badgeObj._objects[i];
+            if (obj.type === 'rect') {
+                return obj;
+            }
+        }
+        return null;
+    }
+    
+    // 存储文本特效状态
+    const textEffectStates = new Map();
+    
+    // 获取尺寸标注中的文字对象
+    function getTextFromDimension(dimensionObj) {
+        if (!dimensionObj || !dimensionObj._objects) return null;
+        
+        // 查找文字对象（通常是最后一个对象）
+        for (let i = dimensionObj._objects.length - 1; i >= 0; i--) {
+            const obj = dimensionObj._objects[i];
+            if (obj.type === 'text') {
+                return obj;
+            }
+        }
+        return null;
+    }
+    
+    // 获取尺寸标注中的文字颜色
+    function getTextColorFromDimension(dimensionObj) {
+        const textObj = getTextFromDimension(dimensionObj);
+        return textObj ? textObj.fill : '#3b82f6';
+    }
+    
+    // 获取尺寸标注中的文字大小
+    function getTextSizeFromDimension(dimensionObj) {
+        const textObj = getTextFromDimension(dimensionObj);
+        return textObj ? textObj.fontSize : 14;
+    }
+    
+    // 获取尺寸标注的值
+    function getDimensionValue(dimensionObj) {
+        const textObj = getTextFromDimension(dimensionObj);
+        return textObj ? textObj.text.replace('px', '').replace('cm', '') : '15';
+    }
+    
+    // 获取标注气泡颜色
+    function getCalloutBubbleColor(calloutObj) {
+        // 查找画布中所有改进的标注气泡的气泡部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isImprovedCalloutBubble) {
+                return objects[i].fill || '#3b82f6';
+            }
+        }
+        return '#3b82f6';
+    }
+    
+    // 获取标注气泡文字颜色
+    function getCalloutTextColor(calloutObj) {
+        // 查找画布中所有改进的标注气泡的文字部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isImprovedCalloutText) {
+                return objects[i].fill || 'white';
+            }
+        }
+        return 'white';
+    }
+    
+    // 获取标注气泡文字内容
+    function getCalloutText(calloutObj) {
+        // 查找画布中所有改进的标注气泡的文字部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isImprovedCalloutText) {
+                return objects[i].text || '标注内容';
+            }
+        }
+        return '标注内容';
+    }
+    
+    // 编辑标注气泡主体属性
+    window.editCalloutBubbleProperty = function(property, value) {
+        // 查找画布中所有改进的标注气泡的气泡部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isImprovedCalloutBubble) {
+                objects[i].set(property, value);
+            }
+        }
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 编辑标注气泡文字属性
+    window.editCalloutTextProperty = function(property, value) {
+        // 查找画布中所有改进的标注气泡的文字部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isImprovedCalloutText) {
+                objects[i].set(property, value);
+            }
+        }
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 获取数字标记背景颜色
+    function getMarkerBackgroundColor(markerObj) {
+        // 查找画布中所有数字标记的圆形背景部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isNumberMarkerCircle) {
+                return objects[i].fill || '#3b82f6';
+            }
+        }
+        return '#3b82f6';
+    }
+    
+    // 获取数字标记文字颜色
+    function getMarkerTextColor(markerObj) {
+        // 查找画布中所有数字标记的数字部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isNumberMarkerText) {
+                return objects[i].fill || 'white';
+            }
+        }
+        return 'white';
+    }
+    
+    // 获取数字标记文字内容
+    function getMarkerText(markerObj) {
+        // 查找画布中所有数字标记的数字部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isNumberMarkerText) {
+                return objects[i].text || '1';
+            }
+        }
+        return '1';
+    }
+    
+    // 编辑数字标记背景属性
+    window.editMarkerBackgroundProperty = function(property, value) {
+        // 查找画布中所有数字标记的圆形背景部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isNumberMarkerCircle) {
+                objects[i].set(property, value);
+            }
+        }
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 编辑数字标记文字属性
+    window.editMarkerTextProperty = function(property, value) {
+        // 查找画布中所有数字标记的数字部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isNumberMarkerText) {
+                objects[i].set(property, value);
+            }
+        }
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 获取大括号标注颜色
+    function getBraceColor(braceObj) {
+        // 查找画布中所有大括号标注的线条部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isBraceAnnotationLine || objects[i].isBraceAnnotationTopLine || objects[i].isBraceAnnotationBottomLine) {
+                return objects[i].stroke || '#3b82f6';
+            }
+        }
+        return '#3b82f6';
+    }
+    
+    // 获取大括号标注文字内容
+    function getBraceText(braceObj) {
+        // 查找画布中所有大括号标注的文字部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isBraceAnnotationText) {
+                return objects[i].text || '标注内容';
+            }
+        }
+        return '标注内容';
+    }
+    
+    // 编辑大括号标注属性
+    window.editBraceProperty = function(property, value) {
+        // 查找画布中所有大括号标注的线条部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isBraceAnnotationLine || objects[i].isBraceAnnotationTopLine || objects[i].isBraceAnnotationBottomLine) {
+                objects[i].set(property, value);
+            }
+        }
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 编辑大括号标注文字属性
+    window.editBraceTextProperty = function(property, value) {
+        // 查找画布中所有大括号标注的文字部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isBraceAnnotationText) {
+                objects[i].set(property, value);
+            }
+        }
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 获取星标颜色
+    function getStarColor(starObj) {
+        // 查找画布中所有星标的星形部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isStarMarkerStar) {
+                return objects[i].fill || '#3b82f6';
+            }
+        }
+        return '#3b82f6';
+    }
+    
+    // 获取星标文字颜色
+    function getStarTextColor(starObj) {
+        // 查找画布中所有星标的文字部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isStarMarkerText) {
+                return objects[i].fill || 'white';
+            }
+        }
+        return 'white';
+    }
+    
+    // 编辑星标属性
+    window.editStarProperty = function(property, value) {
+        // 查找画布中所有星标的星形部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isStarMarkerStar) {
+                objects[i].set(property, value);
+            }
+        }
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 编辑星标文字属性
+    window.editStarTextProperty = function(property, value) {
+        // 查找画布中所有星标的文字部分
+        const objects = canvas.getObjects();
+        for (let i = 0; i < objects.length; i++) {
+            if (objects[i].isStarMarkerText) {
+                objects[i].set(property, value);
+            }
+        }
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 编辑尺寸标注属性
+    window.editDimensionProperty = function(property, value) {
+        const activeObject = canvas.getActiveObject();
+        if (!activeObject || !activeObject.isDimension) return;
+        
+        // 更新所有子对象的属性
+        if (activeObject._objects) {
+            activeObject._objects.forEach(obj => {
+                // 只更新线条和箭头的属性
+                if (obj.type === 'line' || obj.type === 'triangle') {
+                    obj.set(property, value);
+                }
+            });
+        }
+        
+        // 更新主对象的属性
+        activeObject.set(property, value);
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 编辑尺寸标注文字属性
+    window.editDimensionTextProperty = function(property, value) {
+        const activeObject = canvas.getActiveObject();
+        if (!activeObject || !activeObject.isDimension) return;
+        
+        // 查找并更新文字对象
+        if (activeObject._objects) {
+            activeObject._objects.forEach(obj => {
+                if (obj.type === 'text') {
+                    obj.set(property, value);
+                }
+            });
+        }
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 更新尺寸标注值
+    window.updateDimensionValue = function(value) {
+        const activeObject = canvas.getActiveObject();
+        if (!activeObject || !activeObject.isDimension) return;
+        
+        // 查找并更新文字对象
+        if (activeObject._objects) {
+            activeObject._objects.forEach(obj => {
+                if (obj.type === 'text') {
+                    obj.set('text', value + 'cm');
+                }
+            });
+        }
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 改变尺寸标注方向
+    window.changeDimensionOrientation = function(orientation) {
+        const activeObject = canvas.getActiveObject();
+        if (!activeObject || !activeObject.isDimension) return;
+        
+        // 更新方向属性
+        activeObject.set('dimensionOrientation', orientation);
+        
+        // 查找并更新文字对象
+        if (activeObject._objects) {
+            activeObject._objects.forEach(obj => {
+                if (obj.type === 'text') {
+                    // 根据方向设置文字位置和旋转
+                    if (orientation === 'horizontal') {
+                        obj.set({
+                            top: -20,
+                            angle: 0
+                        });
+                    } else {
+                        obj.set({
+                            top: 0,
+                            angle: 90
+                        });
+                    }
+                }
+            });
+        }
+        
+        canvas.requestRenderAll();
+        
+        // 重新渲染属性面板以更新按钮状态
+        renderProp();
+    };
+    
+    // 应用文本特效
+    window.applyTextEffect = function(effectType) {
+        const o = canvas.getActiveObject(); if(!o) return;
+        
+        // 获取对象ID
+        const objectId = o.__uid || (o.__uid = fabric.util.getRandomInt(100000, 999999));
+        
+        // 初始化对象特效状态
+        if (!textEffectStates.has(objectId)) {
+            textEffectStates.set(objectId, {
+                highlight: false,
+                skew: false,
+                gradient: false,
+                outline: false,
+                shadow: false,
+                glow: false,
+                '3d': false,
+                originalFill: o.fill,
+                originalFontWeight: o.fontWeight,
+                originalBackgroundColor: o.backgroundColor,
+                originalUnderline: o.underline,
+                originalSkewX: o.skewX || 0,
+                originalAngle: o.angle || 0,
+                originalScaleX: o.scaleX || 1,
+                originalScaleY: o.scaleY || 1,
+                originalStroke: o.stroke,
+                originalStrokeWidth: o.strokeWidth,
+                originalShadow: o.shadow
+            });
+        }
+        
+        const state = textEffectStates.get(objectId);
+        
+        // 切换特效状态
+        state[effectType] = !state[effectType];
+        
+        // 更新按钮样式
+        updateEffectButtonStyles(objectId);
+        
+        switch(effectType) {
+            case 'highlight':
+                if (state.highlight) {
+                    // 应用划重点效果
+                    o.set({
+                        fontWeight: 'bold',
+                        backgroundColor: 'rgba(255, 255, 0, 0.4)', // 更明显的半透明黄色背景
+                        underline: true,
+                        fill: '#000000' // 黑色文字更易读
+                    });
+                } else {
+                    // 取消划重点效果
+                    o.set({
+                        fontWeight: state.originalFontWeight || 'normal',
+                        backgroundColor: state.originalBackgroundColor || '',
+                        underline: state.originalUnderline || false,
+                        fill: state.originalFill || '#000000'
+                    });
+                }
+                break;
+            
+            case 'skew':
+                if (state.skew) {
+                    // 应用变形效果 - 更有趣的变形
+                    o.set({
+                        skewX: 20, // 更大水平倾斜
+                        angle: -10, // 更大旋转角度
+                        scaleX: 1.1, // 轻微水平拉伸
+                        scaleY: 0.9  // 轻微垂直压缩
+                    });
+                } else {
+                    // 取消变形效果
+                    o.set({
+                        skewX: state.originalSkewX || 0,
+                        angle: state.originalAngle || 0,
+                        scaleX: state.originalScaleX || 1,
+                        scaleY: state.originalScaleY || 1
+                    });
+                }
+                break;
+            
+            case 'gradient':
+                if (state.gradient) {
+                    // 应用渐变效果
+                    const gradient = new fabric.Gradient({
+                        type: 'linear',
+                        coords: {
+                            x1: 0,
+                            y1: 0,
+                            x2: o.width,
+                            y2: 0
+                        },
+                        colorStops: [
+                            { offset: 0, color: '#ff00cc' }, // 粉红色
+                            { offset: 0.25, color: '#3333ff' }, // 蓝色
+                            { offset: 0.5, color: '#00ccff' }, // 青色
+                            { offset: 0.75, color: '#00ff00' }, // 绿色
+                            { offset: 1, color: '#ffff00' }  // 黄色
+                        ]
+                    });
+                    o.set('fill', gradient);
+                    // 添加描边使渐变更明显
+                    o.set({
+                        stroke: '#000000',
+                        strokeWidth: 1
+                    });
+                } else {
+                    // 取消渐变效果
+                    o.set({
+                        fill: state.originalFill || '#000000',
+                        stroke: state.originalStroke || null,
+                        strokeWidth: state.originalStrokeWidth || 0
+                    });
+                }
+                break;
+            
+            case 'outline':
+                if (state.outline) {
+                    // 应用描边效果 - 更明显的描边
+                    o.set({
+                        stroke: '#ff0000',
+                        strokeWidth: 3
+                    });
+                } else {
+                    // 取消描边效果
+                    o.set({
+                        stroke: state.originalStroke || null,
+                        strokeWidth: state.originalStrokeWidth || 0
+                    });
+                }
+                break;
+            
+            case 'shadow':
+                if (state.shadow) {
+                    // 应用阴影效果 - 更自然的阴影
+                    o.set('shadow', new fabric.Shadow({
+                        color: 'rgba(0,0,0,0.4)',
+                        blur: 8,
+                        offsetX: 4,
+                        offsetY: 4
+                    }));
+                } else {
+                    // 取消阴影效果
+                    o.set('shadow', state.originalShadow || null);
+                }
+                break;
+            
+            case 'glow':
+                if (state.glow) {
+                    // 应用发光效果
+                    o.set('shadow', new fabric.Shadow({
+                        color: '#00ffff',
+                        blur: 20,
+                        offsetX: 0,
+                        offsetY: 0
+                    }));
+                } else {
+                    // 取消发光效果
+                    o.set('shadow', state.originalShadow || null);
+                }
+                break;
+            
+            case '3d':
+                if (state['3d']) {
+                    // 应用3D效果 - 双重阴影创造更立体的效果
+                    o.set({
+                        shadow: new fabric.Shadow({
+                            color: 'rgba(0,0,0,0.2)',
+                            blur: 0,
+                            offsetX: 3,
+                            offsetY: 3
+                        }),
+                        fontWeight: 'bold',
+                        stroke: '#cccccc',
+                        strokeWidth: 1
+                    });
+                } else {
+                    // 取消3D效果
+                    o.set({
+                        shadow: state.originalShadow || null,
+                        fontWeight: state.originalFontWeight || 'normal',
+                        stroke: state.originalStroke || null,
+                        strokeWidth: state.originalStrokeWidth || 0
+                    });
+                }
+                break;
+        }
+        
+        canvas.requestRenderAll();
+    }
+    
+    // 更新特效按钮样式
+    function updateEffectButtonStyles(objectId) {
+        const state = textEffectStates.get(objectId);
+        if (!state) return;
+        
+        // 更新按钮激活状态样式
+        document.getElementById('effect-highlight').style.background = state.highlight ? '#fef2f2' : '';
+        document.getElementById('effect-skew').style.background = state.skew ? '#eff6ff' : '';
+        document.getElementById('effect-gradient').style.background = state.gradient ? '#f0f9ff' : '';
+        document.getElementById('effect-outline').style.background = state.outline ? '#ecfdf5' : '';
+        document.getElementById('effect-shadow').style.background = state.shadow ? '#f5f3ff' : '';
+        document.getElementById('effect-glow').style.background = state.glow ? '#f0fdf4' : '';
+        document.getElementById('effect-3d').style.background = state['3d'] ? '#fffbeb' : '';
+    }
+    
+    // 阴影控制函数
+    window.toggleShadow = function(isChecked) {
+        const o = canvas.getActiveObject(); if(!o) return;
+        
+        const shadowControls = document.getElementById('shadow-controls');
+        shadowControls.style.display = isChecked ? 'block' : 'none';
+        
+        if (isChecked) {
+            // 启用阴影
+            if (!o.shadow) {
+                o.set('shadow', new fabric.Shadow({
+                    color: '#000000',
+                    blur: 10,
+                    offsetX: 5,
+                    offsetY: 5
+                }));
+            }
+        } else {
+            // 禁用阴影
+            o.set('shadow', null);
+        }
+        
+        canvas.requestRenderAll();
+    }
+    
+    window.updateShadow = function(key, val) {
+        const o = canvas.getActiveObject(); if(!o) return;
+        
+        // 确保阴影对象存在
+        if (!o.shadow) {
+            o.set('shadow', new fabric.Shadow({
+                color: '#000000',
+                blur: 10,
+                offsetX: 5,
+                offsetY: 5
+            }));
+        }
+        
+        // 更新阴影属性
+        o.shadow[key] = val;
+        
+        // 更新显示数值
+        if(key === 'blur') document.getElementById('shadow-blur-val').innerText = val + 'px';
+        if(key === 'offsetX') document.getElementById('shadow-offset-x-val').innerText = val + 'px';
+        if(key === 'offsetY') document.getElementById('shadow-offset-y-val').innerText = val + 'px';
+        
+        canvas.requestRenderAll();
+    }
+    
+    // 应用阴影预设
+    window.applyShadowPreset = function(preset) {
+        if (!preset) return;
+        
+        const o = canvas.getActiveObject(); if(!o) return;
+        
+        let shadowConfig;
+        switch(preset) {
+            case 'subtle':
+                shadowConfig = { color: 'rgba(0,0,0,0.3)', blur: 5, offsetX: 2, offsetY: 2 };
+                break;
+            case 'medium':
+                shadowConfig = { color: 'rgba(0,0,0,0.5)', blur: 10, offsetX: 5, offsetY: 5 };
+                break;
+            case 'strong':
+                shadowConfig = { color: 'rgba(0,0,0,0.7)', blur: 15, offsetX: 10, offsetY: 10 };
+                break;
+            case 'glow':
+                shadowConfig = { color: '#3b82f6', blur: 20, offsetX: 0, offsetY: 0 };
+                break;
+            default:
+                return;
+        }
+        
+        // 确保阴影控件可见
+        const shadowControls = document.getElementById('shadow-controls');
+        shadowControls.style.display = 'block';
+        
+        // 应用阴影配置
+        o.set('shadow', new fabric.Shadow(shadowConfig));
+        
+        // 更新UI控件
+        document.getElementById('shadow-color').value = shadowConfig.color;
+        document.getElementById('shadow-blur').value = shadowConfig.blur;
+        document.getElementById('shadow-offset-x').value = shadowConfig.offsetX;
+        document.getElementById('shadow-offset-y').value = shadowConfig.offsetY;
+        
+        // 更新显示数值
+        document.getElementById('shadow-blur-val').innerText = shadowConfig.blur + 'px';
+        document.getElementById('shadow-offset-x-val').innerText = shadowConfig.offsetX + 'px';
+        document.getElementById('shadow-offset-y-val').innerText = shadowConfig.offsetY + 'px';
+        
+        canvas.requestRenderAll();
+    }
+
+    window.setTab = function(t) {
+        document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+        document.querySelectorAll('.panel-scroll').forEach(e => e.classList.remove('active'));
+        
+        const idx = {canvas:0, assets:1, batch:2}[t];
+        document.querySelectorAll('.nav-item')[idx].classList.add('active');
+        document.querySelectorAll('.panel-scroll')[idx].classList.add('active');
+    }
+
+    // ==========================================
+    // 8. 导出与批量处理
+    // ==========================================
+    
+    // 导出当前画布
+    window.exportCurrentCanvas = function() {
+        const v = canvas.viewportTransform.slice();
+        const z = canvas.getZoom();
+        
+        // 冻结视图，设为1:1
+        canvas.setViewportTransform([1,0,0,1,0,0]);
+        
+        const d = canvas.toDataURL({
+            format: 'png',
+            quality: 1,
+            multiplier: 1,
+            left: 0, top: 0,
+            width: artboard.w, height: artboard.h
+        });
+        
+        // 恢复视图
+        canvas.setViewportTransform(v);
+        canvas.setZoom(z);
+        
+        saveAs(d, 'ozonbox_canvas.png');
+    }
+    
+    // 导出所有画布
+    window.exportAllCanvases = function() {
+        // 单画布模式，只导出当前画布
+        exportCurrentCanvas();
+    }
+    
+    // 批量处理
+    window.runBatch = async function(input) {
+        const fs = input.files;
+        if(!fs.length) return;
+        
+        const st = document.getElementById('batch-status');
+        st.innerText = `正在处理 ${fs.length} 张图片...`;
+        
+        // 1. 隐藏底图和辅助白纸
+        const hidden = [];
+        canvas.getObjects().forEach(o => {
+            if(o.isPreview || o === artboard.rect) {
+                o.visible = false;
+                hidden.push(o);
+            }
+        });
+        canvas.discardActiveObject();
+        canvas.requestRenderAll();
+        
+        // 2. 生成水印层
+        const v = canvas.viewportTransform.slice();
+        canvas.setViewportTransform([1,0,0,1,0,0]);
+        const wm = canvas.toDataURL({format:'png', left:0, top:0, width:artboard.w, height:artboard.h});
+        canvas.setViewportTransform(v);
+        
+        // 3. 恢复显示
+        hidden.forEach(o => o.visible = true);
+        canvas.requestRenderAll();
+
+        // 4. 合成
+        const zip = new JSZip();
+        for(let i=0; i<fs.length; i++) {
+            st.innerText = `处理进度: ${i+1}/${fs.length}`;
+            const b = await merge(fs[i], wm, artboard.bgFill);
+            zip.file(fs[i].name, b);
+        }
+        
+        st.innerText = "打包中...";
+        zip.generateAsync({type:'blob'}).then(c => {
+            saveAs(c, 'Ozonbox_Batch.zip');
+            st.innerText = "完成！";
+            input.value = '';
+        });
+    }
+
+    function merge(f, wmUrl, bg) {
+        return new Promise(resolve => {
+            const i = new Image();
+            i.src = URL.createObjectURL(f);
+            i.onload = () => {
+                const c = document.createElement('canvas');
+                c.width = artboard.w; c.height = artboard.h;
+                const ctx = c.getContext('2d');
+                
+                // 绘制背景
+                ctx.fillStyle = bg;
+                ctx.fillRect(0, 0, c.width, c.height);
+                
+                // 绘制原图 (Contain)
+                const s = Math.min(c.width/i.width, c.height/i.height);
+                const w = i.width*s; const h = i.height*s;
+                ctx.drawImage(i, (c.width-w)/2, (c.height-h)/2, w, h);
+                
+                // 绘制水印
+                const wmi = new Image();
+                wmi.src = wmUrl;
+                wmi.onload = () => {
+                    ctx.drawImage(wmi, 0, 0);
+                    c.toBlob(b => resolve(b), 'image/jpeg', 0.9);
+                }
+            }
+        });
+    }
+
+    // 裁剪相关变量
+    let cropArea = null;  // 裁剪区域
+    let isCropping = false;  // 是否处于裁剪模式
+    let originalImageObject = null;  // 原始图片对象
+    let cropOverlay = null;  // 裁剪遮罩层
+    let cropStartX = 0;  // 裁剪起始X坐标
+    let cropStartY = 0;  // 裁剪起始Y坐标
+    
+    // 开始裁剪模式
+    window.startCropMode = function() {
+        const activeObject = canvas.getActiveObject();
+        if (!activeObject || activeObject.type !== 'image') return;
+        
+        // 保存当前状态到撤回栈
+        saveState();
+        
+        // 保存原始图片对象
+        originalImageObject = activeObject;
+        
+        // 备份原图的完整数据（用于撤销裁剪）
+        if (!originalImageObject.fullSrc) {
+            originalImageObject.fullSrc = originalImageObject.toDataURL();
+        }
+        
+        // 设置裁剪模式标志
+        isCropping = true;
+        
+        // 显示裁剪控制面板
+        document.getElementById('crop-controls').style.display = 'block';
+        
+        // 移除之前的裁剪区域（如果存在）
+        if (cropArea) {
+            canvas.remove(cropArea);
+        }
+        
+        // 锁定原图防止误操作
+        originalImageObject.selectable = false;
+        originalImageObject.evented = false;
+        
+        // 创建裁剪区域
+        createCropArea(activeObject);
+        
+        // 创建遮罩层
+        createCropOverlay(activeObject);
+        
+        // 禁用画布平移/缩放
+        disableCanvasInteractions();
+        
+        // 添加鼠标事件监听
+        canvas.on('mouse:down', startCropSelection);
+        canvas.on('mouse:move', updateCropSelection);
+        canvas.on('mouse:up', endCropSelection);
+        
+        // 添加键盘事件监听，支持回车键应用裁剪
+        document.addEventListener('keydown', handleCropKeyDown);
+        
+        // 显示裁剪提示
+        showToast('请框选裁剪区域，按回车键确认裁剪或再次选择图片点击裁剪按钮', 3000);
+        
+        // 重新渲染画布
+        canvas.requestRenderAll();
+        
+        // 重新渲染属性面板以显示裁剪控制
+        renderProp();
+    };
+    
+    // 再次选择图片时的裁剪功能
+    window.cropSelectedImage = function() {
+        // 如果已经在裁剪模式下，直接应用裁剪
+        if (isCropping && cropArea) {
+            applyCrop();
+        } else {
+            // 否则启动裁剪模式
+            startCropMode();
+        }
+    }
+    
+    // 创建裁剪区域
+    function createCropArea(imageObj) {
+        // 获取图片的实际尺寸
+        const imgWidth = imageObj.width * imageObj.scaleX;
+        const imgHeight = imageObj.height * imageObj.scaleY;
+        
+        // 计算图片在画布上的边界
+        const imgLeft = imageObj.left - imgWidth / 2;
+        const imgTop = imageObj.top - imgHeight / 2;
+        
+        // 设置初始裁剪区域为图片的80%
+        const cropWidth = imgWidth * 0.8;
+        const cropHeight = imgHeight * 0.8;
+        
+        // 计算裁剪区域的左上角坐标（居中）
+        const cropLeft = imgLeft + (imgWidth - cropWidth) / 2;
+        const cropTop = imgTop + (imgHeight - cropHeight) / 2;
+        
+        // 创建裁剪区域矩形
+        cropArea = new fabric.Rect({
+            left: cropLeft,
+            top: cropTop,
+            width: cropWidth,
+            height: cropHeight,
+            fill: 'rgba(0, 0, 0, 0.01)', // 几乎透明的填充，用于接收事件
+            stroke: '#ffffff',
+            strokeWidth: 2,
+            strokeDashArray: [5, 5],
+            originX: 'left',
+            originY: 'top',
+            selectable: true,
+            hasControls: true,
+            hasBorders: true,
+            lockUniScaling: false,
+            hoverCursor: 'move',
+            cornerColor: '#ffffff',
+            cornerSize: 12,
+            cornerStyle: 'circle',
+            transparentCorners: false,
+            // 确保裁剪区域能接收事件
+            evented: true
+        });
+        
+        // 添加裁剪区域到画布
+        canvas.add(cropArea);
+        cropArea.bringToFront();
+        canvas.setActiveObject(cropArea);
+        
+        // 监听裁剪区域的变化
+        cropArea.on('moving', function() {
+            constrainCropArea(imageObj);
+            updateCropOverlay(imageObj);
+            updateCropInputs();
+        });
+        
+        cropArea.on('scaling', function() {
+            constrainCropArea(imageObj);
+            updateCropOverlay(imageObj);
+            updateCropInputs();
+        });
+        
+        // 初始化输入框的值
+        setTimeout(updateCropInputs, 100);
+    }
+    
+    // 创建裁剪遮罩层
+    function createCropOverlay(imageObj) {
+        // 移除现有的遮罩层
+        if (cropOverlay) {
+            canvas.remove(cropOverlay);
+        }
+        
+        // 获取图片的实际尺寸
+        const imgWidth = imageObj.width * imageObj.scaleX;
+        const imgHeight = imageObj.height * imageObj.scaleY;
+        
+        // 计算图片在画布上的边界
+        const imgLeft = imageObj.left - imgWidth / 2;
+        const imgTop = imageObj.top - imgHeight / 2;
+        
+        // 创建遮罩组（包含四个矩形形成遮罩效果）
+        const maskGroup = new fabric.Group([], {
+            selectable: false,
+            evented: false,
+            originX: 'left',
+            originY: 'top'
+        });
+        
+        // 创建遮罩矩形（黑色半透明）
+        const maskRect = new fabric.Rect({
+            left: imgLeft,
+            top: imgTop,
+            width: imgWidth,
+            height: imgHeight,
+            fill: 'rgba(0, 0, 0, 0.3)',
+            selectable: false,
+            evented: false,
+            originX: 'left',
+            originY: 'top'
+        });
+        
+        maskGroup.addWithUpdate(maskRect);
+        
+        // 添加遮罩组到画布
+        canvas.add(maskGroup);
+        maskGroup.sendToBack();
+        
+        cropOverlay = maskGroup;
+        
+        // 更新遮罩以创建裁剪区域的开口效果
+        updateCropOverlay(imageObj);
+    }
+    
+    // 更新裁剪遮罩层
+    function updateCropOverlay(imageObj) {
+        if (!cropOverlay || !cropArea || !imageObj) return;
+        
+        // 获取图片的实际尺寸
+        const imgWidth = imageObj.width * imageObj.scaleX;
+        const imgHeight = imageObj.height * imageObj.scaleY;
+        
+        // 计算图片在画布上的边界
+        const imgLeft = imageObj.left - imgWidth / 2;
+        const imgTop = imageObj.top - imgHeight / 2;
+        
+        // 获取裁剪区域的边界
+        const cropLeft = cropArea.left;
+        const cropTop = cropArea.top;
+        const cropRight = cropArea.left + cropArea.width * cropArea.scaleX;
+        const cropBottom = cropArea.top + cropArea.height * cropArea.scaleY;
+        
+        // 移除现有的开口矩形
+        const objects = cropOverlay.getObjects();
+        if (objects.length > 1) {
+            for (let i = objects.length - 1; i >= 1; i--) {
+                cropOverlay.remove(objects[i]);
+            }
+        }
+        
+        // 创建开口矩形（透明区域）
+        // 上方区域
+        if (cropTop > imgTop) {
+            const topRect = new fabric.Rect({
+                left: imgLeft,
+                top: imgTop,
+                width: imgWidth,
+                height: cropTop - imgTop,
+                fill: 'rgba(0, 0, 0, 0.3)',
+                selectable: false,
+                evented: false,
+                originX: 'left',
+                originY: 'top'
+            });
+            cropOverlay.addWithUpdate(topRect);
+        }
+        
+        // 左侧区域
+        if (cropLeft > imgLeft) {
+            const leftRect = new fabric.Rect({
+                left: imgLeft,
+                top: cropTop,
+                width: cropLeft - imgLeft,
+                height: cropBottom - cropTop,
+                fill: 'rgba(0, 0, 0, 0.3)',
+                selectable: false,
+                evented: false,
+                originX: 'left',
+                originY: 'top'
+            });
+            cropOverlay.addWithUpdate(leftRect);
+        }
+        
+        // 右侧区域
+        if (cropRight < imgLeft + imgWidth) {
+            const rightRect = new fabric.Rect({
+                left: cropRight,
+                top: cropTop,
+                width: imgLeft + imgWidth - cropRight,
+                height: cropBottom - cropTop,
+                fill: 'rgba(0, 0, 0, 0.3)',
+                selectable: false,
+                evented: false,
+                originX: 'left',
+                originY: 'top'
+            });
+            cropOverlay.addWithUpdate(rightRect);
+        }
+        
+        // 下方区域
+        if (cropBottom < imgTop + imgHeight) {
+            const bottomRect = new fabric.Rect({
+                left: imgLeft,
+                top: cropBottom,
+                width: imgWidth,
+                height: imgTop + imgHeight - cropBottom,
+                fill: 'rgba(0, 0, 0, 0.3)',
+                selectable: false,
+                evented: false,
+                originX: 'left',
+                originY: 'top'
+            });
+            cropOverlay.addWithUpdate(bottomRect);
+        }
+        
+        cropOverlay.dirty = true;
+        canvas.requestRenderAll();
+    }
+    
+    // 禁用画布交互
+    function disableCanvasInteractions() {
+        // 保存原始的事件处理函数
+        window.originalWheelHandler = canvas.__eventListeners['mouse:wheel'];
+        window.originalMouseDownHandler = canvas.__eventListeners['mouse:down'];
+        window.originalMouseMoveHandler = canvas.__eventListeners['mouse:move'];
+        window.originalMouseUpHandler = canvas.__eventListeners['mouse:up'];
+        
+        // 移除画布的鼠标滚轮事件（禁用缩放）
+        canvas.off('mouse:wheel');
+        
+        // 移除画布的鼠标按下事件（禁用平移）
+        canvas.off('mouse:down');
+        
+        // 移除画布的鼠标移动事件（禁用平移）
+        canvas.off('mouse:move');
+        
+        // 移除画布的鼠标抬起事件（禁用平移）
+        canvas.off('mouse:up');
+    }
+    
+    // 启用画布交互
+    function enableCanvasInteractions() {
+        // 恢复画布的鼠标滚轮事件（启用缩放）
+        if (window.originalWheelHandler && window.originalWheelHandler.length > 0) {
+            canvas.on('mouse:wheel', window.originalWheelHandler[0]);
+        } else {
+            // 如果没有保存的处理器，则重新绑定默认的滚轮缩放事件
+            canvas.on('mouse:wheel', opt => {
+                let z = canvas.getZoom();
+                z *= 0.999 ** opt.e.deltaY;
+                if(z > 5) z = 5; 
+                if(z < 0.1) z = 0.1;
+                canvas.zoomToPoint({x: opt.e.offsetX, y: opt.e.offsetY}, z);
+                opt.e.preventDefault();
+                opt.e.stopPropagation();
+                document.getElementById('zoom-txt').innerText = Math.round(z * 100) + '%';
+            });
+        }
+        
+        // 恢复画布的鼠标按下事件（启用平移）
+        if (window.originalMouseDownHandler && window.originalMouseDownHandler.length > 0) {
+            canvas.on('mouse:down', window.originalMouseDownHandler[0]);
+        } else {
+            // 如果没有保存的处理器，则重新绑定默认的鼠标按下事件
+            canvas.on('mouse:down', o => {
+                // 只有在没有选中对象且按住Alt键或鼠标中键时才允许拖拽
+                if((o.e.altKey || o.e.button === 1) && !canvas.getActiveObject()) {
+                    isDrag = true;
+                    canvas.selection = false;
+                    lx = o.e.clientX; ly = o.e.clientY;
+                    document.body.style.cursor = 'grab';
+                }
+            });
+        }
+        
+        // 恢复画布的鼠标移动事件（启用平移）
+        if (window.originalMouseMoveHandler && window.originalMouseMoveHandler.length > 0) {
+            canvas.on('mouse:move', window.originalMouseMoveHandler[0]);
+        } else {
+            // 如果没有保存的处理器，则重新绑定默认的鼠标移动事件
+            canvas.on('mouse:move', o => {
+                if(isDrag) {
+                    const v = canvas.viewportTransform;
+                    v[4] += o.e.clientX - lx;
+                    v[5] += o.e.clientY - ly;
+                    canvas.requestRenderAll();
+                    lx = o.e.clientX; ly = o.e.clientY;
+                }
+            });
+        }
+        
+        // 恢复画布的鼠标抬起事件（启用平移）
+        if (window.originalMouseUpHandler && window.originalMouseUpHandler.length > 0) {
+            canvas.on('mouse:up', window.originalMouseUpHandler[0]);
+        } else {
+            // 如果没有保存的处理器，则重新绑定默认的鼠标抬起事件
+            canvas.on('mouse:up', () => {
+                isDrag = false;
+                canvas.selection = true;
+                document.body.style.cursor = 'default';
+            });
+        }
+    }
+    
+    // 限制裁剪区域在图片范围内
+    function constrainCropArea(imageObj) {
+        if (!cropArea || !imageObj) return;
+        
+        // 获取图片的实际尺寸
+        const imgWidth = imageObj.width * imageObj.scaleX;
+        const imgHeight = imageObj.height * imageObj.scaleY;
+        
+        // 计算图片在画布上的边界
+        const imgLeft = imageObj.left - imgWidth / 2;
+        const imgTop = imageObj.top - imgHeight / 2;
+        const imgRight = imgLeft + imgWidth;
+        const imgBottom = imgTop + imgHeight;
+        
+        // 获取裁剪区域的边界
+        let cropLeft = cropArea.left;
+        let cropTop = cropArea.top;
+        let cropRight = cropArea.left + cropArea.width * cropArea.scaleX;
+        let cropBottom = cropArea.top + cropArea.height * cropArea.scaleY;
+        
+        // 限制裁剪区域在图片范围内
+        if (cropLeft < imgLeft) {
+            cropArea.set({ left: imgLeft });
+        }
+        
+        if (cropTop < imgTop) {
+            cropArea.set({ top: imgTop });
+        }
+        
+        if (cropRight > imgRight) {
+            cropArea.set({ left: imgRight - cropArea.width * cropArea.scaleX });
+        }
+        
+        if (cropBottom > imgBottom) {
+            cropArea.set({ top: imgBottom - cropArea.height * cropArea.scaleY });
+        }
+        
+        // 重新计算裁剪区域边界
+        cropLeft = cropArea.left;
+        cropTop = cropArea.top;
+        cropRight = cropArea.left + cropArea.width * cropArea.scaleX;
+        cropBottom = cropArea.top + cropArea.height * cropArea.scaleY;
+        
+        // 确保裁剪区域不会小于最小尺寸
+        const minWidth = 20;
+        const minHeight = 20;
+        
+        let changed = false;
+        
+        if (cropArea.width * cropArea.scaleX < minWidth) {
+            cropArea.set({ scaleX: minWidth / cropArea.width });
+            changed = true;
+        }
+        
+        if (cropArea.height * cropArea.scaleY < minHeight) {
+            cropArea.set({ scaleY: minHeight / cropArea.height });
+            changed = true;
+        }
+        
+        // 如果裁剪区域被调整，确保它仍在图片范围内
+        if (changed) {
+            if (cropArea.left + cropArea.width * cropArea.scaleX > imgRight) {
+                cropArea.set({ left: imgRight - cropArea.width * cropArea.scaleX });
+            }
+            
+            if (cropArea.top + cropArea.height * cropArea.scaleY > imgBottom) {
+                cropArea.set({ top: imgBottom - cropArea.height * cropArea.scaleY });
+            }
+        }
+    }
+    
+    // 开始裁剪选择
+    function startCropSelection(options) {
+        if (!isCropping || !originalImageObject) return;
+        
+        const pointer = canvas.getPointer(options.e);
+        cropStartX = pointer.x;
+        cropStartY = pointer.y;
+    }
+    
+    // 更新裁剪选择
+    function updateCropSelection(options) {
+        if (!isCropping || !originalImageObject) return;
+        // 通过拖拽控制点来调整裁剪区域，不需要额外处理
+    }
+    
+    // 结束裁剪选择
+    function endCropSelection(options) {
+        if (!isCropping || !originalImageObject) return;
+        // 裁剪区域已经通过控制点调整，无需额外处理
+    }
+    
+    // 处理裁剪模式下的键盘事件
+    function handleCropKeyDown(e) {
+        // 只在裁剪模式下处理键盘事件
+        if (!isCropping) return;
+        
+        // 按下回车键应用裁剪
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            applyCrop();
+        }
+        
+        // 按下ESC键取消裁剪
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            cancelCrop();
+        }
+    }
+    
+    // 应用裁剪
+    window.applyCrop = function() {
+        if (!isCropping || !originalImageObject || !cropArea) return;
+        
+        // 显示提示
+        showToast('正在应用裁剪...', 1500);
+        
+        // 获取图片的实际尺寸
+        const imgWidth = originalImageObject.width * originalImageObject.scaleX;
+        const imgHeight = originalImageObject.height * originalImageObject.scaleY;
+        
+        // 计算图片在画布上的边界
+        const imgLeft = originalImageObject.left - imgWidth / 2;
+        const imgTop = originalImageObject.top - imgHeight / 2;
+        
+        // 获取裁剪区域的边界
+        const cropLeft = cropArea.left;
+        const cropTop = cropArea.top;
+        const cropWidth = cropArea.width * cropArea.scaleX;
+        const cropHeight = cropArea.height * cropArea.scaleY;
+        
+        // 计算裁剪区域相对于图片的坐标
+        const relativeLeft = cropLeft - imgLeft;
+        const relativeTop = cropTop - imgTop;
+        
+        // 确保裁剪区域在图片范围内
+        const finalLeft = Math.max(0, Math.min(relativeLeft, imgWidth - cropWidth));
+        const finalTop = Math.max(0, Math.min(relativeTop, imgHeight - cropHeight));
+        const finalWidth = Math.min(cropWidth, imgWidth - finalLeft);
+        const finalHeight = Math.min(cropHeight, imgHeight - finalTop);
+        
+        // 创建临时canvas进行裁剪
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = finalWidth;
+        tempCanvas.height = finalHeight;
+        const ctx = tempCanvas.getContext('2d');
+        
+        // 获取原图数据
+        const imgSrc = originalImageObject.fullSrc || originalImageObject.toDataURL();
+        
+        // 创建一个新的图片元素用于裁剪
+        const img = new Image();
+        img.src = imgSrc;
+        
+        img.onload = function() {
+            // 计算在原图上的裁剪坐标（考虑原始图片的缩放）
+            const scaleX = img.width / imgWidth;
+            const scaleY = img.height / imgHeight;
+            
+            const sourceX = finalLeft * scaleX;
+            const sourceY = finalTop * scaleY;
+            const sourceWidth = finalWidth * scaleX;
+            const sourceHeight = finalHeight * scaleY;
+            
+            // 在临时canvas上绘制裁剪区域
+            ctx.drawImage(
+                img,
+                sourceX, sourceY, sourceWidth, sourceHeight,
+                0, 0, finalWidth, finalHeight
+            );
+            
+            // 获取裁剪后的数据URL
+            const croppedDataUrl = tempCanvas.toDataURL('image/png');
+            
+            // 创建新图片对象
+            fabric.Image.fromURL(croppedDataUrl, function(newImg) {
+                // 保存原图的完整数据（用于撤销裁剪）
+                if (!newImg.fullSrc) {
+                    newImg.fullSrc = imgSrc;
+                }
+                
+                // 设置新图片的位置和尺寸
+                newImg.set({
+                    left: originalImageObject.left,
+                    top: originalImageObject.top,
+                    scaleX: originalImageObject.scaleX,
+                    scaleY: originalImageObject.scaleY,
+                    angle: originalImageObject.angle,
+                    originX: 'center',
+                    originY: 'center'
+                });
+                
+                // 替换原图片
+                canvas.remove(originalImageObject);
+                canvas.add(newImg);
+                canvas.setActiveObject(newImg);
+                
+                // 隐藏裁剪控制面板
+                document.getElementById('crop-controls').style.display = 'none';
+                
+                // 清理裁剪相关元素
+                cleanupCropMode();
+                
+                // 保存状态到撤回栈
+                setTimeout(saveState, 100);
+                
+                // 重新渲染属性面板
+                renderProp();
+            });
+        };
+    };
+    
+    // 撤销裁剪（恢复到原始完整图片）
+    window.undoCrop = function() {
+        if (!isCropping || !originalImageObject || !originalImageObject.fullSrc) return;
+        
+        // 创建新图片对象（使用原始完整图片）
+        fabric.Image.fromURL(originalImageObject.fullSrc, function(newImg) {
+            // 保存原图的完整数据
+            newImg.fullSrc = originalImageObject.fullSrc;
+            
+            // 设置新图片的位置和尺寸
+            newImg.set({
+                left: originalImageObject.left,
+                top: originalImageObject.top,
+                scaleX: originalImageObject.scaleX,
+                scaleY: originalImageObject.scaleY,
+                angle: originalImageObject.angle,
+                originX: 'center',
+                originY: 'center'
+            });
+            
+            // 替换当前图片
+            canvas.remove(originalImageObject);
+            canvas.add(newImg);
+            canvas.setActiveObject(newImg);
+            
+            // 隐藏裁剪控制面板
+            document.getElementById('crop-controls').style.display = 'none';
+            
+            // 清理裁剪相关元素
+            cleanupCropMode();
+            
+            // 保存状态到撤回栈
+            setTimeout(saveState, 100);
+            
+            // 重新渲染属性面板
+            renderProp();
+        });
+    };
+    
+    // 取消裁剪
+    window.cancelCrop = function() {
+        // 显示提示
+        showToast('已取消裁剪', 1500);
+        
+        // 隐藏裁剪控制面板
+        document.getElementById('crop-controls').style.display = 'none';
+        
+        // 清理裁剪相关元素
+        cleanupCropMode();
+        
+        // 重新选择原始图片
+        if (originalImageObject) {
+            canvas.setActiveObject(originalImageObject);
+        }
+        
+        // 保存状态到撤回栈
+        setTimeout(saveState, 100);
+        
+        // 重新渲染属性面板
+        renderProp();
+    };
+    
+    // 清理裁剪模式
+    function cleanupCropMode() {
+        // 移除裁剪区域
+        if (cropArea) {
+            canvas.remove(cropArea);
+            cropArea = null;
+        }
+        
+        // 移除遮罩层
+        if (cropOverlay) {
+            canvas.remove(cropOverlay);
+            cropOverlay = null;
+        }
+        
+        // 恢复原图的可选择性
+        if (originalImageObject) {
+            originalImageObject.selectable = true;
+            originalImageObject.evented = true;
+        }
+        
+        // 移除事件监听
+        canvas.off('mouse:down', startCropSelection);
+        canvas.off('mouse:move', updateCropSelection);
+        canvas.off('mouse:up', endCropSelection);
+        
+        // 移除键盘事件监听
+        document.removeEventListener('keydown', handleCropKeyDown);
+        
+        // 恢复画布交互
+        enableCanvasInteractions();
+        
+        // 重置变量
+        isCropping = false;
+        originalImageObject = null;
+        
+        // 重新渲染画布
+        canvas.requestRenderAll();
+    }
+    
+    // 设置裁剪比例
+    window.setCropRatio = function(ratio) {
+        if (!cropArea || !isCropping) return;
+        
+        // 如果ratio为0，表示自由裁剪
+        if (ratio === 0) {
+            cropArea.set({ lockUniScaling: false });
+        } else {
+            // 设置固定比例
+            cropArea.set({ lockUniScaling: true });
+            
+            // 调整裁剪区域的高度以匹配比例
+            const newHeight = cropArea.width / ratio;
+            cropArea.set({ height: newHeight });
+        }
+        
+        // 更新输入框的值
+        updateCropInputs();
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 更新裁剪区域尺寸
+    window.updateCropSize = function() {
+        if (!cropArea || !isCropping || !originalImageObject) return;
+        
+        const widthInput = document.getElementById('crop-width');
+        const heightInput = document.getElementById('crop-height');
+        
+        let newWidth = parseFloat(widthInput.value);
+        let newHeight = parseFloat(heightInput.value);
+        
+        // 检查输入值的有效性
+        if (isNaN(newWidth) || isNaN(newHeight) || newWidth <= 0 || newHeight <= 0) return;
+        
+        // 获取图片的实际尺寸
+        const imgWidth = originalImageObject.width * originalImageObject.scaleX;
+        const imgHeight = originalImageObject.height * originalImageObject.scaleY;
+        
+        // 计算图片在画布上的边界
+        const imgLeft = originalImageObject.left - imgWidth / 2;
+        const imgTop = originalImageObject.top - imgHeight / 2;
+        const imgRight = imgLeft + imgWidth;
+        const imgBottom = imgTop + imgHeight;
+        
+        // 限制裁剪区域尺寸不超过图片尺寸
+        newWidth = Math.min(newWidth, imgWidth);
+        newHeight = Math.min(newHeight, imgHeight);
+        
+        // 获取当前裁剪区域的位置
+        let cropLeft = cropArea.left;
+        let cropTop = cropArea.top;
+        
+        // 确保裁剪区域不会超出右边界
+        if (cropLeft + newWidth > imgRight) {
+            cropLeft = imgRight - newWidth;
+        }
+        
+        // 确保裁剪区域不会超出下边界
+        if (cropTop + newHeight > imgBottom) {
+            cropTop = imgBottom - newHeight;
+        }
+        
+        // 更新裁剪区域
+        cropArea.set({
+            width: newWidth,
+            height: newHeight,
+            left: cropLeft,
+            top: cropTop
+        });
+        
+        // 约束裁剪区域在图片范围内
+        constrainCropArea(originalImageObject);
+        
+        // 更新遮罩层
+        updateCropOverlay(originalImageObject);
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 更新裁剪区域位置
+    window.updateCropPosition = function() {
+        if (!cropArea || !isCropping || !originalImageObject) return;
+        
+        const xInput = document.getElementById('crop-x');
+        const yInput = document.getElementById('crop-y');
+        
+        let newX = parseFloat(xInput.value);
+        let newY = parseFloat(yInput.value);
+        
+        // 检查输入值的有效性
+        if (isNaN(newX) || isNaN(newY)) return;
+        
+        // 获取图片的实际尺寸
+        const imgWidth = originalImageObject.width * originalImageObject.scaleX;
+        const imgHeight = originalImageObject.height * originalImageObject.scaleY;
+        
+        // 计算图片在画布上的边界
+        const imgLeft = originalImageObject.left - imgWidth / 2;
+        const imgTop = originalImageObject.top - imgHeight / 2;
+        
+        // 转换相对坐标为绝对坐标
+        const absoluteX = imgLeft + newX;
+        const absoluteY = imgTop + newY;
+        
+        // 获取裁剪区域的尺寸
+        const cropWidth = cropArea.width * cropArea.scaleX;
+        const cropHeight = cropArea.height * cropArea.scaleY;
+        
+        // 限制裁剪区域在图片范围内
+        const constrainedX = Math.max(imgLeft, Math.min(absoluteX, imgLeft + imgWidth - cropWidth));
+        const constrainedY = Math.max(imgTop, Math.min(absoluteY, imgTop + imgHeight - cropHeight));
+        
+        // 更新裁剪区域位置
+        cropArea.set({
+            left: constrainedX,
+            top: constrainedY
+        });
+        
+        // 更新遮罩层
+        updateCropOverlay(originalImageObject);
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 居中裁剪区域
+    window.centerCropArea = function() {
+        if (!cropArea || !isCropping || !originalImageObject) return;
+        
+        // 获取图片的实际尺寸
+        const imgWidth = originalImageObject.width * originalImageObject.scaleX;
+        const imgHeight = originalImageObject.height * originalImageObject.scaleY;
+        
+        // 计算图片在画布上的边界
+        const imgLeft = originalImageObject.left - imgWidth / 2;
+        const imgTop = originalImageObject.top - imgHeight / 2;
+        
+        // 获取裁剪区域的尺寸
+        const cropWidth = cropArea.width * cropArea.scaleX;
+        const cropHeight = cropArea.height * cropArea.scaleY;
+        
+        // 计算居中位置
+        const centerX = imgLeft + (imgWidth - cropWidth) / 2;
+        const centerY = imgTop + (imgHeight - cropHeight) / 2;
+        
+        // 更新裁剪区域位置
+        cropArea.set({
+            left: centerX,
+            top: centerY
+        });
+        
+        // 更新输入框的值
+        updateCropInputs();
+        
+        // 更新遮罩层
+        updateCropOverlay(originalImageObject);
+        
+        canvas.requestRenderAll();
+    };
+    
+    // 更新裁剪输入框的值
+    function updateCropInputs() {
+        if (!cropArea || !isCropping || !originalImageObject) return;
+        
+        const widthInput = document.getElementById('crop-width');
+        const heightInput = document.getElementById('crop-height');
+        const xInput = document.getElementById('crop-x');
+        const yInput = document.getElementById('crop-y');
+        
+        // 获取裁剪区域的尺寸
+        const cropWidth = cropArea.width * cropArea.scaleX;
+        const cropHeight = cropArea.height * cropArea.scaleY;
+        
+        // 获取裁剪区域的位置（相对于图片）
+        const imgWidth = originalImageObject.width * originalImageObject.scaleX;
+        const imgHeight = originalImageObject.height * originalImageObject.scaleY;
+        const imgLeft = originalImageObject.left - imgWidth / 2;
+        const imgTop = originalImageObject.top - imgHeight / 2;
+        
+        const relativeX = cropArea.left - imgLeft;
+        const relativeY = cropArea.top - imgTop;
+        
+        // 更新输入框的值
+        widthInput.value = Math.round(cropWidth);
+        heightInput.value = Math.round(cropHeight);
+        xInput.value = Math.round(relativeX);
+        yInput.value = Math.round(relativeY);
+    }
+    
+    // 撤回功能相关变量
+    let undoStack = [];
+    let redoStack = [];
+    let isUndoRedoing = false; // 防止撤回操作本身触发新的状态保存
+    let lastSavedTimestamp = 0;
+    
+    // 优化的状态保存函数
+    function saveState() {
+        // 如果正在执行撤回/重做操作，则不保存状态
+        if (isUndoRedoing) return;
+        
+        // 限制保存频率，至少间隔100ms
+        const now = Date.now();
+        if (now - lastSavedTimestamp < 100) return;
+        lastSavedTimestamp = now;
+        
+        // 限制撤回栈大小，避免占用过多内存
+        if (undoStack.length > 75) {
+            undoStack.shift();
+        }
+        
+        // 保存当前画布状态（只保存必要的属性以提高性能）
+        const state = canvas.toJSON([
+            'left', 'top', 'width', 'height', 'scaleX', 'scaleY', 'angle', 
+            'flipX', 'flipY', 'originX', 'originY', 'strokeWidth', 'fill', 
+            'stroke', 'opacity', 'shadow', 'visible', 'clipTo', 'backgroundColor',
+            'text', 'fontFamily', 'fontSize', 'fontWeight', 'textDecoration',
+            'textAlign', 'fontStyle', 'lineHeight', 'textBackgroundColor',
+            'src', 'crossOrigin', 'filters'
+        ]);
+        
+        // 使用轻量级序列化方法
+        const stateStr = JSON.stringify(state, function(key, value) {
+            // 过滤掉不必要的大对象
+            if (key === 'canvas') return undefined;
+            return value;
+        });
+        
+        undoStack.push(stateStr);
+        
+        // 清空重做栈
+        redoStack = [];
+        
+        // 更新撤回/恢复按钮状态
+        updateUndoRedoButtons();
+    }
+    
+    // 更新撤回/恢复按钮状态
+    function updateUndoRedoButtons() {
+        const undoBtn = document.getElementById('undo-btn');
+        const redoBtn = document.getElementById('redo-btn');
+        
+        // 撤回按钮：至少要有初始状态和一个操作状态才能撤回
+        undoBtn.disabled = undoStack.length <= 1;
+        
+        // 恢复按钮：重做栈不为空时可用
+        redoBtn.disabled = redoStack.length === 0;
+    }
+    
+    // 撤回操作
+    function undo() {
+        if (undoStack.length <= 1) {
+            showToast('无法撤回更多操作', 1500);
+            return; // 至少保留初始状态
+        }
+        
+        // 保存当前状态到重做栈
+        const currentState = canvas.toJSON([
+            'left', 'top', 'width', 'height', 'scaleX', 'scaleY', 'angle', 
+            'flipX', 'flipY', 'originX', 'originY', 'strokeWidth', 'fill', 
+            'stroke', 'opacity', 'shadow', 'visible', 'clipTo', 'backgroundColor',
+            'text', 'fontFamily', 'fontSize', 'fontWeight', 'textDecoration',
+            'textAlign', 'fontStyle', 'lineHeight', 'textBackgroundColor',
+            'src', 'crossOrigin', 'filters'
+        ]);
+        
+        const currentStateStr = JSON.stringify(currentState, function(key, value) {
+            if (key === 'canvas') return undefined;
+            return value;
+        });
+        
+        redoStack.push(currentStateStr);
+        
+        // 从撤回栈取出上一个状态
+        const prevStateStr = undoStack.pop();
+        
+        // 标记正在进行撤回操作
+        isUndoRedoing = true;
+        
+        // 显示操作提示
+        showToast('已撤回操作', 1500);
+        
+        // 恢复上一个状态
+        canvas.loadFromJSON(prevStateStr, () => {
+            canvas.renderAll();
+            // 恢复完成后取消标记
+            isUndoRedoing = false;
+            // 更新撤回/恢复按钮状态
+            updateUndoRedoButtons();
+        });
+    }
+    
+    // 重做操作
+    function redo() {
+        if (redoStack.length === 0) {
+            showToast('无法恢复更多操作', 1500);
+            return;
+        }
+        
+        // 保存当前状态到撤回栈
+        const currentState = canvas.toJSON([
+            'left', 'top', 'width', 'height', 'scaleX', 'scaleY', 'angle', 
+            'flipX', 'flipY', 'originX', 'originY', 'strokeWidth', 'fill', 
+            'stroke', 'opacity', 'shadow', 'visible', 'clipTo', 'backgroundColor',
+            'text', 'fontFamily', 'fontSize', 'fontWeight', 'textDecoration',
+            'textAlign', 'fontStyle', 'lineHeight', 'textBackgroundColor',
+            'src', 'crossOrigin', 'filters'
+        ]);
+        
+        const currentStateStr = JSON.stringify(currentState, function(key, value) {
+            if (key === 'canvas') return undefined;
+            return value;
+        });
+        
+        undoStack.push(currentStateStr);
+        
+        // 从重做栈取出下一个状态
+        const nextStateStr = redoStack.pop();
+        
+        // 标记正在进行重做操作
+        isUndoRedoing = true;
+        
+        // 显示操作提示
+        showToast('已恢复操作', 1500);
+        
+        // 恢复下一个状态
+        canvas.loadFromJSON(nextStateStr, () => {
+            canvas.renderAll();
+            // 恢复完成后取消标记
+            isUndoRedoing = false;
+            // 更新撤回/恢复按钮状态
+            updateUndoRedoButtons();
+        });
+    }
+    
+    // 处理键盘事件
+    document.addEventListener('keydown', function(e) {
+        // Ctrl+Z 撤回
+        if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+            e.preventDefault();
+            undo();
+        }
+        
+        // Ctrl+Shift+Z 重做
+        if (e.ctrlKey && e.shiftKey && e.key === 'Z') {
+            e.preventDefault();
+            redo();
+        }
+        
+        // Ctrl+Y 重做
+        if (e.ctrlKey && e.key === 'y') {
+            e.preventDefault();
+            redo();
+        }
+        
+        // Ctrl+C 复制
+        if (e.ctrlKey && e.key === 'c') {
+            e.preventDefault();
+            copyObject();
+        }
+        
+        // Ctrl+V 粘贴
+        if (e.ctrlKey && e.key === 'v') {
+            e.preventDefault();
+            pasteObject();
+        }
+    });
+    
+    // 监听画布变化事件，自动保存状态
+    // 使用更高效的节流方法
+    let saveStateTimeout;
+    function throttledSaveState() {
+        clearTimeout(saveStateTimeout);
+        saveStateTimeout = setTimeout(saveState, 50);
+    }
+    
+    // 复制对象到剪贴板
+    function copyObject() {
+        const activeObject = canvas.getActiveObject();
+        if (!activeObject) {
+            showToast('请先选择要复制的对象', 1500);
+            return;
+        }
+        
+        // 将对象序列化为JSON字符串
+        const objectJson = JSON.stringify(activeObject.toObject());
+        
+        // 存储到localStorage作为剪贴板
+        localStorage.setItem('fabricClipboard', objectJson);
+        
+        // 显示提示信息
+        showToast('已复制到剪贴板', 1500);
+    }
+    
+    // 从剪贴板粘贴对象
+    function pasteObject() {
+        // 从localStorage获取剪贴板数据
+        const objectJson = localStorage.getItem('fabricClipboard');
+        if (!objectJson) {
+            showToast('剪贴板为空', 1500);
+            return;
+        }
+        
+        try {
+            // 解析JSON数据
+            const objectData = JSON.parse(objectJson);
+            
+            // 创建新对象
+            fabric.util.enlivenObjects([objectData], function(objects) {
+                const newObj = objects[0];
+                
+                // 设置新对象的位置（稍微偏移一点避免完全重叠）
+                newObj.set({
+                    left: newObj.left + 20,
+                    top: newObj.top + 20,
+                });
+                
+                // 添加到画布
+                canvas.add(newObj);
+                canvas.setActiveObject(newObj);
+                canvas.requestRenderAll();
+                
+                // 保存状态
+                saveState();
+                
+                // 显示提示信息
+                showToast('已粘贴对象', 1500);
+            });
+        } catch (e) {
+            console.error('粘贴对象失败:', e);
+            showToast('粘贴失败', 1500);
+        }
+    }
+    
+    // 显示提示信息
+    function showToast(message, duration = 2000) {
+        // 查找是否已存在提示元素
+        let toast = document.getElementById('operation-toast');
+        
+        if (!toast) {
+            // 创建提示元素
+            toast = document.createElement('div');
+            toast.id = 'operation-toast';
+            toast.style.position = 'fixed';
+            toast.style.top = '20px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.backgroundColor = 'rgba(37, 99, 235, 0.9)';
+            toast.style.color = 'white';
+            toast.style.padding = '12px 24px';
+            toast.style.borderRadius = '6px';
+            toast.style.zIndex = '10000';
+            toast.style.fontSize = '14px';
+            toast.style.fontWeight = '500';
+            toast.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            toast.style.transition = 'opacity 0.3s, transform 0.3s';
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(-20px)';
+            
+            // 添加到页面
+            document.body.appendChild(toast);
+        }
+        
+        // 设置消息内容
+        toast.innerText = message;
+        
+        // 显示动画
+        setTimeout(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+        }, 10);
+        
+        // 指定时间后淡出并移除
+        clearTimeout(toast.timeoutId);
+        toast.timeoutId = setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(-20px)';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, duration);
+    }
+    
+    canvas.on('object:added', throttledSaveState);
+    canvas.on('object:removed', throttledSaveState);
+    canvas.on('object:modified', throttledSaveState);
+    canvas.on('object:moving', throttledSaveState);
+    canvas.on('object:scaling', throttledSaveState);
+    canvas.on('object:rotating', throttledSaveState);
+    
+    // 初始化保存状态
+    setTimeout(() => {
+        saveState();
+        // 初始化撤回/恢复按钮状态
+        updateUndoRedoButtons();
+    }, 100);
+    
+    // 处理拖拽开始事件
+    function handleDragStart(e, dataUrl) {
+        e.dataTransfer.setData('text/plain', dataUrl);
+    }
+    
+    // 处理拖拽到画布事件
+    function handleDragOver(e) {
+        e.preventDefault();
+    }
+    
+    // 处理拖拽放置事件
+    function handleDrop(e) {
+        e.preventDefault();
+        const dataUrl = e.dataTransfer.getData('text/plain');
+        if (dataUrl) {
+            addImageToCanvasAtPosition(dataUrl, e.offsetX, e.offsetY);
+        }
+    }
+    
+    // 吸附功能相关变量
+    const SNAP_THRESHOLD = 5; // 吸附阈值（像素）
+    let snapLines = []; // 存储当前显示的吸附线
+    
+    // 清除吸附线
+    function clearSnapLines() {
+        snapLines.forEach(line => canvas.remove(line));
+        snapLines = [];
+        canvas.requestRenderAll();
+    }
+    
+    // 对象移动时的吸附处理
+    canvas.on('object:moving', function(options) {
+        const target = options.target;
+        
+        // 清除之前的吸附线
+        clearSnapLines();
+        
+        // 获取所有其他对象
+        const objects = canvas.getObjects().filter(obj => obj !== target);
+        
+        // 获取目标对象的边界
+        const targetLeft = target.left;
+        const targetTop = target.top;
+        const targetRight = targetLeft + target.width * target.scaleX;
+        const targetBottom = targetTop + target.height * target.scaleY;
+        
+        // 初始化最小距离和吸附位置
+        let minDeltaX = null;
+        let minDeltaY = null;
+        
+        // 检查与画布边缘的吸附
+        const canvasWidth = artboard.w;
+        const canvasHeight = artboard.h;
+        
+        // 检查左边
+        if (Math.abs(targetLeft) < SNAP_THRESHOLD) {
+            minDeltaX = -targetLeft;
+            // 添加垂直吸附线
+            const line = new fabric.Line([0, 0, 0, canvasHeight], {
+                stroke: '#2563eb',
+                strokeWidth: 1,
+                selectable: false,
+                evented: false,
+                originX: 'center',
+                originY: 'center'
+            });
+            snapLines.push(line);
+            canvas.add(line);
+        }
+        // 检查右边
+        else if (Math.abs(targetRight - canvasWidth) < SNAP_THRESHOLD) {
+            minDeltaX = canvasWidth - targetRight;
+            // 添加垂直吸附线
+            const line = new fabric.Line([canvasWidth, 0, canvasWidth, canvasHeight], {
+                stroke: '#2563eb',
+                strokeWidth: 1,
+                selectable: false,
+                evented: false,
+                originX: 'center',
+                originY: 'center'
+            });
+            snapLines.push(line);
+            canvas.add(line);
+        }
+        // 检查水平居中
+        else if (Math.abs(targetLeft + (target.width * target.scaleX) / 2 - canvasWidth / 2) < SNAP_THRESHOLD) {
+            minDeltaX = canvasWidth / 2 - (targetLeft + (target.width * target.scaleX) / 2);
+            // 添加垂直吸附线
+            const line = new fabric.Line([canvasWidth / 2, 0, canvasWidth / 2, canvasHeight], {
+                stroke: '#2563eb',
+                strokeWidth: 1,
+                selectable: false,
+                evented: false,
+                originX: 'center',
+                originY: 'center'
+            });
+            snapLines.push(line);
+            canvas.add(line);
+        }
+        
+        // 检查顶部
+        if (Math.abs(targetTop) < SNAP_THRESHOLD) {
+            minDeltaY = -targetTop;
+            // 添加水平吸附线
+            const line = new fabric.Line([0, 0, canvasWidth, 0], {
+                stroke: '#2563eb',
+                strokeWidth: 1,
+                selectable: false,
+                evented: false,
+                originX: 'center',
+                originY: 'center'
+            });
+            snapLines.push(line);
+            canvas.add(line);
+        }
+        // 检查底部
+        else if (Math.abs(targetBottom - canvasHeight) < SNAP_THRESHOLD) {
+            minDeltaY = canvasHeight - targetBottom;
+            // 添加水平吸附线
+            const line = new fabric.Line([0, canvasHeight, canvasWidth, canvasHeight], {
+                stroke: '#2563eb',
+                strokeWidth: 1,
+                selectable: false,
+                evented: false,
+                originX: 'center',
+                originY: 'center'
+            });
+            snapLines.push(line);
+            canvas.add(line);
+        }
+        // 检查垂直居中
+        else if (Math.abs(targetTop + (target.height * target.scaleY) / 2 - canvasHeight / 2) < SNAP_THRESHOLD) {
+            minDeltaY = canvasHeight / 2 - (targetTop + (target.height * target.scaleY) / 2);
+            // 添加水平吸附线
+            const line = new fabric.Line([0, canvasHeight / 2, canvasWidth, canvasHeight / 2], {
+                stroke: '#2563eb',
+                strokeWidth: 1,
+                selectable: false,
+                evented: false,
+                originX: 'center',
+                originY: 'center'
+            });
+            snapLines.push(line);
+            canvas.add(line);
+        }
+        
+        // 检查与其他对象的吸附
+        objects.forEach(obj => {
+            const objLeft = obj.left;
+            const objTop = obj.top;
+            const objRight = objLeft + obj.width * obj.scaleX;
+            const objBottom = objTop + obj.height * obj.scaleY;
+            
+            // 水平吸附检查
+            // 左对左
+            if (Math.abs(targetLeft - objLeft) < SNAP_THRESHOLD) {
+                if (minDeltaX === null || Math.abs(targetLeft - objLeft) < Math.abs(minDeltaX)) {
+                    minDeltaX = objLeft - targetLeft;
+                }
+                // 添加垂直吸附线
+                const line = new fabric.Line([objLeft, 0, objLeft, canvasHeight], {
+                    stroke: '#2563eb',
+                    strokeWidth: 1,
+                    selectable: false,
+                    evented: false,
+                    originX: 'center',
+                    originY: 'center'
+                });
+                snapLines.push(line);
+                canvas.add(line);
+            }
+            // 左对右
+            else if (Math.abs(targetLeft - objRight) < SNAP_THRESHOLD) {
+                if (minDeltaX === null || Math.abs(targetLeft - objRight) < Math.abs(minDeltaX)) {
+                    minDeltaX = objRight - targetLeft;
+                }
+                // 添加垂直吸附线
+                const line = new fabric.Line([objRight, 0, objRight, canvasHeight], {
+                    stroke: '#2563eb',
+                    strokeWidth: 1,
+                    selectable: false,
+                    evented: false,
+                    originX: 'center',
+                    originY: 'center'
+                });
+                snapLines.push(line);
+                canvas.add(line);
+            }
+            // 右对左
+            else if (Math.abs(targetRight - objLeft) < SNAP_THRESHOLD) {
+                if (minDeltaX === null || Math.abs(targetRight - objLeft) < Math.abs(minDeltaX)) {
+                    minDeltaX = objLeft - targetRight;
+                }
+                // 添加垂直吸附线
+                const line = new fabric.Line([objLeft, 0, objLeft, canvasHeight], {
+                    stroke: '#2563eb',
+                    strokeWidth: 1,
+                    selectable: false,
+                    evented: false,
+                    originX: 'center',
+                    originY: 'center'
+                });
+                snapLines.push(line);
+                canvas.add(line);
+            }
+            // 右对右
+            else if (Math.abs(targetRight - objRight) < SNAP_THRESHOLD) {
+                if (minDeltaX === null || Math.abs(targetRight - objRight) < Math.abs(minDeltaX)) {
+                    minDeltaX = objRight - targetRight;
+                }
+                // 添加垂直吸附线
+                const line = new fabric.Line([objRight, 0, objRight, canvasHeight], {
+                    stroke: '#2563eb',
+                    strokeWidth: 1,
+                    selectable: false,
+                    evented: false,
+                    originX: 'center',
+                    originY: 'center'
+                });
+                snapLines.push(line);
+                canvas.add(line);
+            }
+            // 水平居中对齐
+            else if (Math.abs((targetLeft + targetRight) / 2 - (objLeft + objRight) / 2) < SNAP_THRESHOLD) {
+                const delta = (objLeft + objRight) / 2 - (targetLeft + targetRight) / 2;
+                if (minDeltaX === null || Math.abs(delta) < Math.abs(minDeltaX)) {
+                    minDeltaX = delta;
+                }
+                // 添加垂直吸附线
+                const centerX = (objLeft + objRight) / 2;
+                const line = new fabric.Line([centerX, 0, centerX, canvasHeight], {
+                    stroke: '#2563eb',
+                    strokeWidth: 1,
+                    selectable: false,
+                    evented: false,
+                    originX: 'center',
+                    originY: 'center'
+                });
+                snapLines.push(line);
+                canvas.add(line);
+            }
+            
+            // 垂直吸附检查
+            // 顶对顶
+            if (Math.abs(targetTop - objTop) < SNAP_THRESHOLD) {
+                if (minDeltaY === null || Math.abs(targetTop - objTop) < Math.abs(minDeltaY)) {
+                    minDeltaY = objTop - targetTop;
+                }
+                // 添加水平吸附线
+                const line = new fabric.Line([0, objTop, canvasWidth, objTop], {
+                    stroke: '#2563eb',
+                    strokeWidth: 1,
+                    selectable: false,
+                    evented: false,
+                    originX: 'center',
+                    originY: 'center'
+                });
+                snapLines.push(line);
+                canvas.add(line);
+            }
+            // 顶对底
+            else if (Math.abs(targetTop - objBottom) < SNAP_THRESHOLD) {
+                if (minDeltaY === null || Math.abs(targetTop - objBottom) < Math.abs(minDeltaY)) {
+                    minDeltaY = objBottom - targetTop;
+                }
+                // 添加水平吸附线
+                const line = new fabric.Line([0, objBottom, canvasWidth, objBottom], {
+                    stroke: '#2563eb',
+                    strokeWidth: 1,
+                    selectable: false,
+                    evented: false,
+                    originX: 'center',
+                    originY: 'center'
+                });
+                snapLines.push(line);
+                canvas.add(line);
+            }
+            // 底对顶
+            else if (Math.abs(targetBottom - objTop) < SNAP_THRESHOLD) {
+                if (minDeltaY === null || Math.abs(targetBottom - objTop) < Math.abs(minDeltaY)) {
+                    minDeltaY = objTop - targetBottom;
+                }
+                // 添加水平吸附线
+                const line = new fabric.Line([0, objTop, canvasWidth, objTop], {
+                    stroke: '#2563eb',
+                    strokeWidth: 1,
+                    selectable: false,
+                    evented: false,
+                    originX: 'center',
+                    originY: 'center'
+                });
+                snapLines.push(line);
+                canvas.add(line);
+            }
+            // 底对底
+            else if (Math.abs(targetBottom - objBottom) < SNAP_THRESHOLD) {
+                if (minDeltaY === null || Math.abs(targetBottom - objBottom) < Math.abs(minDeltaY)) {
+                    minDeltaY = objBottom - targetBottom;
+                }
+                // 添加水平吸附线
+                const line = new fabric.Line([0, objBottom, canvasWidth, objBottom], {
+                    stroke: '#2563eb',
+                    strokeWidth: 1,
+                    selectable: false,
+                    evented: false,
+                    originX: 'center',
+                    originY: 'center'
+                });
+                snapLines.push(line);
+                canvas.add(line);
+            }
+            // 垂直居中对齐
+            else if (Math.abs((targetTop + targetBottom) / 2 - (objTop + objBottom) / 2) < SNAP_THRESHOLD) {
+                const delta = (objTop + objBottom) / 2 - (targetTop + targetBottom) / 2;
+                if (minDeltaY === null || Math.abs(delta) < Math.abs(minDeltaY)) {
+                    minDeltaY = delta;
+                }
+                // 添加水平吸附线
+                const centerY = (objTop + objBottom) / 2;
+                const line = new fabric.Line([0, centerY, canvasWidth, centerY], {
+                    stroke: '#2563eb',
+                    strokeWidth: 1,
+                    selectable: false,
+                    evented: false,
+                    originX: 'center',
+                    originY: 'center'
+                });
+                snapLines.push(line);
+                canvas.add(line);
+            }
+        });
+        
+        // 应用吸附偏移
+        if (minDeltaX !== null) {
+            target.left += minDeltaX;
+        }
+        if (minDeltaY !== null) {
+            target.top += minDeltaY;
+        }
+        
+        // 重新渲染画布
+        canvas.requestRenderAll();
+    });
+    
+    // 对象移动结束时清除吸附线
+    canvas.on('object:modified', clearSnapLines);
+    canvas.on('object:selected', clearSnapLines);
+    canvas.on('selection:cleared', clearSnapLines);
+    
+    // 在指定位置添加图片到画布
+    function addImageToCanvasAtPosition(dataUrl, x, y) {
+        fabric.Image.fromURL(dataUrl, function(img) {
+            // 计算合适的缩放比例，使图片不超过画布的80%
+            const maxWidth = artboard.w * 0.8;
+            const maxHeight = artboard.h * 0.8;
+            
+            let scaleX = 1;
+            let scaleY = 1;
+            
+            if (img.width > maxWidth) {
+                scaleX = maxWidth / img.width;
+                scaleY = scaleX;
+            }
+            
+            if (img.height * scaleY > maxHeight) {
+                scaleY = maxHeight / img.height;
+                scaleX = scaleY;
+            }
+            
+            // 将画布坐标转换为Fabric.js坐标
+            const viewportTransform = canvas.viewportTransform;
+            const fabricX = (x - viewportTransform[4]) / viewportTransform[0];
+            const fabricY = (y - viewportTransform[5]) / viewportTransform[3];
+            
+            img.set({
+                left: fabricX,
+                top: fabricY,
+                originX: 'center',
+                originY: 'center',
+                scaleX: scaleX,
+                scaleY: scaleY
+            });
+            canvas.add(img);
+            canvas.setActiveObject(img);
+            
+            // 确保画布交互正常
+            enableCanvasInteractions();
+        });
+    }
+    
+    // 添加拖拽事件监听器
+    document.getElementById('canvas-container').addEventListener('dragover', handleDragOver);
+    document.getElementById('canvas-container').addEventListener('drop', handleDrop);
+    
+    // 初始化运行
+    initArtboard();
+
+</script>
+</body>
+</html>

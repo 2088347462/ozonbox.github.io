@@ -4,711 +4,370 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>选品手册 - OZON工具盒子</title>
-    <!-- 缓存控制 -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     
-    <!-- 网站图标 -->
-    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon.svg">
-    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon.svg">
-    <link rel="apple-touch-icon" href="../images/favicon.svg">
-    <meta name="theme-color" content="#667eea">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
-        
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            --manual-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --glass-bg: rgba(255, 255, 255, 0.25);
-            --glass-border: rgba(255, 255, 255, 0.18);
-            --text-primary: #2d3748;
-            --text-secondary: #4a5568;
-            --text-muted: #718096;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.06);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
-            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
-            --border-radius: 16px;
-            --border-radius-lg: 24px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            /* === [配色] 旗舰级流光白金 === */
+            --bg-body: #F8F9FC; 
+            --bg-glass: rgba(255, 255, 255, 0.65);
+            --bg-glass-heavy: rgba(255, 255, 255, 0.95);
+            
+            /* 品牌色 */
+            --primary: #2563EB; 
+            --accent: #F97316;
+            --gradient-text: linear-gradient(135deg, #2563EB 0%, #3B82F6 50%, #F97316 100%);
+            --gradient-card: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); /* 选品专用渐变 */
+            
+            /* 文本 */
+            --text-main: #0F172A; 
+            --text-sub: #64748B;
+            
+            /* 阴影与圆角 */
+            --shadow-float: 0 20px 40px -10px rgba(15, 23, 42, 0.05);
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+            
+            --radius-xl: 32px;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            
+            --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+            
+            --container-width: 1400px;
         }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            /* 性能优化 - 移除所有消耗性能的效果 */
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            will-change: auto !important;
-        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--primary-gradient);
-            background-attachment: fixed;
-            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
             line-height: 1.6;
-            font-weight: 400;
-            letter-spacing: -0.01em;
             overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.03) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(249, 115, 22, 0.03) 0px, transparent 50%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* 动画定义 */
+        @keyframes flowIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes pendulum { 0% { transform: rotate(0deg); } 25% { transform: rotate(2deg); } 75% { transform: rotate(-2deg); } 100% { transform: rotate(0deg); } }
+
+        /* === 1. 悬浮岛屿导航栏 === */
+        .navbar {
+            position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+            width: 95%; max-width: 1400px;
+            height: 80px;
+            background: var(--bg-glass-heavy);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            display: flex; align-items: center; justify-content: space-between;
+            /* 右侧增加巨大内边距，给吊坠留出绝对安全区 */
+            padding-left: 32px; padding-right: 140px; 
+            z-index: 1000;
+            transition: all 0.4s var(--ease-out);
+        }
+
+        .navbar.scrolled {
+            top: 0; width: 100%; max-width: 100%; border-radius: 0;
+            background: rgba(255,255,255,0.98);
+            height: 72px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-right: 140px; 
+        }
+
+        .navbar-brand {
+            display: flex; align-items: center; gap: 14px;
+            font-size: 1.4rem; font-weight: 800; color: var(--text-main);
+            text-decoration: none; letter-spacing: -0.5px; flex-shrink: 0;
+        }
+        .navbar-logo {
+            width: 42px; height: 42px; border-radius: 12px;
+            background: #fff; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 1.2rem; color: var(--primary);
+        }
+
+        .navbar-nav {
+            display: flex; align-items: center; gap: 6px; list-style: none;
+            /* 关键：右侧留白防止遮挡 */
+            margin-right: 200px; 
+        }
+
+        .nav-link {
+            padding: 8px 14px; border-radius: 10px;
+            color: var(--text-sub); text-decoration: none; font-weight: 600;
+            font-size: 0.9rem; transition: all 0.3s; white-space: nowrap;
+        }
+        .nav-link:hover { color: var(--text-main); background: rgba(0,0,0,0.03); }
+        .nav-link.active { color: var(--primary); background: #EFF6FF; }
+
+        /* 广告胶囊：强制不收缩 */
+        .ad-pill {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.8rem; color: var(--text-sub);
+            border: 1px solid rgba(0,0,0,0.08);
+            padding: 8px 16px; border-radius: 100px;
+            background: rgba(255,255,255,0.5);
+            transition: 0.3s;
+            /* 关键属性：防止文字被压缩 */
+            white-space: nowrap; 
+            flex-shrink: 0; 
+            max-width: 500px; 
+            overflow: visible;
+        }
+        .ad-pill:hover { background: #fff; border-color: var(--accent); color: var(--text-main); }
+        
+        .qr-wrapper { position: relative; cursor: pointer; display: flex; align-items: center; gap: 4px; font-weight: 600; color: var(--text-main); margin-left: 8px; padding-left: 8px; border-left: 1px solid #ddd; }
+        .qr-popup {
+            position: absolute; top: 160%; left: 50%; transform: translateX(-50%) scale(0.9);
+            width: 140px; background: #fff; padding: 10px; border-radius: 16px;
+            box-shadow: var(--shadow-float); opacity: 0; visibility: hidden;
+            transition: 0.3s var(--ease-elastic); z-index: 1100;
+        }
+        .qr-wrapper:hover .qr-popup { opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); top: 140%; }
+        .qr-popup img { width: 100%; border-radius: 8px; display: block; }
+
+        /* 移动端菜单按钮 */
+        .menu-toggle { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; }
+
+        /* === ★★★ 旗舰吊坠 (全息铭牌) ★★★ === */
+        .pendant-container {
+            position: fixed; 
+            top: 24px; 
+            right: 40px; /* 固定在视窗最右侧 */
+            z-index: 1002;
+            display: flex; flex-direction: column; align-items: center;
+            transform-origin: top center;
+            animation: pendulum 6s ease-in-out infinite;
+            transition: top 0.4s;
+        }
+        
+        .pendant-rope {
+            width: 2px; height: 35px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4));
+            margin-top: -10px;
+        }
+        
+        .pendant-badge {
+            width: 150px; 
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,1);
+            border-radius: 20px;
+            padding: 16px;
+            text-decoration: none;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            box-shadow: 
+                0 15px 35px -5px rgba(0, 0, 0, 0.1),
+                inset 0 0 0 1px rgba(255,255,255,0.5);
+            transition: transform 0.3s var(--ease-out);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pendant-badge::before {
+            content:''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .badge-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #EFF6FF 0%, #FFF7ED 100%);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: var(--primary);
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
+        }
+
+        .badge-text { font-size: 14px; font-weight: 700; color: var(--text-main); }
+        .badge-sub { font-size: 10px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+        .pendant-container:hover { animation-play-state: paused; }
+        .pendant-container:hover .pendant-badge { transform: translateY(5px) scale(1.03); background: #fff; }
+        body.is-scrolled .pendant-container { top: 0; }
+
+        /* === 页面内容 === */
+        .main-content {
+            padding-top: 220px; 
+            padding-bottom: 80px;
             min-height: 100vh;
         }
         
-
-        
-        /* 动画定义 */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes fadeInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-        
-        /* 玻璃态效果 - 性能优化版本 */
-        .glass {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        /* 顶部导航栏 - 性能优化版本 */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 80px;
-            background: var(--glass-bg);
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
-            z-index: 1000;
-            transition: var(--transition);
-        }
-        
-        .navbar.scrolled {
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: white;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-        
-        .navbar.scrolled .navbar-brand {
-            color: var(--text-primary);
-        }
-        
-        .navbar-logo {
-            width: 40px;
-            height: 40px;
-            background: white;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .navbar-nav {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            list-style: none;
-        }
-        
-        .nav-link {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: var(--transition);
-            position: relative;
-        }
-        
-        .navbar.scrolled .nav-link {
-            color: var(--text-secondary);
-        }
-        
-        .nav-link:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        .navbar.scrolled .nav-link:hover {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-        }
-        
-        .nav-link.active {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-        
-        .navbar.scrolled .nav-link.active {
-            background: #667eea;
-            color: white;
-        }
-        
-        /* 移动端菜单按钮 */
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: var(--transition);
-        }
-        
-        .navbar.scrolled .menu-toggle {
-            color: var(--text-primary);
-        }
-        
-        .menu-toggle:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        /* 主要内容区域 */
-        .main-content {
-            margin-top: 80px;
-            min-height: calc(100vh - 80px);
-            padding: 2rem;
-        }
-        
         .container {
-            max-width: 1400px;
+            max-width: var(--container-width);
             margin: 0 auto;
-            padding: 0 1rem;
+            padding: 0 24px;
         }
-        
-        /* 面包屑导航 - 性能优化版本 */
+
+        /* 面包屑 */
         .breadcrumb {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--border-radius);
-            padding: 1rem 1.5rem;
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 12px;
+            padding: 12px 24px;
+            margin-bottom: 40px;
+            display: flex; align-items: center; gap: 8px;
             font-size: 0.9rem;
+            width: fit-content;
+            margin-left: auto; margin-right: auto;
+            box-shadow: var(--shadow-card);
         }
-        
-        .breadcrumb a {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-        
-        .breadcrumb a:hover {
-            color: white;
-        }
-        
-        .breadcrumb-separator {
-            color: rgba(255, 255, 255, 0.5);
-            margin: 0 0.5rem;
-        }
-        
-        .breadcrumb-current {
-            color: white;
-            font-weight: 500;
-        }
-        
-        /* 页面标题区域 */
-        .page-header {
-            text-align: center;
-            margin-bottom: 3rem;
-            animation: fadeInUp 0.8s ease-out;
-        }
-        
+        .breadcrumb a { color: var(--text-sub); text-decoration: none; transition: 0.3s; }
+        .breadcrumb a:hover { color: var(--primary); }
+        .breadcrumb-separator { color: #ddd; }
+        .breadcrumb-current { color: var(--text-main); font-weight: 600; }
+
+        /* 标题区 */
+        .page-header { text-align: center; margin-bottom: 60px; animation: flowIn 0.8s var(--ease-out); }
         .page-title {
-            font-family: 'Poppins', sans-serif;
-            font-size: clamp(2.5rem, 5vw, 3.5rem);
-            font-weight: 800;
-            color: white;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-            letter-spacing: -0.02em;
-            background: linear-gradient(45deg, #fff, #e0e7ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 3rem; font-weight: 800; color: var(--text-main);
+            margin-bottom: 16px; letter-spacing: -1px;
+            display: flex; align-items: center; justify-content: center; gap: 16px;
         }
-        
-        .page-subtitle {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.9);
-            max-width: 600px;
-            margin: 0 auto 2rem;
-            line-height: 1.6;
-        }
-        
+        .page-title i { color: var(--primary); }
+        .page-subtitle { font-size: 1.2rem; color: var(--text-sub); max-width: 700px; margin: 0 auto; line-height: 1.6; }
+
         /* 快速导航 */
         .quick-nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: center;
-            margin-bottom: 2rem;
-            animation: fadeInUp 1s ease-out;
+            display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+            margin-bottom: 48px; animation: flowIn 1s var(--ease-out);
         }
         
         .quick-btn {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 0.75rem 1.5rem;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            background: #fff; border: 1px solid #E2E8F0;
+            color: var(--text-main); padding: 10px 24px; border-radius: 100px;
+            font-size: 0.95rem; font-weight: 600; text-decoration: none;
+            transition: all 0.3s; display: flex; align-items: center; gap: 8px;
+            box-shadow: var(--shadow-card);
         }
-        
         .quick-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px); border-color: var(--primary);
+            color: var(--primary); box-shadow: var(--shadow-float);
         }
-        /* 显著标识：大促日历按钮高亮样式 */
         .quick-btn.highlight {
-            background: rgba(255, 255, 255, 0.30);
-            border-color: rgba(255, 255, 255, 0.6);
-            color: #fff;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.35);
-            font-weight: 700;
+            background: var(--gradient-text); color: white; border: none;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
         .quick-btn.highlight:hover {
-            background: rgba(255, 255, 255, 0.40);
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 14px 40px rgba(102, 126, 234, 0.50);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
         }
-        
-        /* 选品分类网格 */
+
+        /* 选品卡片网格 */
         .selection-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 32px; margin-bottom: 60px;
         }
         
         .selection-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            overflow: hidden;
-            transition: var(--transition);
-            animation: fadeInUp 1.2s ease-out;
-            position: relative;
+            background: #fff; border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-card); border: 1px solid rgba(0,0,0,0.03);
+            overflow: hidden; transition: all 0.4s var(--ease-out);
+            position: relative; animation: flowIn 1.2s var(--ease-out);
         }
-        
-        .selection-card:nth-child(2) { animation-delay: 0.2s; }
-        .selection-card:nth-child(3) { animation-delay: 0.4s; }
-        .selection-card:nth-child(4) { animation-delay: 0.6s; }
         
         .selection-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-xl);
-        }
-        
-        .selection-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--manual-gradient);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-        
-        .selection-card:hover::before {
-            transform: scaleX(1);
+            transform: translateY(-8px); box-shadow: var(--shadow-float);
+            border-color: rgba(37, 99, 235, 0.1);
         }
         
         .card-header {
-            background: var(--manual-gradient);
-            color: white;
-            padding: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .card-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
-            pointer-events: none;
+            background: #F8FAFC; padding: 24px 32px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #F1F5F9;
         }
         
         .card-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            position: relative;
-            z-index: 1;
+            display: flex; align-items: center; gap: 16px;
+            font-size: 1.4rem; font-weight: 700; color: var(--text-main);
         }
         
         .card-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            animation: float 3s ease-in-out infinite;
+            width: 48px; height: 48px; background: #EFF6FF; border-radius: 12px;
+            display: grid; place-items: center; font-size: 1.5rem; color: var(--primary);
+            transition: 0.3s;
         }
+        .selection-card:hover .card-icon { background: var(--primary); color: #fff; transform: rotate(-5deg); }
         
         .ext-link {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: var(--transition);
-            position: relative;
-            z-index: 1;
+            background: #fff; border: 1px solid #E2E8F0; color: var(--text-sub);
+            padding: 6px 16px; border-radius: 100px; font-size: 0.9rem; font-weight: 600;
+            text-decoration: none; transition: 0.3s;
         }
+        .ext-link:hover { border-color: var(--primary); color: var(--primary); transform: translateX(-3px); }
         
-        .ext-link:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        .card-body {
-            padding: 1.5rem;
-            background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.9) 100%);
-        }
+        .card-body { padding: 32px; }
         
         .keywords-wrap {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
+            display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px;
         }
         
         .keyword-btn {
-            background: white;
-            border: 2px solid rgba(102, 126, 234, 0.2);
-            color: var(--text-primary);
-            padding: 0.75rem 1rem;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            min-width: 120px;
-            position: relative;
-            overflow: hidden;
+            background: #F8FAFC; border: 1px solid #E2E8F0; color: var(--text-main);
+            padding: 10px 16px; border-radius: 12px; font-size: 0.9rem; cursor: pointer;
+            transition: 0.2s; display: flex; flex-direction: column; align-items: center;
+            min-width: 100px; text-align: center;
         }
-        
-        .keyword-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
-            transition: left 0.5s;
-        }
-        
-        .keyword-btn:hover::before {
-            left: 100%;
-        }
-        
         .keyword-btn:hover {
-            transform: translateY(-3px);
-            border-color: #667eea;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
-            background: linear-gradient(135deg, #f8f9ff 0%, #eef2ff 100%);
+            background: #fff; border-color: var(--accent); transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         
-        .keyword-btn:active {
-            transform: translateY(-1px);
-        }
-        
-        .keyword-text {
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.25rem;
-        }
-        
-        .keyword-russian {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-style: italic;
-        }
+        .keyword-text { font-weight: 700; margin-bottom: 4px; }
+        .keyword-russian { font-size: 0.8rem; color: var(--text-sub); font-style: italic; }
         
         .card-note {
-            background: rgba(102, 126, 234, 0.1);
-            border-left: 4px solid #667eea;
-            padding: 1rem;
-            border-radius: 0 8px 8px 0;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-top: 1rem;
+            background: #FFF7ED; border-left: 4px solid var(--accent);
+            padding: 16px; border-radius: 0 12px 12px 0;
+            color: #9A3412; font-size: 0.95rem; line-height: 1.6;
         }
-        
+
         /* 浮动按钮 */
-        .floating-buttons {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            z-index: 1000;
-        }
-        
+        .floating-buttons { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 16px; z-index: 1000; }
         .floating-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-decoration: none;
-            font-size: 1.5rem;
-            box-shadow: var(--shadow-lg);
-            transition: var(--transition);
-            animation: float 3s ease-in-out infinite;
-            cursor: pointer;
-            border: none;
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: #fff; color: var(--text-main);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-decoration: none; transition: 0.3s; cursor: pointer; border: none; font-size: 1.2rem;
         }
-        
-        .floating-btn:nth-child(2) {
-            animation-delay: 0.5s;
-        }
-        
-        .floating-btn.customer-service {
-            background: var(--success-gradient);
-        }
-        
-        .floating-btn.back-to-top {
-            background: var(--primary-gradient);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(20px);
-        }
-        
-        .floating-btn.back-to-top.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        
-        .floating-btn:hover {
-            transform: scale(1.1) translateY(-3px);
-            box-shadow: var(--shadow-xl);
-        }
-        
-        /* Toast 提示 */
+        .floating-btn:hover { background: var(--primary); color: #fff; transform: translateY(-4px); }
+        .floating-btn.back-to-top { opacity: 0; visibility: hidden; transform: translateY(10px); }
+        .floating-btn.back-to-top.show { opacity: 1; visibility: visible; transform: translateY(0); }
+
+        /* Toast */
         .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: var(--border-radius);
-            font-size: 0.9rem;
-            z-index: 1100;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-            max-width: 400px;
-            text-align: center;
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: #0F172A; color: white; padding: 12px 24px; border-radius: 50px;
+            font-size: 0.95rem; z-index: 2100; opacity: 0; visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        
-        .toast.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(-10px);
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .navbar-nav {
-                display: none;
-            }
-            
-            .menu-toggle {
-                display: block;
-            }
-            
-            .main-content {
-                padding: 1rem;
-            }
-            
-            .selection-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .quick-nav {
-                justify-content: center;
-            }
-            
-            .quick-btn {
-                padding: 0.6rem 1.2rem;
-                font-size: 0.85rem;
-            }
-            
-            .card-header {
-                padding: 1.25rem;
-            }
-            
-            .card-body {
-                padding: 1.25rem;
-            }
-            
-            .keyword-btn {
-                min-width: 100px;
-                padding: 0.6rem 0.8rem;
-            }
-            
-            .floating-buttons {
-                bottom: 1rem;
-                right: 1rem;
-            }
-            
-            .floating-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .page-title {
-                font-size: 2rem;
-            }
-            
-            .page-subtitle {
-                font-size: 1rem;
-            }
-            
-            .breadcrumb {
-                padding: 0.75rem 1rem;
-                font-size: 0.8rem;
-            }
-            
-            .selection-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .keywords-wrap {
-                gap: 0.5rem;
-            }
-            
-            .keyword-btn {
-                min-width: 90px;
-                padding: 0.5rem 0.6rem;
-                font-size: 0.8rem;
-            }
+        .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 1300px) {
+            .navbar-nav { display: none; }
+            .menu-toggle { display: block; }
+            .pendant-container { display: none; }
+            .navbar { padding-right: 24px; }
+            .selection-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    
-    <!-- 导航栏 -->
     <nav class="navbar" id="navbar">
         <a href="../index.html" class="navbar-brand">
             <div class="navbar-logo">
@@ -717,6 +376,17 @@
             OZON工具盒子
         </a>
         
+        <div class="ad-pill">
+            <i class="fas fa-shipping-fast" style="color:var(--accent)"></i>
+            <span>OZON专业货代 | UNI、GUOO物流 | 当天核验，24h内上网 | 价格实惠</span>
+            <div class="qr-wrapper">
+                <i class="fas fa-qrcode"></i>
+                <div class="qr-popup">
+                    <img src="../images/wang.png" alt="QR">
+                </div>
+            </div>
+        </div>
+
         <ul class="navbar-nav">
             <li><a href="../index.html" class="nav-link">首页</a></li>
             <li><a href="ai-tools.html" class="nav-link">AI工具</a></li>
@@ -731,26 +401,31 @@
         </button>
     </nav>
     
-    <!-- 主要内容 -->
+    <div class="pendant-container">
+        <div class="pendant-rope"></div>
+        <a href="https://ozonbox.top/pages/ozon_editor.html" target="_blank" class="pendant-badge">
+            <div class="badge-icon">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <div style="text-align:center;">
+                <div class="badge-text">图形编辑器</div>
+                <div class="badge-sub">Pro Tools</div>
+            </div>
+        </a>
+    </div>
+    
     <main class="main-content">
         <div class="container">
-            <!-- 面包屑导航 -->
             <nav class="breadcrumb">
                 <a href="../index.html">
-                    <i class="fas fa-home"></i>
-                    首页
+                    <i class="fas fa-home"></i> 首页
                 </a>
-                <span class="breadcrumb-separator">
-                    <i class="fas fa-chevron-right"></i>
-                </span>
+                <span class="breadcrumb-separator">/</span>
                 <a href="auxiliary-tools.html">辅助工具</a>
-                <span class="breadcrumb-separator">
-                    <i class="fas fa-chevron-right"></i>
-                </span>
+                <span class="breadcrumb-separator">/</span>
                 <span class="breadcrumb-current">选品手册</span>
             </nav>
             
-            <!-- 页面标题 -->
             <div class="page-header">
                 <h1 class="page-title">
                     <i class="fas fa-book"></i>
@@ -760,292 +435,226 @@
                     点击关键词将直接在 OZON 发起搜索；右上角"查看站内手册"打开我们制作的站内类目指南页面
                 </p>
                 
-                <!-- 快速导航 -->
                 <div class="quick-nav">
                     <a class="quick-btn highlight" href="ozon-calendar.html">
-                        <i class="fas fa-calendar-alt"></i>
-                        俄罗斯电商大促日历
+                        <i class="fas fa-calendar-alt"></i> 俄罗斯电商大促日历
                     </a>
-                        <a class="quick-btn" href="selection-silver-economy.html">
-                        <i class="fas fa-car"></i>
-                        银发经济
+                    <a class="quick-btn" href="selection-silver-economy.html">
+                        <i class="fas fa-user-plus"></i> 银发经济
                     </a>
                     <a class="quick-btn" href="selection-car.html">
-                        <i class="fas fa-car"></i>
-                        汽摩配件
+                        <i class="fas fa-car"></i> 汽摩配件
                     </a>
                     <a class="quick-btn" href="selection-winter.html">
-                        <i class="fas fa-snowflake"></i>
-                        秋冬用品
+                        <i class="fas fa-snowflake"></i> 秋冬用品
                     </a>
                     <a class="quick-btn" href="selection-festival.html">
-                        <i class="fas fa-gift"></i>
-                        节日用品
+                        <i class="fas fa-gift"></i> 节日用品
                     </a>
                     <a class="quick-btn" href="selection-wedding.html">
-                        <i class="fas fa-ring"></i>
-                        婚礼用品
+                        <i class="fas fa-ring"></i> 婚礼用品
                     </a>
                 </div>
             </div>
             
-            <!-- 选品分类网格 -->
             <div class="selection-grid">
-                <!-- 俄罗斯电商大促日历 -->
                 <div class="selection-card">
                     <div class="card-header">
                         <div class="card-title">
-                            <div class="card-icon">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                            俄罗斯电商大促日历
+                            <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
+                            电商大促日历
                         </div>
-                        <a class="ext-link" href="ozon-calendar.html?month=january">查看日历</a>
+                        <a class="ext-link" href="ozon-calendar.html?month=january">查看日历 <i class="fas fa-arrow-right"></i></a>
                     </div>
                     <div class="card-body">
-                        <p style="color:#4a5568;margin-bottom:1rem;">
-                            汇总俄罗斯每月重要节日与消费特点，提供重点推广品类及营销建议。点击进入可查看一月详细日历内容。
+                        <p style="color:var(--text-sub); margin-bottom:20px; line-height:1.6;">
+                            汇总俄罗斯每月重要节日与消费特点，提供重点推广品类及营销建议。点击下方标签直达相关月历。
                         </p>
                         <div class="keywords-wrap">
                             <button class="keyword-btn" onclick="location.href='ozon-calendar.html?month=january'">
-                                <span class="keyword-text">查看一月</span>
+                                <span class="keyword-text">一月日历</span>
                                 <span class="keyword-russian">Январь</span>
                             </button>
                             <button class="keyword-btn" onclick="location.href='ozon-calendar.html?month=january'">
-                                <span class="keyword-text">节日与消费特点</span>
-                                <span class="keyword-russian">Праздники и спрос</span>
+                                <span class="keyword-text">节日与消费</span>
+                                <span class="keyword-russian">Праздники</span>
                             </button>
                             <button class="keyword-btn" onclick="location.href='ozon-calendar.html?month=january'">
-                                <span class="keyword-text">重点品类建议</span>
-                                <span class="keyword-russian">Рекоменд. категории</span>
+                                <span class="keyword-text">品类建议</span>
+                                <span class="keyword-russian">Категории</span>
                             </button>
                         </div>
                         <div class="card-note">
-                            建议在一月重点布局保暖、礼品、运动与室内娱乐类目，并结合平台运营节奏进行投放。
+                            💡 建议在一月重点布局保暖、礼品、运动与室内娱乐类目，并结合平台运营节奏进行投放。
                         </div>
                     </div>
                 </div>
                 
-                <!-- 银发经济 -->
                 <div class="selection-card">
                     <div class="card-header">
                         <div class="card-title">
-                            <div class="card-icon">
-                                <i class="fas fa-user-alt"></i>
-                            </div>
+                            <div class="card-icon"><i class="fas fa-user-plus"></i></div>
                             银发经济
                         </div>
-                        <a class="ext-link" href="selection-silver-economy.html">查看站内手册</a>
+                        <a class="ext-link" href="selection-silver-economy.html">查看手册 <i class="fas fa-arrow-right"></i></a>
                     </div>
                     <div class="card-body">
-                        <div class="keywords-wrap" data-cat="silver">
-                            <button class="keyword-btn" data-q="медицинские приборы">
+                        <div class="keywords-wrap">
+                            <button class="keyword-btn" onclick="openOzonSearch('медицинские приборы')">
                                 <span class="keyword-text">医疗设备</span>
                                 <span class="keyword-russian">медицинские приборы</span>
                             </button>
-                            <button class="keyword-btn" data-q="тонометр">
+                            <button class="keyword-btn" onclick="openOzonSearch('тонометр')">
                                 <span class="keyword-text">血压计</span>
                                 <span class="keyword-russian">тонометр</span>
                             </button>
-                            <button class="keyword-btn" data-q="глюкометр">
+                            <button class="keyword-btn" onclick="openOzonSearch('глюкометр')">
                                 <span class="keyword-text">血糖仪</span>
                                 <span class="keyword-russian">глюкометр</span>
                             </button>
-                            <button class="keyword-btn" data-q="пульсоксиметр">
-                                <span class="keyword-text">血氧仪</span>
-                                <span class="keyword-russian">пульсоксиметр</span>
-                            </button>
-
-                            <button class="keyword-btn" data-q="массажер">
+                            <button class="keyword-btn" onclick="openOzonSearch('массажер')">
                                 <span class="keyword-text">按摩器</span>
                                 <span class="keyword-russian">массажер</span>
                             </button>
-                            <button class="keyword-btn" data-q="таблетница с напоминанием">
+                            <button class="keyword-btn" onclick="openOzonSearch('таблетница с напоминанием')">
                                 <span class="keyword-text">智能药盒</span>
-                                <span class="keyword-russian">таблетница с напоминанием</span>
+                                <span class="keyword-russian">таблетница</span>
                             </button>
-                            <button class="keyword-btn" data-q="браслет с обнаружением падений для пожилых">
-                                <span class="keyword-text">跌倒检测</span>
-                                <span class="keyword-russian">браслет с обнаружением падений для пожилых</span>
-                            </button>
-                            <button class="keyword-btn" data-q="gps-трекер для пожилых">
-                                <span class="keyword-text">定位手环</span>
-                                <span class="keyword-russian">gps-трекер для пожилых</span>
-                            </button>
-
-                         
-                            <button class="keyword-btn" data-q="лупа для чтения">
-                                <span class="keyword-text">阅读辅助</span>
-                                <span class="keyword-russian">лупа для чтения</span>
-                            </button>
-                         
-                        
-                        
-                        
                         </div>
                         <div class="card-note">
-                            针对老年人群体的健康监测和生活辅助用品。
+                            💡 针对老年人群体的健康监测和生活辅助用品，关注易用性与大字体设计。
                         </div>
                     </div>
                 </div>
-                <!-- 汽摩配件 -->
+
                 <div class="selection-card">
                     <div class="card-header">
                         <div class="card-title">
-                            <div class="card-icon">
-                                <i class="fas fa-car"></i>
-                            </div>
+                            <div class="card-icon"><i class="fas fa-car"></i></div>
                             汽摩配件
                         </div>
-                        <a class="ext-link" href="selection-car.html">查看站内手册</a>
+                        <a class="ext-link" href="selection-car.html">查看手册 <i class="fas fa-arrow-right"></i></a>
                     </div>
                     <div class="card-body">
-                        <div class="keywords-wrap" data-cat="car">
-                            <button class="keyword-btn" data-q="автомобильные аксессуары">
+                        <div class="keywords-wrap">
+                            <button class="keyword-btn" onclick="openOzonSearch('автомобильные аксессуары')">
                                 <span class="keyword-text">汽车配件</span>
-                                <span class="keyword-russian">автомобильные аксессуары</span>
+                                <span class="keyword-russian">аксессуары</span>
                             </button>
-                            <button class="keyword-btn" data-q="чехлы для сидений">
+                            <button class="keyword-btn" onclick="openOzonSearch('чехлы для сидений')">
                                 <span class="keyword-text">座椅套</span>
-                                <span class="keyword-russian">чехлы для сидений</span>
+                                <span class="keyword-russian">чехлы</span>
                             </button>
-                            <button class="keyword-btn" data-q="дворники">
+                            <button class="keyword-btn" onclick="openOzonSearch('дворники')">
                                 <span class="keyword-text">雨刷</span>
                                 <span class="keyword-russian">дворники</span>
                             </button>
-                            <button class="keyword-btn" data-q="аккумулятор для авто">
-                                <span class="keyword-text">汽车电瓶</span>
-                                <span class="keyword-russian">аккумулятор</span>
-                            </button>
-                            <button class="keyword-btn" data-q="автомобильный компрессор">
+                            <button class="keyword-btn" onclick="openOzonSearch('автомобильный компрессор')">
                                 <span class="keyword-text">打气泵</span>
                                 <span class="keyword-russian">автокомпрессор</span>
                             </button>
                         </div>
                         <div class="card-note">
-                            建议结合车系关键词进行长尾搜索，提高选品精准度。
+                            💡 俄罗斯汽车保有量大，冬季对防冻、保暖及维修工具需求极高。
                         </div>
                     </div>
                 </div>
 
-                <!-- 秋冬用品 -->
                 <div class="selection-card">
                     <div class="card-header">
                         <div class="card-title">
-                            <div class="card-icon">
-                                <i class="fas fa-snowflake"></i>
-                            </div>
+                            <div class="card-icon"><i class="fas fa-snowflake"></i></div>
                             秋冬用品
                         </div>
-                        <a class="ext-link" href="selection-winter.html">查看站内手册</a>
+                        <a class="ext-link" href="selection-winter.html">查看手册 <i class="fas fa-arrow-right"></i></a>
                     </div>
                     <div class="card-body">
-                        <div class="keywords-wrap" data-cat="winter">
-                            <button class="keyword-btn" data-q="зимняя одежда">
+                        <div class="keywords-wrap">
+                            <button class="keyword-btn" onclick="openOzonSearch('зимняя одежда')">
                                 <span class="keyword-text">冬季服装</span>
                                 <span class="keyword-russian">зимняя одежда</span>
                             </button>
-                            <button class="keyword-btn" data-q="термобельё">
+                            <button class="keyword-btn" onclick="openOzonSearch('термобельё')">
                                 <span class="keyword-text">保暖内衣</span>
                                 <span class="keyword-russian">термобельё</span>
                             </button>
-                            <button class="keyword-btn" data-q="шапка зимняя">
+                            <button class="keyword-btn" onclick="openOzonSearch('шапка зимняя')">
                                 <span class="keyword-text">保暖帽</span>
-                                <span class="keyword-russian">шапка зимняя</span>
+                                <span class="keyword-russian">шапка</span>
                             </button>
-                            <button class="keyword-btn" data-q="перчатки зимние">
-                                <span class="keyword-text">глобусы</span>
-                                <span class="keyword-russian">перчатки зимние</span>
-                            </button>
-                            <button class="keyword-btn" data-q="обогреватель">
-                                <span class="keyword-text">тепловентилятор</span>
+                            <button class="keyword-btn" onclick="openOzonSearch('обогреватель')">
+                                <span class="keyword-text">取暖器</span>
                                 <span class="keyword-russian">обогреватель</span>
                             </button>
                         </div>
                         <div class="card-note">
-                            季节性强，注意时效与库存周转，建议提前布局。
+                            💡 季节性强，建议提前 2-3 个月备货，注意物流时效与库存周转。
                         </div>
                     </div>
                 </div>
 
-                <!-- 节日用品 -->
                 <div class="selection-card">
                     <div class="card-header">
                         <div class="card-title">
-                            <div class="card-icon">
-                                <i class="fas fa-gift"></i>
-                            </div>
+                            <div class="card-icon"><i class="fas fa-gift"></i></div>
                             节日用品
                         </div>
-                        <a class="ext-link" href="selection-festival.html">查看站内手册</a>
+                        <a class="ext-link" href="selection-festival.html">查看手册 <i class="fas fa-arrow-right"></i></a>
                     </div>
                     <div class="card-body">
-                        <div class="keywords-wrap" data-cat="festival">
-                            <button class="keyword-btn" data-q="новогодние украшения">
-                                <span class="keyword-text">圣诞装饰品</span>
-                                <span class="keyword-russian">новогодние украшения</span>
+                        <div class="keywords-wrap">
+                            <button class="keyword-btn" onclick="openOzonSearch('новогодние украшения')">
+                                <span class="keyword-text">圣诞装饰</span>
+                                <span class="keyword-russian">украшения</span>
                             </button>
-                            <button class="keyword-btn" data-q="гирлянды">
-                                <span class="keyword-text">灯光</span>
+                            <button class="keyword-btn" onclick="openOzonSearch('гирлянды')">
+                                <span class="keyword-text">彩灯串</span>
                                 <span class="keyword-russian">гирлянды</span>
                             </button>
-                            <button class="keyword-btn" data-q="подарочные наборы">
+                            <button class="keyword-btn" onclick="openOzonSearch('подарочные наборы')">
                                 <span class="keyword-text">礼品套装</span>
-                                <span class="keyword-russian">подарочные наборы</span>
+                                <span class="keyword-russian">подарки</span>
                             </button>
-                            <button class="keyword-btn" data-q="пасхальные украшения">
-                                <span class="keyword-text">复活节装饰</span>
-                                <span class="keyword-russian">пасхальные украшения</span>
-                            </button>
-                            <button class="keyword-btn" data-q="хэллоуин декор">
+                            <button class="keyword-btn" onclick="openOzonSearch('хэллоуин декор')">
                                 <span class="keyword-text">万圣节装饰</span>
-                                <span class="keyword-russian">хэллоуин декор</span>
+                                <span class="keyword-russian">хэллоуин</span>
                             </button>
                         </div>
                         <div class="card-note">
-                            结合俄罗斯当地节日节奏做活动节点布局，把握时机。
+                            💡 结合俄罗斯当地节日节奏做活动节点布局，把握送礼高峰期。
                         </div>
                     </div>
                 </div>
 
-
-
-                <!-- 婚礼用品 -->
                 <div class="selection-card">
                     <div class="card-header">
                         <div class="card-title">
-                            <div class="card-icon">
-                                <i class="fas fa-ring"></i>
-                            </div>
+                            <div class="card-icon"><i class="fas fa-ring"></i></div>
                             婚礼用品
                         </div>
-                        <a class="ext-link" href="selection-wedding.html">查看站内手册</a>
+                        <a class="ext-link" href="selection-wedding.html">查看手册 <i class="fas fa-arrow-right"></i></a>
                     </div>
                     <div class="card-body">
-                        <div class="keywords-wrap" data-cat="wedding">
-                            <button class="keyword-btn" data-q="свадебное платье">
-                                <span class="keyword-text">结婚礼服</span>
-                                <span class="keyword-russian">свадебное платье</span>
+                        <div class="keywords-wrap">
+                            <button class="keyword-btn" onclick="openOzonSearch('свадебное платье')">
+                                <span class="keyword-text">婚纱礼服</span>
+                                <span class="keyword-russian">платье</span>
                             </button>
-                            <button class="keyword-btn" data-q="аксессуары для свадьбы">
+                            <button class="keyword-btn" onclick="openOzonSearch('аксессуары для свадьбы')">
                                 <span class="keyword-text">婚礼配件</span>
-                                <span class="keyword-russian">аксессуары для свадьбы</span>
+                                <span class="keyword-russian">аксессуары</span>
                             </button>
-                            <button class="keyword-btn" data-q="свадебный декор">
-                                <span class="keyword-text">婚礼装饰</span>
-                                <span class="keyword-russian">свадебный декор</span>
+                            <button class="keyword-btn" onclick="openOzonSearch('свадебный декор')">
+                                <span class="keyword-text">现场布置</span>
+                                <span class="keyword-russian">декор</span>
                             </button>
-                            <button class="keyword-btn" data-q="букет невесты">
-                                <span class="keyword-text">新娘的花束</span>
-                                <span class="keyword-russian">букет невесты</span>
-                            </button>
-                            <button class="keyword-btn" data-q="приглашения на свадьбу">
-                                <span class="keyword-text">婚礼请柬</span>
-                                <span class="keyword-russian">приглашения на свадьбу</span>
+                            <button class="keyword-btn" onclick="openOzonSearch('букет невесты')">
+                                <span class="keyword-text">手捧花</span>
+                                <span class="keyword-russian">букет</span>
                             </button>
                         </div>
                         <div class="card-note">
-                            可按风格、预算、材质等维度延展关键词，细分市场。
+                            💡 婚礼季通常在夏季和初秋，可按风格（如波西米亚、复古）细分市场。
                         </div>
                     </div>
                 </div>
@@ -1053,7 +662,6 @@
         </div>
     </main>
     
-    <!-- 浮动按钮 -->
     <div class="floating-buttons">
         <button class="floating-btn customer-service" onclick="showCustomerService()">
             <i class="fas fa-headset"></i>
@@ -1063,7 +671,6 @@
         </button>
     </div>
     
-    <!-- Toast 提示 -->
     <div class="toast" id="toast"></div>
     
     <script>
@@ -1122,28 +729,6 @@
             showToast(`正在OZON搜索: ${query}`, 2000);
         }
         
-        // 关键词点击事件
-        document.addEventListener('click', function(e) {
-            const btn = e.target.closest('.keyword-btn');
-            if (btn && btn.dataset.q) {
-                openOzonSearch(btn.dataset.q);
-            }
-        });
-        
-        // 平滑滚动
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-        
         // 页面进入动画
         document.addEventListener('DOMContentLoaded', function() {
             const animatedElements = document.querySelectorAll('.selection-card, .page-header, .breadcrumb, .quick-nav');
@@ -1169,27 +754,12 @@
             document.body.style.opacity = '0';
             document.body.style.transform = 'translateY(-20px)';
         });
-    // 修复浏览器后退缓存（bfcache）导致页面空白
-    window.addEventListener('pageshow', function(e) {
-        // 重置在 beforeunload 中设置的样式
-        document.body.style.opacity = '1';
-        document.body.style.transform = 'none';
-
-        // 若为缓存恢复，重新应用滚动相关样式与状态
-        if (e.persisted) {
-            const navbar = document.getElementById('navbar');
-            const backToTop = document.getElementById('backToTop');
-            if (navbar && backToTop) {
-                if (window.scrollY > 100) {
-                    navbar.classList.add('scrolled');
-                    backToTop.classList.add('show');
-                } else {
-                    navbar.classList.remove('scrolled');
-                    backToTop.classList.remove('show');
-                }
-            }
-        }
-    });
+        
+        // 修复bfcache
+        window.addEventListener('pageshow', function(e) {
+            document.body.style.opacity = '1';
+            document.body.style.transform = 'none';
+        });
     </script>
 </body>
 </html>

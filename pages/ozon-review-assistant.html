@@ -5,318 +5,441 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ozon评论分析助手 - OZON工具盒子</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            will-change: auto !important;
+        :root {
+            /* === [配色] 旗舰级流光白金 === */
+            --bg-body: #F8F9FC; 
+            --bg-glass: rgba(255, 255, 255, 0.65);
+            --bg-glass-heavy: rgba(255, 255, 255, 0.95);
+            
+            /* 品牌色 */
+            --primary: #2563EB; 
+            --accent: #F97316;
+            --purple: #7C3AED;
+            --gradient-text: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #F97316 100%);
+            
+            /* 文本 */
+            --text-main: #0F172A; 
+            --text-sub: #64748B;
+            
+            /* 阴影与圆角 */
+            --shadow-float: 0 20px 40px -10px rgba(15, 23, 42, 0.05);
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+            
+            --radius-xl: 32px;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            
+            --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+            
+            --container-width: 1200px;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(124, 58, 237, 0.03) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(249, 115, 22, 0.03) 0px, transparent 50%);
             background-attachment: fixed;
-            color: #1f2937;
             min-height: 100vh;
-            padding: 32px 16px;
         }
 
-        .back-btn {
-            position: fixed;
-            top: 24px;
-            left: 24px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 999px;
-            padding: 10px 20px;
-            color: white;
+        /* 动画定义 */
+        @keyframes flowIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pendulum { 0% { transform: rotate(0deg); } 25% { transform: rotate(2deg); } 75% { transform: rotate(-2deg); } 100% { transform: rotate(0deg); } }
+        @keyframes shimmer { 0%, 100% { background-position: 200% 0; } 50% { background-position: -200% 0; } }
+
+        /* === 1. 悬浮岛屿导航栏 === */
+        .navbar {
+            position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+            width: 95%; max-width: 1400px;
+            height: 80px;
+            background: var(--bg-glass-heavy);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            display: flex; align-items: center; justify-content: space-between;
+            /* 右侧增加巨大内边距，给吊坠留出绝对安全区 */
+            padding-left: 32px; padding-right: 140px; 
+            z-index: 1000;
+            transition: all 0.4s var(--ease-out);
+        }
+
+        .navbar.scrolled {
+            top: 0; width: 100%; max-width: 100%; border-radius: 0;
+            background: rgba(255,255,255,0.98);
+            height: 72px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-right: 140px; 
+        }
+
+        .navbar-brand {
+            display: flex; align-items: center; gap: 14px;
+            font-size: 1.4rem; font-weight: 800; color: var(--text-main);
+            text-decoration: none; letter-spacing: -0.5px; flex-shrink: 0;
+        }
+        .navbar-logo {
+            width: 42px; height: 42px; border-radius: 12px;
+            background: #fff; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 1.2rem; color: var(--primary);
+        }
+
+        .navbar-nav {
+            display: flex; align-items: center; gap: 6px; list-style: none;
+            /* 关键：右侧留白防止遮挡 */
+            margin-right: 200px; 
+        }
+
+        .nav-link {
+            padding: 8px 14px; border-radius: 10px;
+            color: var(--text-sub); text-decoration: none; font-weight: 600;
+            font-size: 0.9rem; transition: all 0.3s; white-space: nowrap;
+        }
+        .nav-link:hover { color: var(--text-main); background: rgba(0,0,0,0.03); }
+        .nav-link.active { color: var(--primary); background: #EFF6FF; }
+
+        /* 广告胶囊：强制不收缩 */
+        .ad-pill {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.8rem; color: var(--text-sub);
+            border: 1px solid rgba(0,0,0,0.08);
+            padding: 8px 16px; border-radius: 100px;
+            background: rgba(255,255,255,0.5);
+            transition: 0.3s;
+            /* 关键属性：防止文字被压缩 */
+            white-space: nowrap; 
+            flex-shrink: 0; 
+            max-width: 500px; 
+            overflow: visible;
+        }
+        .ad-pill:hover { background: #fff; border-color: var(--accent); color: var(--text-main); }
+        
+        .qr-wrapper { position: relative; cursor: pointer; display: flex; align-items: center; gap: 4px; font-weight: 600; color: var(--text-main); margin-left: 8px; padding-left: 8px; border-left: 1px solid #ddd; }
+        .qr-popup {
+            position: absolute; top: 160%; left: 50%; transform: translateX(-50%) scale(0.9);
+            width: 140px; background: #fff; padding: 10px; border-radius: 16px;
+            box-shadow: var(--shadow-float); opacity: 0; visibility: hidden;
+            transition: 0.3s var(--ease-elastic); z-index: 1100;
+        }
+        .qr-wrapper:hover .qr-popup { opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); top: 140%; }
+        .qr-popup img { width: 100%; border-radius: 8px; display: block; }
+
+        /* 移动端菜单按钮 */
+        .menu-toggle { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; }
+
+        /* === ★★★ 旗舰吊坠 (全息铭牌) ★★★ === */
+        .pendant-container {
+            position: fixed; 
+            top: 24px; 
+            right: 40px; /* 固定在视窗最右侧 */
+            z-index: 1002;
+            display: flex; flex-direction: column; align-items: center;
+            transform-origin: top center;
+            animation: pendulum 6s ease-in-out infinite;
+            transition: top 0.4s;
+        }
+        
+        .pendant-rope {
+            width: 2px; height: 35px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4));
+            margin-top: -10px;
+        }
+        
+        .pendant-badge {
+            width: 150px; 
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,1);
+            border-radius: 20px;
+            padding: 16px;
             text-decoration: none;
-            display: inline-flex;
-            gap: 8px;
-            align-items: center;
-            font-weight: 600;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            box-shadow: 
+                0 15px 35px -5px rgba(0, 0, 0, 0.1),
+                inset 0 0 0 1px rgba(255,255,255,0.5);
+            transition: transform 0.3s var(--ease-out);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pendant-badge::before {
+            content:''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .badge-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #EFF6FF 0%, #FFF7ED 100%);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: var(--primary);
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
+        }
+
+        .badge-text { font-size: 14px; font-weight: 700; color: var(--text-main); }
+        .badge-sub { font-size: 10px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+        .pendant-container:hover { animation-play-state: paused; }
+        .pendant-container:hover .pendant-badge { transform: translateY(5px) scale(1.03); background: #fff; }
+        body.is-scrolled .pendant-container { top: 0; }
+
+        /* === 页面内容 === */
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 220px 24px 80px; /* 加大顶部间距，沉浸式体验 */
+        }
+
+        /* 返回按钮 */
+        .back-nav {
+            position: absolute; top: 140px; left: 0; right: 0;
+            max-width: var(--container-width); margin: 0 auto; padding: 0 24px;
             z-index: 10;
         }
-
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: var(--text-sub); text-decoration: none; font-size: 0.95rem; font-weight: 600;
+            padding: 10px 20px; background: #fff; border-radius: 100px;
+            box-shadow: var(--shadow-card); transition: all 0.3s var(--ease-out);
+        }
         .back-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateX(-5px); color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
         }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.97);
-            border-radius: 28px;
-            padding: 56px 48px;
-            margin-top: 32px;
-            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.2);
-        }
-
-        .hero {
-            text-align: center;
-            margin-bottom: 48px;
-        }
-
+        /* 头部Hero */
+        .hero { text-align: center; margin-bottom: 60px; animation: flowIn 0.8s var(--ease-out); }
         .hero h1 {
-            font-size: clamp(2.4rem, 5vw, 3.4rem);
-            font-weight: 800;
-            color: #312e81;
-            margin-bottom: 12px;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
+            font-size: 3.5rem; font-weight: 800; color: var(--text-main);
+            margin-bottom: 16px; letter-spacing: -1px;
+            display: flex; align-items: center; justify-content: center; gap: 16px;
         }
+        .hero h1 i { color: var(--purple); }
+        .hero p { font-size: 1.2rem; color: var(--text-sub); max-width: 700px; margin: 0 auto 32px; line-height: 1.6; }
 
-        .hero p {
-            font-size: 1.1rem;
-            color: #4b5563;
-            max-width: 640px;
-            margin: 0 auto 16px;
-            line-height: 1.7;
-        }
-
-        .tag-badges {
-            display: inline-flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
+        .tag-badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
         .tag-badge {
-            padding: 6px 16px;
-            border-radius: 999px;
-            background: linear-gradient(135deg, #22d3ee, #0ea5e9);
-            color: white;
-            font-size: 0.9rem;
-            font-weight: 600;
+            padding: 6px 16px; border-radius: 100px; background: #fff;
+            color: var(--text-main); font-weight: 600; font-size: 0.9rem;
+            box-shadow: var(--shadow-card); border: 1px solid rgba(0,0,0,0.05);
         }
 
+        /* 特性网格 */
         .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 48px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px; margin-bottom: 60px;
         }
-
+        
         .feature-card {
-            background: #f8fafc;
-            border: 1px solid rgba(79, 70, 229, 0.15);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+            background: #fff; border-radius: var(--radius-lg); padding: 32px;
+            box-shadow: var(--shadow-card); border: 1px solid rgba(0,0,0,0.03);
+            transition: all 0.4s var(--ease-out); position: relative; overflow: hidden;
         }
-
-        .feature-card h3 {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.05rem;
-            color: #312e81;
-            margin-bottom: 10px;
+        
+        .feature-card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: var(--shadow-float); 
+            border-color: rgba(124, 58, 237, 0.1); 
         }
-
-        .feature-card p {
-            color: #475569;
-            line-height: 1.6;
-            font-size: 0.95rem;
+        
+        .feature-card h3 { 
+            font-size: 1.25rem; font-weight: 700; color: var(--text-main); 
+            margin-bottom: 12px; display: flex; align-items: center; gap: 10px; 
         }
+        .feature-card h3 i { color: var(--purple); font-size: 1.4rem; }
+        .feature-card p { color: var(--text-sub); font-size: 0.95rem; line-height: 1.6; }
 
+        /* 画廊 */
+        .gallery { margin-bottom: 60px; }
+        .gallery h2 { font-size: 2rem; font-weight: 700; color: var(--text-main); margin-bottom: 32px; text-align: center; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 32px; }
+        
+        .gallery-card {
+            background: #F8FAFC; padding: 24px; border-radius: var(--radius-lg);
+            border: 1px solid #E2E8F0; text-align: center;
+        }
+        .gallery-card img {
+            width: 100%; border-radius: 12px; box-shadow: var(--shadow-card);
+            margin-bottom: 16px; transition: 0.3s;
+        }
+        .gallery-card:hover img { transform: scale(1.02); box-shadow: var(--shadow-float); }
+        .gallery-card p { font-weight: 600; color: var(--text-sub); }
+
+        /* 下载区域 */
         .download-section {
-            background: linear-gradient(135deg, #ede9fe, #e0e7ff);
-            border-radius: 24px;
-            padding: 40px;
-            margin-bottom: 48px;
-            border: 1px solid rgba(99, 102, 241, 0.3);
+            background: #fff; border-radius: var(--radius-xl); padding: 60px;
+            box-shadow: var(--shadow-float); border: 1px solid rgba(0,0,0,0.03);
+            text-align: center; margin-bottom: 60px; position: relative; overflow: hidden;
+            animation: flowIn 1s var(--ease-out);
         }
-
-        .download-section h2 {
-            font-size: 1.6rem;
-            color: #312e81;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .download-section::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
+            background: var(--gradient-text);
+            animation: shimmer 3s infinite linear;
+            background-size: 200% 100%;
         }
-
+        
+        .download-section h2 { font-size: 2rem; font-weight: 700; color: var(--text-main); margin-bottom: 40px; }
+        
         .download-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
+            display: flex; justify-content: center; gap: 40px; margin-bottom: 40px; flex-wrap: wrap;
         }
-
         .download-info div {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 14px 18px;
-            border-radius: 16px;
-            color: #4338ca;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            background: #F8FAFC; padding: 12px 24px; border-radius: 100px;
+            color: var(--text-main); font-weight: 600; border: 1px solid #E2E8F0;
+            display: flex; align-items: center; gap: 8px;
         }
+        .download-info i { color: var(--purple); }
 
         .download-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: linear-gradient(135deg, #7c3aed, #6366f1);
-            color: white;
-            padding: 16px 36px;
-            border-radius: 999px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1rem;
-            box-shadow: 0 20px 40px rgba(79, 70, 229, 0.4);
+            display: inline-flex; align-items: center; gap: 12px;
+            background: var(--text-main); color: white;
+            padding: 18px 48px; border-radius: 100px; text-decoration: none;
+            font-size: 1.1rem; font-weight: 700; transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+        }
+        .download-btn:hover { 
+            transform: translateY(-4px); 
+            background: var(--primary); 
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.35); 
         }
 
-        .gallery {
-            margin-bottom: 48px;
-        }
-
-        .gallery h2 {
-            font-size: 1.5rem;
-            color: #312e81;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
-        }
-
-        .gallery-card {
-            background: #f1f5f9;
-            border-radius: 20px;
-            padding: 18px;
-            border: 1px solid rgba(15, 23, 42, 0.1);
-            text-align: center;
-        }
-
-        .gallery-card img {
-            width: 100%;
-            border-radius: 16px;
-            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.15);
-            margin-bottom: 12px;
-        }
-
-        .gallery-card p {
-            color: #475569;
-            font-size: 0.95rem;
-        }
-
+        /* 使用指南 */
         .guide-section {
-            margin-bottom: 48px;
+            background: #fff; border-radius: var(--radius-xl); padding: 60px;
+            box-shadow: var(--shadow-card); margin-bottom: 60px;
         }
-
-        .guide-section h2 {
-            font-size: 1.5rem;
-            color: #312e81;
-            margin-bottom: 16px;
-        }
-
-        .steps-list {
-            list-style: none;
-            counter-reset: step;
-        }
-
+        .guide-section h2 { font-size: 2rem; font-weight: 700; color: var(--text-main); margin-bottom: 40px; text-align: center; }
+        
+        .steps-list { list-style: none; counter-reset: step; max-width: 800px; margin: 0 auto; }
         .steps-list li {
-            counter-increment: step;
-            background: #f8fafc;
-            border: 1px solid rgba(99, 102, 241, 0.1);
-            padding: 18px 24px;
-            border-radius: 18px;
-            margin-bottom: 16px;
-            position: relative;
-            padding-left: 72px;
+            position: relative; padding: 24px 32px 24px 80px;
+            background: #F8FAFC; border-radius: 20px; margin-bottom: 24px;
+            border: 1px solid #E2E8F0; transition: 0.3s;
         }
-
+        .steps-list li:hover { 
+            background: #fff; transform: translateX(8px); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05); border-color: var(--purple); 
+        }
+        
         .steps-list li::before {
-            content: counter(step);
-            position: absolute;
-            left: 24px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: linear-gradient(135deg, #7c3aed, #6366f1);
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
+            counter-increment: step; content: counter(step);
+            position: absolute; left: 24px; top: 24px;
+            width: 36px; height: 36px; border-radius: 50%;
+            background: #E2E8F0; color: var(--text-sub);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.1rem; transition: 0.3s;
         }
+        .steps-list li:hover::before { background: var(--purple); color: #fff; }
+        .steps-list strong { display: block; font-size: 1.1rem; margin-bottom: 4px; color: var(--text-main); }
 
+        /* Tips Card */
         .tips-card {
-            background: linear-gradient(135deg, #fef3c7, #fde68a);
-            padding: 24px;
-            border-radius: 20px;
-            border-left: 5px solid #f97316;
-            margin-bottom: 48px;
+            background: #FFF7ED; border-left: 4px solid var(--accent);
+            padding: 32px; border-radius: var(--radius-lg); margin-bottom: 60px;
         }
+        .tips-card h3 { color: #9A3412; font-size: 1.25rem; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .tips-card p { color: #9A3412; line-height: 1.8; margin: 0; }
 
+        /* FAQ */
         .faq {
-            background: #f8fafc;
-            border-radius: 24px;
-            padding: 32px;
-            border: 1px solid rgba(148, 163, 184, 0.4);
-            margin-bottom: 32px;
+            background: #fff; border-radius: var(--radius-xl); padding: 60px;
+            box-shadow: var(--shadow-card);
         }
-
         .faq-item {
-            margin-bottom: 20px;
+            background: #F8FAFC; border-radius: 16px; padding: 24px; margin-bottom: 20px;
+            border: 1px solid #E2E8F0;
         }
+        .faq-item h3 { font-weight: 700; color: var(--text-main); margin-bottom: 12px; font-size: 1.1rem; }
+        .faq-item p { color: var(--text-sub); line-height: 1.6; font-size: 0.95rem; margin: 0; }
 
-        .faq-item h3 {
-            font-size: 1.05rem;
-            color: #312e81;
-            margin-bottom: 6px;
+        /* 页脚 */
+        footer { text-align: center; color: var(--text-sub); margin-top: 80px; font-size: 0.9rem; }
+
+        @media (max-width: 1300px) {
+            .navbar-nav { display: none; }
+            .menu-toggle { display: block; }
+            .pendant-container { display: none; }
+            .navbar { padding-right: 24px; }
         }
-
-        .faq-item p {
-            color: #475569;
-            line-height: 1.6;
-            font-size: 0.95rem;
-        }
-
-        footer {
-            text-align: center;
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-
         @media (max-width: 768px) {
-            .container {
-                padding: 32px 20px;
-            }
-
-            .back-btn {
-                position: static;
-                margin-bottom: 16px;
-            }
+            .hero h1 { font-size: 2.2rem; flex-direction: column; }
+            .download-info { flex-direction: column; gap: 16px; }
+            .steps-list li { padding-left: 70px; }
         }
     </style>
 </head>
 <body>
-    <a href="tools.html" class="back-btn">
-        <i class="fas fa-arrow-left"></i> 返回实用工具
-    </a>
+    
+    <nav class="navbar" id="navbar">
+        <a href="../index.html" class="navbar-brand">
+            <div class="navbar-logo">
+                <i class="fas fa-cube"></i>
+            </div>
+            OZON工具盒子
+        </a>
+        
+        <div class="ad-pill">
+            <i class="fas fa-shipping-fast" style="color:var(--accent)"></i>
+            <span>OZON专业货代 | UNI、GUOO物流 | 当天核验，24h内上网 | 价格实惠</span>
+            <div class="qr-wrapper">
+                <i class="fas fa-qrcode"></i>
+                <div class="qr-popup">
+                    <img src="../images/wang.png" alt="QR">
+                </div>
+            </div>
+        </div>
+
+        <ul class="navbar-nav">
+            <li><a href="../index.html" class="nav-link">首页</a></li>
+            <li><a href="ai-tools.html" class="nav-link">AI工具</a></li>
+            <li><a href="tools.html" class="nav-link active">实用工具</a></li>
+            <li><a href="auxiliary-tools.html" class="nav-link">辅助工具</a></li>
+            <li><a href="ozon-plugin.html" class="nav-link">数据插件</a></li>
+            <li><a href="volumetric-check.html" class="nav-link">计抛检查</a></li>
+        </ul>
+        
+        <button class="menu-toggle" onclick="alert('移动端菜单开发中...')">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
+    
+    <div class="pendant-container">
+        <div class="pendant-rope"></div>
+        <a href="https://ozonbox.top/pages/ozon_editor.html" target="_blank" class="pendant-badge">
+            <div class="badge-icon">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <div style="text-align:center;">
+                <div class="badge-text">图形编辑器</div>
+                <div class="badge-sub">Pro Tools</div>
+            </div>
+        </a>
+    </div>
 
     <div class="container">
+        <div class="back-nav">
+            <a href="tools.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> 返回实用工具
+            </a>
+        </div>
+
         <section class="hero">
             <h1>
                 <i class="fas fa-comments"></i>
@@ -324,9 +447,9 @@
             </h1>
             <p>通过 DeepSeek AI 聚合商品评论的核心好评、差评与运营建议，帮助卖家快速找到当前问题、调整主图和文案，并用事实数据打动消费者。</p>
             <div class="tag-badges">
-                <span class="tag-badge">AI智能洞察</span>
-                <span class="tag-badge" style="background:linear-gradient(135deg,#34d399,#10b981)">本地插件</span>
-                <span class="tag-badge" style="background:linear-gradient(135deg,#f97316,#fb923c)">运营提效</span>
+                <span class="tag-badge"><i class="fas fa-robot" style="color:var(--primary)"></i> AI智能洞察</span>
+                <span class="tag-badge"><i class="fas fa-lock" style="color:#10B981"></i> 本地安全插件</span>
+                <span class="tag-badge"><i class="fas fa-bolt" style="color:var(--accent)"></i> 运营提效</span>
             </div>
         </section>
 
@@ -350,7 +473,7 @@
         </section>
 
         <section class="gallery">
-            <h2><i class="fas fa-images"></i> 功能界面预览</h2>
+            <h2>功能界面预览</h2>
             <div class="gallery-grid">
                 <div class="gallery-card">
                     <img src="../images/ozon-analysis-ozonbox1.png" alt="Ozon评论分析助手核心好评界面">
@@ -364,7 +487,7 @@
         </section>
 
         <section class="download-section">
-            <h2><i class="fas fa-download"></i> 下载 & 安装信息</h2>
+            <h2>下载 & 安装信息</h2>
             <div class="download-info">
                 <div><i class="fas fa-puzzle-piece"></i> 类型：Chrome / Edge 插件</div>
                 <div><i class="fas fa-code-branch"></i> 版本：DeepSeek逻辑 2025.02</div>
@@ -378,26 +501,26 @@
         </section>
 
         <section class="guide-section">
-            <h2><i class="fas fa-list-ol"></i> 安装使用步骤</h2>
+            <h2>安装使用步骤</h2>
             <ol class="steps-list">
                 <li>
-                    <strong>解压安装包</strong><br>
+                    <strong>解压安装包</strong>
                     从百度网盘下载压缩包，解压到一个易于查找的文件夹。
                 </li>
                 <li>
-                    <strong>打开扩展程序页面</strong><br>
+                    <strong>打开扩展程序页面</strong>
                     Chrome 输入 <code>chrome://extensions</code>，Edge 输入 <code>edge://extensions</code>。
                 </li>
                 <li>
-                    <strong>开启开发者模式</strong><br>
+                    <strong>开启开发者模式</strong>
                     在右上角开启「开发者模式」开关后，点击「加载已解压的扩展程序」。
                 </li>
                 <li>
-                    <strong>导入插件文件夹</strong><br>
+                    <strong>导入插件文件夹</strong>
                     选择刚刚解压的 `ozon-review-assistant` 文件夹，等待浏览器提示安装成功。
                 </li>
                 <li>
-                    <strong>前往商品详情页开始分析</strong><br>
+                    <strong>前往商品详情页开始分析</strong>
                     进入 Ozon 商品详情页，将评论滚动到底部后点击插件按钮，即可生成分析报告。
                 </li>
             </ol>
