@@ -188,6 +188,7 @@
         .pendant-container:hover .pendant-badge { transform: translateY(5px) scale(1.03); background: #fff; }
         body.is-scrolled .pendant-container { top: 0; }
 
+
         /* === 2. Hero 区域 === */
         .hero {
             position: relative;
@@ -329,6 +330,191 @@
         .f-nav a { color: var(--text-sub); text-decoration: none; font-weight: 500; font-size: 1.05rem; transition: 0.2s; }
         .f-nav a:hover { color: var(--primary); }
 
+        /* === ERP展示模块 === */
+        .erp-showcase {
+            padding: 100px 24px;
+            background: linear-gradient(180deg, #fff 0%, #F8FAFC 100%);
+        }
+        .erp-container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+        }
+        .erp-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .erp-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        .erp-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+        .erp-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-sub);
+        }
+        .erp-content {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+        .erp-slider {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.06);
+            border: 1px solid rgba(0,0,0,0.05);
+            max-width: 680px;
+        }
+        .erp-slides {
+            position: relative;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+        }
+        .erp-slide {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .erp-slide.active { opacity: 1; }
+        .erp-slide img {
+            width: 100%; height: 100%;
+            object-fit: contain;
+            background: #f8fafc;
+        }
+        .slide-caption {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: #fff;
+            padding: 40px 24px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .erp-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 16px;
+            background: #F8FAFC;
+        }
+        .erp-nav-btn {
+            width: 40px; height: 40px;
+            border: none;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: 0.3s;
+        }
+        .erp-nav-btn:hover {
+            background: var(--primary);
+            color: #fff;
+            transform: scale(1.1);
+        }
+        .erp-dots {
+            display: flex;
+            gap: 8px;
+        }
+        .erp-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #CBD5E1;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .erp-dot.active {
+            background: var(--primary);
+            width: 28px;
+            border-radius: 5px;
+        }
+        .erp-features {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .erp-feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+        .erp-feature:hover {
+            transform: translateX(8px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+        .ef-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #EFF6FF, #FFF7ED);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        .ef-text h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+        .ef-text p {
+            font-size: 0.95rem;
+            color: var(--text-sub);
+            line-height: 1.5;
+        }
+        .erp-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 36px;
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-top: 12px;
+            transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+        .erp-cta:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(16, 185, 129, 0.4);
+        }
+        @media (max-width: 1000px) {
+            .erp-content {
+                grid-template-columns: 1fr;
+            }
+            .erp-title { font-size: 2rem; }
+        }
+
         /* 下拉菜单 */
         .dropdown-menu {
             position: absolute; top: 100%; right: 0;
@@ -405,6 +591,8 @@
                 </div>
             </div>
             
+            <a href="https://erp.ozonbox.top" target="_blank" class="nav-link" style="color: var(--primary); font-weight: 700; background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(249, 115, 22, 0.1)); border-radius: 8px;" title="ERP控制台">进入ERP控制台</a>
+            
             <a href="https://www.yuque.com/nicole-lkggt/soab22/cslsdbargtzrb6mr?singleDoc# 《ozonbox更新日记》" 
                target="_blank" style="font-size:1.2rem; color:var(--text-main); transition:0.3s;" title="更新日志">
                 <i class="far fa-bell"></i>
@@ -435,6 +623,7 @@
             </div>
         </a>
     </div>
+
 
     <section class="hero" id="home">
         <div class="ambient-light light-1"></div>
@@ -479,6 +668,82 @@
                             <span class="s-lbl">全时响应</span>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ERP控制台介绍模块 -->
+    <section class="erp-showcase" id="erp">
+        <div class="erp-container">
+            <div class="erp-header">
+                <span class="erp-badge">NEW</span>
+                <h2 class="erp-title">OZON 卖家 ERP 控制台</h2>
+                <p class="erp-subtitle">一站式店铺管理，让运营更高效</p>
+            </div>
+            
+            <div class="erp-content">
+                <div class="erp-slider">
+                    <div class="erp-slides" id="erpSlides">
+                        <div class="erp-slide active">
+                            <img src="images/j1.png" alt="数据概览">
+                            <div class="slide-caption">数据概览 - 实时掌控订单与销售动态</div>
+                        </div>
+                        <div class="erp-slide">
+                            <img src="images/j2.png" alt="AI智能上架">
+                            <div class="slide-caption">AI智能助手 - 一键生成专业商品信息</div>
+                        </div>
+                        <div class="erp-slide">
+                            <img src="images/j4.png" alt="订单管理">
+                            <div class="slide-caption">订单管理 - 高效处理备货与发运</div>
+                        </div>
+                        <div class="erp-slide">
+                            <img src="images/j5.png" alt="发运管理">
+                            <div class="slide-caption">物流跟踪 - 批量打印标签与确认</div>
+                        </div>
+                        <div class="erp-slide">
+                            <img src="images/j6.png" alt="会员权益">
+                            <div class="slide-caption">灵活套餐 - 从免费体验到季卡优惠</div>
+                        </div>
+                    </div>
+                    <div class="erp-nav">
+                        <button class="erp-nav-btn" onclick="changeSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+                        <div class="erp-dots" id="erpDots"></div>
+                        <button class="erp-nav-btn" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                
+                <div class="erp-features">
+                    <div class="erp-feature">
+                        <div class="ef-icon"><i class="fas fa-store"></i></div>
+                        <div class="ef-text">
+                            <h4>多店铺统一管理</h4>
+                            <p>绑定多个OZON店铺，数据一目了然</p>
+                        </div>
+                    </div>
+                    <div class="erp-feature">
+                        <div class="ef-icon"><i class="fas fa-robot"></i></div>
+                        <div class="ef-text">
+                            <h4>AI智能上架</h4>
+                            <p>集成DeepSeek，自动生成标题描述</p>
+                        </div>
+                    </div>
+                    <div class="erp-feature">
+                        <div class="ef-icon"><i class="fas fa-shipping-fast"></i></div>
+                        <div class="ef-text">
+                            <h4>订单快速处理</h4>
+                            <p>同步订单、批量打印、一键发货</p>
+                        </div>
+                    </div>
+                    <div class="erp-feature">
+                        <div class="ef-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="ef-text">
+                            <h4>可视化报表</h4>
+                            <p>60天订单趋势，店铺分布一目了然</p>
+                        </div>
+                    </div>
+                    
+                    <a href="https://erp.ozonbox.top" target="_blank" class="erp-cta">立即体验 ERP</a>
                 </div>
             </div>
         </div>
@@ -732,6 +997,61 @@
         }, { threshold: 0.5 });
         const statsSection = document.querySelector('.stats-card');
         if(statsSection) observer.observe(statsSection);
+
+        // === ERP 轮播功能 ===
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.erp-slide');
+        const dotsContainer = document.getElementById('erpDots');
+        let autoSlideInterval;
+
+        // 初始化圆点
+        function initDots() {
+            if (!dotsContainer) return;
+            slides.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.className = 'erp-dot' + (index === 0 ? ' active' : '');
+                dot.onclick = () => goToSlide(index);
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        // 跳转到指定幻灯片
+        function goToSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            document.querySelectorAll('.erp-dot').forEach(dot => dot.classList.remove('active'));
+            
+            currentSlide = index;
+            if (currentSlide >= slides.length) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = slides.length - 1;
+            
+            slides[currentSlide].classList.add('active');
+            const dots = document.querySelectorAll('.erp-dot');
+            if (dots[currentSlide]) dots[currentSlide].classList.add('active');
+        }
+
+        // 切换幻灯片
+        function changeSlide(direction) {
+            goToSlide(currentSlide + direction);
+            resetAutoSlide();
+        }
+
+        // 自动播放
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(() => {
+                goToSlide(currentSlide + 1);
+            }, 4000);
+        }
+
+        function resetAutoSlide() {
+            clearInterval(autoSlideInterval);
+            startAutoSlide();
+        }
+
+        // 初始化
+        if (slides.length > 0) {
+            initDots();
+            startAutoSlide();
+        }
     </script>
 </body>
 </html>
