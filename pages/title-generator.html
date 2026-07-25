@@ -1883,6 +1883,18 @@
                     </select>
                 </div>
                 <div id="deepseekConfig" style="margin-bottom: 10px;">
+                    <div style="margin-bottom: 15px;">
+                        <label for="deepseekModel" style="display: block; margin-bottom: 5px; font-weight: bold;">DeepSeek模型：</label>
+                        <select id="deepseekModel" onchange="onDeepSeekModelChange()"
+                            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: white;">
+                            <option value="deepseek-v4-flash">DeepSeek V4 Flash（速度优先）</option>
+                            <option value="deepseek-v4-pro">DeepSeek V4 Pro（效果优先）</option>
+                            <option value="custom">自定义模型名</option>
+                        </select>
+                        <input type="text" id="customDeepseekModel" placeholder="请输入API支持的模型名"
+                            onchange="onCustomDeepSeekModelChange()"
+                            style="display: none; width: 100%; margin-top: 8px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; box-sizing: border-box;">
+                    </div>
                     <label for="deepseekApiKey" style="display: block; margin-bottom: 5px; font-weight: bold;">API
                         密钥：</label>
                     <div style="display: flex; gap: 10px; align-items: center;">
@@ -3147,7 +3159,7 @@ ${ozonLinks.length > 0 ? '- 请以OZON产品特征为主要分析对象\n- 其�
 请用简洁明了的中文回答，重点突出产品的核心卖点。`;
 
             const requestBody = {
-                model: "deepseek-chat",
+                model: getSelectedDeepSeekModel(),
                 messages: [
                     {
                         role: "system",
@@ -3370,7 +3382,7 @@ ${ozonLinks.length > 0 ? '- 请以OZON产品特征为主要分析对象\n- 其�
 请以结构化的方式返回分析结果。`;
 
             const requestBody = {
-                model: "deepseek-chat",
+                model: getSelectedDeepSeekModel(),
                 messages: [
                     {
                         role: "system",
@@ -3657,9 +3669,55 @@ ${ozonLinks.length > 0 ? '- 请以OZON产品特征为主要分析对象\n- 其�
 
             try {
                 localStorage.setItem('deepseek_api_key', apiKey);
-                showToast('API密钥已保存到本地');
+                saveDeepSeekModel();
+                showToast('API密钥和模型配置已保存到本地');
             } catch (error) {
                 showToast('❌ 保存失败: ' + error.message);
+            }
+        }
+
+        function getSelectedDeepSeekModel() {
+            const modelSelect = document.getElementById('deepseekModel');
+            const customModelInput = document.getElementById('customDeepseekModel');
+            const model = modelSelect.value === 'custom'
+                ? customModelInput.value.trim()
+                : modelSelect.value;
+
+            if (!model) {
+                throw new Error('请先输入API支持的模型名');
+            }
+
+            return model;
+        }
+
+        function saveDeepSeekModel() {
+            const model = getSelectedDeepSeekModel();
+            localStorage.setItem('deepseek_model', model);
+        }
+
+        function onDeepSeekModelChange() {
+            const modelSelect = document.getElementById('deepseekModel');
+            const customModelInput = document.getElementById('customDeepseekModel');
+            const isCustom = modelSelect.value === 'custom';
+
+            customModelInput.style.display = isCustom ? 'block' : 'none';
+            if (isCustom) {
+                customModelInput.focus();
+                return;
+            }
+
+            try {
+                saveDeepSeekModel();
+            } catch (error) {
+                console.error('保存模型配置失败:', error);
+            }
+        }
+
+        function onCustomDeepSeekModelChange() {
+            try {
+                saveDeepSeekModel();
+            } catch (error) {
+                showToast('❌ ' + error.message);
             }
         }
 
@@ -3671,8 +3729,21 @@ ${ozonLinks.length > 0 ? '- 请以OZON产品特征为主要分析对象\n- 其�
                     // 移除持续显示的API密钥加载提示
                     // showToast('✅ 已加载保存的API密钥');
                 }
+
+                const savedModel = localStorage.getItem('deepseek_model') || 'deepseek-v4-flash';
+                const modelSelect = document.getElementById('deepseekModel');
+                const customModelInput = document.getElementById('customDeepseekModel');
+                const presetModels = Array.from(modelSelect.options).map(option => option.value);
+
+                if (presetModels.includes(savedModel)) {
+                    modelSelect.value = savedModel;
+                } else {
+                    modelSelect.value = 'custom';
+                    customModelInput.value = savedModel;
+                }
+                onDeepSeekModelChange();
             } catch (error) {
-                console.error('加载API密钥失败:', error);
+                console.error('加载DeepSeek配置失败:', error);
             }
         }
 
@@ -3837,7 +3908,7 @@ ${ozonLinks.length > 0 ? '- 请以OZON产品特征为主要分析对象\n- 其�
             const prompt = `我是一名跨境电商美工，现在需要为我的产品确定背景，产品为${productName}，我想让你帮我生成${imageCount}个场景词（不要提示词，仅场景词）`;
 
             const requestBody = {
-                model: "deepseek-chat",
+                model: getSelectedDeepSeekModel(),
                 messages: [
                     {
                         role: "system",

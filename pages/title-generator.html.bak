@@ -1,0 +1,3220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OZON标题生成工具</title>
+    <!-- 缓存控制 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 网站图标 -->
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon.svg">
+    <link rel="apple-touch-icon" href="../images/favicon.svg">
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- 性能优化CSS - 解决卡顿问题 -->
+    <link rel="stylesheet" href="performance-fix.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --ai-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            --border-radius: 16px;
+            --border-radius-lg: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8fafc;
+            color: var(--text-primary);
+            display: flex;
+            line-height: 1.6;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* 动画定义 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .analyzing {
+            transform: scale(1.02);
+            transition: transform 0.3s ease;
+        }
+
+        .fade-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .slide-in {
+            transform: translateX(0);
+            opacity: 1;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        /* 加载动画 */
+        .loading-container {
+            display: none;
+            text-align: center;
+            padding: 32px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            border: 2px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loading-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(67, 233, 123, 0.05) 0%, rgba(56, 249, 215, 0.05) 100%);
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(102, 126, 234, 0.2);
+            border-top: 4px solid var(--primary-gradient);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .loading-text {
+            background: var(--success-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success-gradient);
+            border-radius: 4px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step {
+            opacity: 0.6;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .step.active {
+            opacity: 1;
+            font-weight: 700;
+            background: var(--success-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        #competitorAnalysis {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        #competitorAnalysis.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .typewriter {
+            overflow: hidden;
+            white-space: nowrap;
+            margin: 0 auto;
+            border-right: 2px solid #4CAF50;
+        }
+
+        .result-item {
+            opacity: 1;
+            transform: translateX(0);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .sidebar {
+            width: 280px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: var(--shadow-xl);
+            z-index: 100;
+            overflow-y: auto;
+            transition: var(--transition);
+        }
+        .sidebar-header {
+            padding: 24px 20px;
+            background: var(--primary-gradient);
+            text-align: left;
+            font-weight: 700;
+            font-size: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+        .sidebar-menu-item {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 12px;
+            margin: 4px 12px;
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+        }
+        
+        .sidebar-menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: transparent;
+            opacity: 0;
+            transition: var(--transition);
+            border-radius: 12px;
+        }
+        
+        .sidebar-menu-item:hover {
+            color: #2563eb;
+            background: rgba(37, 99, 235, 0.08);
+            transform: translateX(2px);
+        }
+        
+        .sidebar-menu-item:hover::before {
+            opacity: 0;
+        }
+        
+        .sidebar-menu-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 1;
+            transition: var(--transition);
+        }
+        
+        .sidebar-menu-item:hover i {
+            color: #2563eb;
+        }
+        
+        .sidebar-menu-item span {
+            position: relative;
+            z-index: 1;
+        }
+        .sidebar-breadcrumb {
+            padding: 16px 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+            margin: 12px;
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .sidebar-breadcrumb a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .sidebar-breadcrumb a:hover {
+            color: white;
+            text-shadow: 0 0 8px rgba(255,255,255,0.5);
+        }
+        
+        .sidebar-breadcrumb .separator {
+            margin: 0 10px;
+            color: rgba(255,255,255,0.6);
+            font-weight: 300;
+        }
+        
+        .sidebar-breadcrumb .current {
+            color: white;
+            font-weight: 600;
+            text-shadow: 0 0 4px rgba(255,255,255,0.3);
+        }
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 32px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-xl);
+            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            pointer-events: none;
+        }
+        
+        .container > * {
+            position: relative;
+            z-index: 1;
+        }
+        .header {
+            background: var(--ai-gradient);
+            color: white;
+            padding: 32px;
+            text-align: center;
+            border-radius: var(--border-radius);
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header .logo {
+            position: relative;
+            z-index: 1;
+        }
+        .form-group {
+            margin-bottom: 28px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 16px;
+            letter-spacing: -0.01em;
+        }
+        
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            box-sizing: border-box;
+            font-size: 15px;
+            font-weight: 500;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-sm);
+            color: var(--text-primary);
+        }
+        
+        input[type="text"]:focus, textarea:focus, select:focus {
+            border-color: rgba(102, 126, 234, 0.6);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1), var(--shadow-md);
+            outline: none;
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        input[type="text"]::placeholder, textarea::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+        .feature-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .feature-input {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .add-btn, .remove-btn {
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 12px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .add-btn::before, .remove-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .add-btn:hover::before, .remove-btn:hover::before {
+            opacity: 1;
+        }
+        
+        .add-btn:hover, .remove-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .add-btn {
+            background: var(--success-gradient);
+        }
+        
+        .remove-btn {
+            background: var(--secondary-gradient);
+        }
+        .btn {
+            background: var(--success-gradient);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-right: 16px;
+            margin-bottom: 12px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: -0.01em;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .btn:hover::before {
+            opacity: 1;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary-gradient);
+        }
+        
+        .btn-view {
+            background: var(--primary-gradient);
+        }
+        .result-area {
+            margin-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 25px;
+        }
+        .ai-prompt {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            min-height: 120px;
+            margin-bottom: 24px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
+            font-size: 15px;
+            line-height: 1.7;
+            font-family: 'Inter', monospace;
+            color: var(--text-primary);
+            position: relative;
+        }
+        
+        .ai-prompt::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%);
+            pointer-events: none;
+            border-radius: var(--border-radius);
+        }
+        .button-group {
+            display: flex;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            height: 40px;
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #777;
+            font-size: 14px;
+        }
+        .customer-service {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .customer-service:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+        }
+        .customer-service i {
+            font-size: 28px;
+        }
+        
+        /* Toast提示样式 */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 1100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        
+        /* AI作图功能样式 */
+        .ai-image-section {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ai-image-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.02), rgba(118, 75, 162, 0.02));
+            pointer-events: none;
+        }
+        
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+        }
+        
+        .spec-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .spec-input:focus {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .sell-point-input:focus {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .ratio-select:focus {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(160, 174, 192, 0.4);
+        }
+        
+        .btn-copy:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+        }
+        
+        .btn-external:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(237, 137, 54, 0.4);
+        }
+        
+        .result-section {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 兼容旧样式 */
+        .spec-inputs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .spec-inputs input {
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .spec-inputs input:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 1px 4px rgba(76, 175, 80, 0.15);
+            outline: none;
+        }
+        
+        #sellPointsContainer .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        #sellPointsContainer .input-group input {
+            flex: 1;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            background: white;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 1px 4px rgba(76, 175, 80, 0.15);
+            outline: none;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .ai-image-section > div:first-child {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .spec-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            
+            .action-buttons {
+                flex-direction: column !important;
+            }
+            
+            .result-actions {
+                flex-direction: column !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .spec-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        /* 数字突出显示样式 */
+        .highlight-number {
+            background: linear-gradient(135deg, #ff6b35, #f57c00);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
+            display: inline-block;
+            margin: 0 2px;
+        }
+        
+        /* 强调内容项样式 */
+        .emphasize-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 4px solid;
+            transition: all 0.2s ease;
+        }
+        
+        .emphasize-item:hover {
+            transform: translateX(2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .emphasize-color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .emphasize-content {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .emphasize-remove {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+        
+        .emphasize-remove:hover {
+            background: #ff3742;
+            transform: scale(1.05);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 240px;
+            }
+            
+            .main-content {
+                margin-left: 240px;
+                padding: 20px;
+            }
+            
+            .container {
+                padding: 24px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                margin-right: 0;
+                margin-bottom: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 200px;
+            }
+            
+            .main-content {
+                margin-left: 200px;
+                padding: 16px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .customer-service {
+                width: 50px;
+                height: 50px;
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .customer-service i {
+                font-size: 24px;
+            }
+        }
+        
+
+        
+        .toast.show {
+            opacity: 1;
+        }
+        @media (max-width: 600px) {
+            .button-group {
+                flex-direction: column;
+            }
+            .btn {
+                margin-bottom: 12px;
+            }
+            .customer-service {
+                width: 50px;
+                height: 50px;
+                bottom: 20px;
+                right: 20px;
+            }
+            .customer-service i {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span>OZON标题生成</span>
+            <i class="fas fa-bars" style="margin-left: auto;"></i>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-breadcrumb">
+                <a href="../index.html">首页</a>
+                <span class="separator">></span>
+                <a href="ai-tools.html">AI工具</a>
+                <span class="separator">></span>
+                <span class="current">AI标题-简介-关键词</span>
+            </div>
+            <a href="../index.html" class="sidebar-menu-item"><i class="fas fa-home"></i> 首页</a>
+            <a href="tools.html" class="sidebar-menu-item"><i class="fas fa-tools"></i> 实用工具</a>
+            <a href="ai-tools.html" class="sidebar-menu-item"><i class="fas fa-robot"></i> AI工具</a>
+            <a href="ozon-plugin.html" class="sidebar-menu-item"><i class="fas fa-puzzle-piece"></i> OZON插件</a>
+            <a href="selection-manual.html" class="sidebar-menu-item"><i class="fas fa-book"></i> 选品手册</a>
+            <a href="size-chart.html" class="sidebar-menu-item"><i class="fas fa-ruler"></i> 中俄尺码对照表</a>
+            <a href="volumetric-check.html" class="sidebar-menu-item"><i class="fas fa-calculator"></i> 计抛检查工具</a>
+            
+        </div>
+    </div>
+    
+    <div class="main-content">
+    <div class="container">
+        
+        <div class="header">
+            <img src="../images/logo.png" alt="AI工具" class="logo">
+            <h1>AI智能生成: 商品图、标题、简介、标签</h1>
+        </div>
+        
+        <!-- 更新通知 -->
+        <div class="update-notice" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); position: relative; overflow: hidden;">
+            <div style="position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); animation: pulse 3s infinite;"></div>
+            <div style="position: relative; z-index: 1;">
+                <h3 style="margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; font-size: 18px;">
+                    <span style="font-size: 20px;">🎉</span>
+                    <span>功能更新通知</span>
+                    <span style="background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: normal;">最新</span>
+                </h3>
+                <div style="font-size: 14px; line-height: 1.6; opacity: 0.95;">
+                    <p style="margin: 8px 0; display: flex; align-items: flex-start; gap: 8px;">
+                        <span style="color: #90EE90; font-weight: bold; min-width: 16px;">✅</span>
+                        <span><strong>优化界面体验：</strong>移除了"模拟卖点分析"功能，界面更加简洁专注</span>
+                    </p>
+                    <p style="margin: 8px 0; display: flex; align-items: flex-start; gap: 8px;">
+                        <span style="color: #87CEEB; font-weight: bold; min-width: 16px;">🔧</span>
+                        <span><strong>功能精简：</strong>专注于核心的AI提问词生成和产品分析功能</span>
+                    </p>
+                    <p style="margin: 8px 0; display: flex; align-items: flex-start; gap: 8px;">
+                        <span style="color: #FFB6C1; font-weight: bold; min-width: 16px;">💡</span>
+                        <span><strong>使用建议：</strong>建议配置DeepSeek API密钥以获得最佳的产品分析效果</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DeepSeek API 配置区域 -->
+        <div class="api-config" style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2196f3;">
+            <h3 style="margin: 0 0 10px 0; color: #1976d2;">🤖 AI模型配置</h3>
+            <div style="margin-bottom: 15px;">
+                <label for="aiModel" style="display: block; margin-bottom: 5px; font-weight: bold;">选择AI模型：</label>
+                <select id="aiModel" onchange="onAiModelChange()" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: white;">
+                    <option value="deepseek">DeepSeek (需要API密钥)</option>
+                </select>
+            </div>
+            <div id="deepseekConfig" style="margin-bottom: 10px;">
+                        <label for="deepseekApiKey" style="display: block; margin-bottom: 5px; font-weight: bold;">API 密钥：</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="password" id="deepseekApiKey" placeholder="请输入您的DeepSeek API密钥 (sk-...)" 
+                                   style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace;">
+                            <button onclick="toggleApiKeyVisibility()" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; background: #f8f9fa; cursor: pointer;" title="显示/隐藏密钥">👁️</button>
+                            <button onclick="saveApiKey()" style="padding: 8px 12px; border: 1px solid #28a745; border-radius: 4px; background: #28a745; color: white; cursor: pointer;" title="保存到本地">💾</button>
+                        </div>
+                    </div>
+
+            <div id="deepseekHelp" style="font-size: 12px; color: #666; line-height: 1.4;">
+                <p style="margin: 5px 0;">💡 <strong>如何获取API密钥：</strong></p>
+                <p style="margin: 5px 0; background-color: #fff3cd; padding: 8px 12px; border-radius: 4px; border-left: 4px solid #ffc107; font-weight: bold;"><span style="color: #856404;">⚡ 快捷购买链接 1元/月（免实名认证）：</span><a href="https://pay.ldxp.cn/item/fzm441" target="_blank" style="color: #1976d2; font-weight: bold;">点击购买DeepSeek API密钥</a></p>
+                <p style="margin: 5px 0;">🔒 <strong>隐私保护：</strong>API密钥仅在本地使用，不会被保存或上传到任何服务器</p>
+            </div>
+        </div>
+        
+        <!-- 第一模块：AI智能生成：标题、简介、关键词、标签 -->
+        <div class="module-separator" style="text-align: center; margin: 40px 0 30px 0; position: relative;">
+            <div style="height: 2px; background: linear-gradient(90deg, transparent, #28a745, transparent); margin: 20px 0;"></div>
+            <div style="background: white; padding: 0 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #28a745; font-weight: bold; font-size: 16px;">📝 模块一：AI智能生成</div>
+        </div>
+        <div class="section-container" style="background: linear-gradient(135deg, #e8f5e8, #f0f8f0); padding: 25px; border-radius: 15px; margin-bottom: 40px; border: 2px solid #28a745; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.1);">
+            <h2 style="margin: 0 0 20px 0; color: #28a745; display: flex; align-items: center; gap: 10px; font-size: 20px;">
+                <span>🤖</span>
+                <span>AI智能生成：标题、简介、关键词、标签</span>
+            </h2>
+            
+            <div class="form-group">
+                <label for="productName">* 中文名称</label>
+                <input type="text" id="productName" placeholder="请输入产品中文名称">
+            </div>
+        
+        <div class="form-group">
+            <label for="competitorLink">竞品链接分析</label>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #17a2b8;">
+                <h4 style="margin: 0 0 10px 0; color: #17a2b8;">🌐 支持的平台</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 14px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #007bff;">🛒</span>
+                        <strong>OZON</strong> - 俄罗斯电商平台
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #ff6900;">🏭</span>
+                        <strong>1688</strong> - 阿里巴巴批发网
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #e02e24;">🛍️</span>
+                        <strong>拼多多</strong> - 中国电商平台
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #ff4500;">📦</span>
+                        <strong>淘宝</strong> - 阿里巴巴零售平台
+                    </div>
+                </div>
+                <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">💡 提示：可以同时输入多个平台的链接进行对比分析</p>
+            </div>
+            
+            <div id="linkInputs">
+                <div class="link-input-container" style="margin-bottom: 10px;">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <select class="platform-select" style="width: 120px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: white;">
+                            <option value="auto">自动识别</option>
+                            <option value="ozon">OZON</option>
+                            <option value="1688">1688</option>
+                            <option value="pdd">拼多多</option>
+                            <option value="taobao">淘宝</option>
+                        </select>
+                        <input type="text" class="competitor-link" placeholder="请输入竞品链接（支持OZON、1688、拼多多、淘宝等平台）" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <button class="remove-link-btn" onclick="removeLinkInput(this)" style="padding: 8px 12px; border: 1px solid #dc3545; border-radius: 4px; background: #dc3545; color: white; cursor: pointer;" title="删除此链接">🗑️</button>
+                    </div>
+                    <div class="platform-info" style="font-size: 12px; color: #666; margin-top: 5px; display: none;"></div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 10px;">
+                <button class="btn" onclick="addLinkInput()" style="background: #28a745; margin-right: 10px;">➕ 添加更多链接</button>
+                <button class="btn" onclick="analyzeCompetitor()" style="margin-right: 10px;">🔍 分析产品卖点</button>
+
+            </div>
+            
+            <!-- 加载动画容器 -->
+            <div id="loadingContainer" class="loading-container">
+                <div class="loading-spinner"></div>
+                <div class="loading-text" id="loadingText">正在分析竞品...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                </div>
+                <div class="progress-steps">
+                    <span class="step" id="step1">获取链接</span>
+                    <span class="step" id="step2">解析内容</span>
+                    <span class="step" id="step3">AI分析</span>
+                    <span class="step" id="step4">生成结果</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group" id="competitorAnalysis" style="display: none;">
+            <label>竞品分析结果</label>
+            <div class="ai-prompt" id="competitorResult"></div>
+        </div>
+        
+        <!-- 关键规格输入 -->
+        <div class="form-group" style="margin-bottom: 20px; background: #f8f9fa; padding: 20px; border-radius: 10px; border: 2px solid #e9ecef;">
+            <label class="form-label" style="display: flex; align-items: center; gap: 6px; margin-bottom: 15px; font-weight: 600; color: #4a5568;">📏 关键规格</label>
+            <div class="spec-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
+                <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">长度（厘米）</label>
+                    <input type="text" placeholder="如：15" id="length" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
+                </div>
+                <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">宽度（厘米）</label>
+                    <input type="text" placeholder="如：10" id="width" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
+                </div>
+                <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">高度（厘米）</label>
+                    <input type="text" placeholder="如：5" id="height" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
+                </div>
+                <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">重量（克）</label>
+                    <input type="text" placeholder="如：200" id="weight" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
+                </div>
+                <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">颜色</label>
+                    <input type="text" placeholder="如：黑色" id="color" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
+                </div>
+                <div class="spec-item" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label class="spec-label" style="font-size: 12px; color: #718096; font-weight: 500;">数量</label>
+                    <input type="text" placeholder="如：1个" id="quantity" class="spec-input" style="padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s;">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>商品特征</label>
+
+            <div id="features">
+                <div class="feature-container">
+                    <input type="text" class="feature-input" placeholder="请输入商品特征描述（中文）：如“可折叠”、“轻便”">
+                    <button class="add-btn" onclick="addFeature()">+</button>
+                </div>
+            </div>
+        </div>
+        
+            <div class="button-group">
+                <button class="btn" onclick="generatePrompt()">生成【标题、简介、标签】AI提问词</button>
+                <button class="btn btn-secondary" onclick="clearForm()">清空</button>
+            </div>
+            
+            <!-- AI提问词结果区域 -->
+            <div class="result-area" id="resultArea" style="display: none;">
+                <h3>AI提问词</h3>
+                <div class="ai-prompt" id="aiPrompt"></div>
+                
+                <div class="button-group">
+                    <button class="btn" onclick="copyPrompt()">复制AI提问词</button>
+                    <button class="btn btn-view" onclick="goToDeepseek()">前往Deepseek</button>
+                    <button class="btn btn-view" onclick="goToDouBao()">前往豆包</button>
+                </div>
+            </div>
+            
+
+        </div>
+        
+        <!-- 第二模块：场景图生成功能 -->
+        <div class="module-separator" style="text-align: center; margin: 40px 0 30px 0; position: relative;">
+            <div style="height: 2px; background: linear-gradient(90deg, transparent, #4169e1, transparent); margin: 20px 0;"></div>
+            <div style="background: white; padding: 0 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #4169e1; font-weight: bold; font-size: 16px;">🎨 模块二：场景图生成</div>
+        </div>
+        <div class="form-group" style="background: linear-gradient(135deg, #f0f8ff, #e6f3ff); padding: 25px; border-radius: 15px; border: 2px solid #4169e1; box-shadow: 0 4px 15px rgba(65, 105, 225, 0.1); margin-bottom: 40px;">
+            <h3 style="margin: 0 0 15px 0; color: #4169e1; display: flex; align-items: center; gap: 8px;">
+                <span>🎨</span>
+                <span>商品场景图提示词生成</span>
+                <span style="background: rgba(65, 105, 225, 0.1); padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: normal;">新功能</span>
+            </h3>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="season" style="display: block; margin-bottom: 5px; font-weight: bold;">穿着/使用季节：</label>
+                <select id="season" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: white;">
+                    <option value="通用">通用</option>
+                    <option value="春季">春季</option>
+                    <option value="夏季">夏季</option>
+                    <option value="秋季">秋季</option>
+                    <option value="冬季">冬季</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">图片数量：</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="imageCount" value="2" style="margin-right: 5px;"> 2张
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="imageCount" value="4" checked style="margin-right: 5px;"> 4张
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="imageCount" value="6" style="margin-right: 5px;"> 6张
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="imageCount" value="8" style="margin-right: 5px;"> 8张
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="imageCount" value="10" style="margin-right: 5px;"> 10张
+                    </label>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">图片背景含有中文：</label>
+                <div style="display: flex; gap: 15px;">
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="hasChineseText" value="yes" checked style="margin-right: 5px;"> 是
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="hasChineseText" value="no" style="margin-right: 5px;"> 否
+                    </label>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">尺寸比例：</label>
+                <div style="display: flex; gap: 15px;">
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="aspectRatio" value="3:4" checked style="margin-right: 5px;"> 3:4
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="aspectRatio" value="1:1" style="margin-right: 5px;"> 1:1
+                    </label>
+                </div>
+            </div>
+            
+            <div style="font-size: 12px; color: #666; line-height: 1.4; margin-bottom: 15px;">
+                <p style="margin: 5px 0;">💡 <strong>功能说明：</strong></p>
+                <p style="margin: 5px 0;">• 基于产品名称、特征和季节生成专业的场景图提示词</p>
+                <p style="margin: 5px 0;">• 符合俄罗斯审美和现实特征的场景设计</p>
+                <p style="margin: 5px 0;">• 突出产品的核心特征（如防水、易清洁等）</p>
+                <p style="margin: 5px 0;">• 生成的是提示词，不直接生成图片</p>
+            </div>
+            
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <button class="btn" onclick="generateScenePrompt()" style="background: linear-gradient(135deg, #4169e1, #6a5acd);">🎨 生成场景词</button>
+                <button class="btn" onclick="generateFinalPrompt()" style="background: linear-gradient(135deg, #28a745, #20c997);">✅ 确定</button>
+                <button class="btn" onclick="openTutorialVideo()" style="background: linear-gradient(135deg, #ff6b6b, #ee5a52); color: white; font-size: 14px;">📹 使用教程</button>
+            </div>
+            
+            <!-- 场景词生成加载动画容器 -->
+            <div id="sceneLoadingContainer" class="loading-container" style="display: none;">
+                <div class="loading-spinner"></div>
+                <div class="loading-text" id="sceneLoadingText">🎨 正在生成场景词...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="sceneProgressFill" style="width: 0%;"></div>
+                </div>
+                <div class="progress-steps">
+                    <span class="step" id="sceneStep1">分析产品</span>
+                    <span class="step" id="sceneStep2">调用AI</span>
+                    <span class="step" id="sceneStep3">生成场景词</span>
+                    <span class="step" id="sceneStep4">完成</span>
+                </div>
+            </div>
+        </div>
+        
+
+
+        
+        <!-- 场景图提示词结果区域 -->
+        <div class="result-area" id="sceneResultArea" style="display: none;">
+            <h3 style="color: #4169e1; display: flex; align-items: center; gap: 8px;">
+                <span>🎨</span>
+                <span>场景图提示词</span>
+            </h3>
+            <div class="ai-prompt" id="scenePrompt" style="background: linear-gradient(135deg, #f0f8ff, #e6f3ff); border-left: 4px solid #4169e1;"></div>
+            
+            <div class="button-group">
+                <button class="btn" onclick="copyScenePrompt()" style="background: linear-gradient(135deg, #4169e1, #6a5acd);">复制场景图提示词</button>
+                <button class="btn btn-view" onclick="goToDouBao()">前往豆包</button>
+                <button class="btn" onclick="goToBaiduAI()" style="background: linear-gradient(135deg, #d32f2f, #f44336);">百度AI去除水印|变高清</button>
+            </div>
+            
+            <!-- 商品图使用教程 -->
+            <div class="tutorial-section" style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #f8f9ff, #e8f0ff); border-radius: 12px; border-left: 4px solid #4169e1;">
+                <h4 style="color: #4169e1; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                    <span>📚</span>
+                    <span>商品图生成使用教程</span>
+                </h4>
+                
+                <div class="tutorial-steps" style="line-height: 1.8; color: #333;">
+                    <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                        <strong style="color: #4169e1;">第一步：</strong> 使用上方功能生成场景提示词，复制生成的提示词内容
+                    </div>
+                    
+                    <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                        <strong style="color: #4169e1;">第二步：</strong> 新开页面选择"图像生成"功能
+                    </div>
+                    
+                    <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                        <strong style="color: #4169e1;">第三步：</strong> 选择参考图（建议上传多张产品图片，越多效果越好）
+                    </div>
+                    
+                    <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                        <strong style="color: #4169e1;">第四步：</strong> 选择比例设置为 <code style="background: #e8f0ff; padding: 2px 6px; border-radius: 4px; color: #4169e1;">1:1</code>（方形比例）
+                    </div>
+                    
+                    <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                        <strong style="color: #4169e1;">第五步：</strong> 选择风格为 <code style="background: #e8f0ff; padding: 2px 6px; border-radius: 4px; color: #4169e1;">人像写真</code>（当前测试推荐）
+                    </div>
+                    
+                    <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                        <strong style="color: #4169e1;">第六步：</strong> 在提示词末尾加上"生成背景，并将产品融入"
+                    </div>
+                    
+                    <div class="step-item" style="padding: 10px; background: rgba(65, 105, 225, 0.1); border-radius: 8px; border: 1px dashed #4169e1;">
+                        <strong style="color: #4169e1;">💡 提示：</strong> 完成以上步骤后点击生成，即可获得专业的商品场景图
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 第三模块：AI作图功能 -->
+        <div class="module-separator" style="text-align: center; margin: 40px 0 30px 0; position: relative;">
+            <div style="height: 2px; background: linear-gradient(90deg, transparent, #667eea, transparent); margin: 20px 0;"></div>
+            <div style="background: white; padding: 0 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #667eea; font-weight: bold; font-size: 16px;">🚀 模块三：AI作图功能</div>
+        </div>
+        <div class="ai-image-section" style="background: linear-gradient(135deg, #f8f9ff, #fff5f5); padding: 25px; border-radius: 15px; border: 2px solid #667eea; margin-bottom: 40px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);">
+            <div class="section-header" style="margin-bottom: 20px; text-align: center;">
+                <h3 style="margin: 0 0 8px 0; color: #2d3748; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 18px;">
+                    <span style="font-size: 20px;">🎨</span>
+                    <span>AI作图功能</span>
+                    <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: normal;">专业版</span>
+                </h3>
+                <p style="margin: 0; color: #718096; font-size: 14px;">生成专业的商品图片设计提示词，支持俄语文案和多种规格配置|输入俄文效果最佳|</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <!-- 核心卖点输入 -->
+                <div class="form-column">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="display: flex; align-items: center; gap: 6px; margin-bottom: 10px; font-weight: 600; color: #4a5568;">💡 核心卖点</label>
+                        <div id="sellPointsContainer" class="sell-points-container">
+                            <div class="input-group" style="display: flex; gap: 8px; align-items: center;">
+                                <input type="text" placeholder="例如：男女通用" class="sell-point-input" style="flex: 1; padding: 10px 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: all 0.2s;">
+                                <button type="button" onclick="addSellPoint()" class="add-btn" style="padding: 10px 12px; background: linear-gradient(135deg, #48bb78, #38a169); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 图片比例选择 -->
+                <div class="form-column-small">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="display: flex; align-items: center; gap: 6px; margin-bottom: 10px; font-weight: 600; color: #4a5568;">📐 图片比例</label>
+                        <select id="imageRatio" class="ratio-select" style="width: 100%; padding: 10px 12px; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                            <option value="3:4">3:4 (竖版)</option>
+                            <option value="1:1">1:1 (方形)</option>
+                            <option value="16:9">16:9 (横版)</option>
+                            <option value="4:3">4:3 (标准)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+
+            
+            <!-- 强调内容设置 -->
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label" style="display: flex; align-items: center; gap: 6px; margin-bottom: 15px; font-weight: 600; color: #4a5568;">🎯 强调设置</label>
+                <div style="background: #fff8e1; padding: 15px; border-radius: 8px; border-left: 4px solid #ff9800; margin-bottom: 15px;">
+                    <p style="margin: 0 0 10px 0; font-size: 13px; color: #e65100; font-weight: 500;">💡 提示：添加需要在图片中突出展示的内容，将使用醒目颜色进行高亮显示</p>
+                    
+                    <!-- 强调内容动态列表 -->
+                    <div id="emphasizeList" style="margin-bottom: 15px;"></div>
+                    
+                    <!-- 添加强调内容的输入区域 -->
+                    <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 15px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 13px; color: #424242; font-weight: 500;">强调内容</label>
+                            <input type="text" id="newEmphasizeContent" placeholder="如：防水功能、超轻材质、限时优惠等" style="width: 100%; padding: 10px 12px; border: 2px solid #ffcc02; border-radius: 8px; font-size: 14px; background: #fffde7; transition: all 0.2s;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-size: 13px; color: #424242; font-weight: 500;">强调颜色</label>
+                            <select id="newEmphasizeColor" style="width: 100%; padding: 10px 12px; border: 2px solid #ffcc02; border-radius: 8px; background: #fffde7; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                                <option value="#ff6b35" style="background: #ff6b35; color: white;">🔥 醒目橙色</option>
+                                <option value="#1e88e5" style="background: #1e88e5; color: white;">💎 亮蓝色</option>
+                                <option value="#d32f2f" style="background: #d32f2f; color: white;">❤️ 鲜红色</option>
+                                <option value="#388e3c" style="background: #388e3c; color: white;">🌿 翠绿色</option>
+                                <option value="#7b1fa2" style="background: #7b1fa2; color: white;">💜 紫色</option>
+                                <option value="#f57c00" style="background: #f57c00; color: white;">🌟 金黄色</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button type="button" onclick="addEmphasizeItem()" style="padding: 10px 15px; background: linear-gradient(135deg, #48bb78, #38a169); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; margin-top: 25px;">➕ 添加</button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <input type="checkbox" id="largeTitle" checked style="transform: scale(1.2);">
+                            <label for="largeTitle" style="font-size: 13px; color: #424242; font-weight: 500; cursor: pointer;">产品名称使用超大字体显示</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="titleShadow" checked style="transform: scale(1.2);">
+                            <label for="titleShadow" style="font-size: 13px; color: #424242; font-weight: 500; cursor: pointer;">为标题添加阴影效果</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons" style="display: flex; gap: 12px; justify-content: center; margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="generateImagePrompt()" style="display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
+                    <span class="btn-icon">🚀</span>
+                    生成AI作图提示词
+                </button>
+                <button class="btn btn-secondary" onclick="clearImageForm()" style="display: flex; align-items: center; gap: 8px; padding: 12px 20px; background: linear-gradient(135deg, #a0aec0, #718096); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    <span class="btn-icon">🗑️</span>
+                    清空表单
+                </button>
+            </div>
+            
+            <!-- AI作图提示词结果区域 -->
+            <div class="result-section" id="imagePromptArea" style="display: none; background: white; border-radius: 10px; padding: 20px; border: 2px solid #e8f4fd; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <div class="result-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                    <h4 style="margin: 0; color: #2d3748; display: flex; align-items: center; gap: 8px;">🎯 AI作图提示词</h4>
+                    <span class="result-badge" style="background: linear-gradient(135deg, #48bb78, #38a169); color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">已生成</span>
+                </div>
+                <div class="prompt-container" style="margin-bottom: 15px;">
+                    <div class="ai-prompt" id="imagePrompt" style="background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.6; color: #2d3748; white-space: pre-wrap;"></div>
+                </div>
+                
+                <div class="result-actions" style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn btn-copy" onclick="copyImagePrompt()" style="display: flex; align-items: center; gap: 6px; padding: 10px 16px; background: linear-gradient(135deg, #4299e1, #3182ce); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                        <span class="btn-icon">📋</span>
+                        复制提示词
+                    </button>
+                    <button class="btn btn-external" onclick="goToLMArena()" style="display: flex; align-items: center; gap: 6px; padding: 10px 16px; background: linear-gradient(135deg, #ed8936, #dd6b20); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                        <span class="btn-icon">🔗</span>
+                        前往 LM Arena
+                    </button>
+                    <button class="btn btn-external" onclick="goToNanoBanana()" style="display: flex; align-items: center; gap: 6px; padding: 10px 16px; background: linear-gradient(135deg, #f6d55c, #ed8936); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                        <span class="btn-icon">🍌</span>
+                        前往 Nano Banana
+                    </button>
+                </div>
+                
+                <!-- AI作图使用教程 -->
+                <div class="tutorial-section" style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #fff8f0, #ffeee6); border-radius: 12px; border-left: 4px solid #ed8936;">
+                    <h4 style="color: #ed8936; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                        <span>📚</span>
+                        <span>AI作图使用教程</span>
+                    </h4>
+                    
+                    <div class="tutorial-steps" style="line-height: 1.8; color: #333;">
+                        <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                            <strong style="color: #ed8936;">第一步：</strong> 生成俄文提示词（建议填入俄文）
+                        </div>
+                        
+                        <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                            <strong style="color: #ed8936;">第二步：</strong> 前往 LM Arena 平台
+                        </div>
+                        
+                        <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                            <strong style="color: #ed8936;">第三步：</strong> 选择 <code style="background: #ffeee6; padding: 2px 6px; border-radius: 4px; color: #ed8936;">gemini-2.5-flash-image-preview</code> 模型
+                        </div>
+                        
+                        <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                            <strong style="color: #ed8936;">第四步：</strong> 上传产品图片作为参考
+                        </div>
+                        
+                        <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                            <strong style="color: #ed8936;">第五步：</strong> 粘贴生成的俄文提示词
+                        </div>
+                        
+                        <div class="step-item" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                            <strong style="color: #ed8936;">第六步：</strong> 按需进行修改并生成图片
+                        </div>
+                        
+                        <div class="step-item" style="padding: 10px; background: rgba(237, 137, 54, 0.1); border-radius: 8px; border: 1px dashed #ed8936;">
+                            <strong style="color: #ed8936;">💡 提示：</strong> 完成以上步骤后即可获得专业的商品图片设计
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            © 2025 Made By Nicole. 
+        </div>
+    </div>
+    </div>
+    
+    <div class="customer-service" onclick="showCustomerService()">
+        <i class="fas fa-headset"></i>
+    </div>
+    
+    <div id="toast" class="toast"></div>
+
+    <script>
+        function addFeature() {
+            const featuresDiv = document.getElementById('features');
+            const newFeature = document.createElement('div');
+            newFeature.className = 'feature-container';
+            newFeature.innerHTML = `
+                <input type="text" class="feature-input" placeholder="请输入商品特征描述（中文）：如"可折叠"、"轻便"">
+                <button class="remove-btn" onclick="removeFeature(this)">-</button>
+                <button class="add-btn" onclick="addFeature()">+</button>
+            `;
+            featuresDiv.appendChild(newFeature);
+        }
+        
+        function removeFeature(button) {
+            const container = button.parentElement;
+            container.remove();
+        }
+
+
+
+        function generatePrompt() {
+            // 为生成按钮添加特殊动画
+            const generateBtn = event.target;
+            generateBtn.classList.add('analyzing');
+            generateBtn.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                generateBtn.style.transform = 'scale(1)';
+            }, 200);
+            
+            const productName = document.getElementById('productName').value.trim();
+            if (!productName) {
+                generateBtn.classList.remove('analyzing');
+                showToast('❌ 请输入产品中文名称');
+                return;
+            }
+
+            // 收集所有链接
+            const linkInputs = document.querySelectorAll('.competitor-link');
+            const links = [];
+            linkInputs.forEach(input => {
+                const value = input.value.trim();
+                if (value) {
+                    links.push(value);
+                }
+            });
+            const competitorLink = links.length > 0 ? links[0] : ''; // 使用第一个链接作为主要参考
+            
+            // 获取所有特征
+            const featureInputs = document.querySelectorAll('.feature-input');
+            const features = [];
+            featureInputs.forEach(input => {
+                const value = input.value.trim();
+                if (value) {
+                    features.push(value);
+                }
+            });
+            
+            // 获取模块三的关键规格信息
+            const length = document.getElementById('length')?.value?.trim() || '';
+            const width = document.getElementById('width')?.value?.trim() || '';
+            const height = document.getElementById('height')?.value?.trim() || '';
+            const weight = document.getElementById('weight')?.value?.trim() || '';
+            const color = document.getElementById('color')?.value?.trim() || '';
+            const quantity = document.getElementById('quantity')?.value?.trim() || '';
+            
+            // 构建规格信息数组（包含单位）
+            const specs = [];
+            if (length) specs.push(`长度: ${length}厘米`);
+            if (width) specs.push(`宽度: ${width}厘米`);
+            if (height) specs.push(`高度: ${height}厘米`);
+            if (weight) specs.push(`重量: ${weight}克`);
+            if (color) specs.push(`颜色: ${color}`);
+            if (quantity) specs.push(`数量: ${quantity}`);
+
+            // 生成AI提问词
+            let prompt = `我是做俄罗斯OZON电商平台的跨境卖家，OZON是货架电商平台，我正在OZON平台上架一款商品，它的中文名称是："${productName}"`;
+            
+            // 处理多个链接
+            if (links.length > 0) {
+                if (links.length === 1) {
+                    prompt += `，这款商品有一个参考链接是"${links[0]}"`;
+                } else {
+                    prompt += `，这款商品有${links.length}个参考链接：`;
+                    links.forEach((link, index) => {
+                        prompt += `\n${index + 1}. ${link}`;
+                    });
+                }
+            }
+            
+            if (features.length > 0) {
+                prompt += `\n\n这款商品有以下特征:`;
+                features.forEach((feature, index) => {
+                    prompt += `\n- ${feature}`;
+                });
+            }
+            
+            prompt += `\n\n请结合商品的中文名称、商品的特征`;
+            
+            // 添加规格信息到提示词中
+            if (specs.length > 0) {
+                prompt += `、以下关键规格信息（${specs.join('、')}）`;
+            }
+            
+            if (links.length > 0) {
+                prompt += `以及参考链接（请解析链接中的俄文标题以及"Описание"属性中的俄文商品描述）`;
+            }
+            
+            prompt += `，请按照以下详细要求生成完整的产品信息：\n\n` +
+                `**1. 产品标题（俄文）**\n` +
+                `- 要求：简洁有力，包含核心关键词和长尾词`;
+            
+            if (specs.length > 0) {
+                prompt += `，适当融入关键规格信息`;
+            }
+            
+            prompt += `\n- 长度：不超过100个字符\n` +
+                `- 格式：用文本编辑器方式展示俄文标题\n` +
+                `- 下方提供中文翻译对照\n\n` +
+                `**2. 产品描述（俄文）**\n` +
+                `- 要求：详细描述产品功能、特点、优势和使用场景\n` +
+                `- 长度：不少于300字，不超过500字\n` +
+                `- 内容：突出产品卖点`;
+            
+            if (specs.length > 0) {
+                prompt += `，自然融入关键规格信息（${specs.join('、')}）`;
+            }
+            
+            prompt += `\n- 语言：符合俄罗斯人口语习惯，包含适当标点符号\n` +
+                `- 格式：用文本编辑器方式展示俄文描述\n` +
+                `- 下方提供中文翻译对照\n` +
+                `- 特别要求：由于OZON平台已取消关键词功能，请将原本的关键词自然地融入到产品描述中，使描述更加丰富和完整\n\n` +
+                `**3. 产品关键词（俄文）**\n` +
+                `- 数量：20-28个关键词\n` +
+                `- 分隔：关键词之间用分号(;)分隔\n` +
+                `- 内容：包含产品类别、功能、材质、适用人群等`;
+            
+            if (specs.length > 0) {
+                prompt += `，包含规格相关词汇`;
+            }
+            
+            prompt += `\n- 格式：用文本编辑器方式展示俄文关键词\n` +
+                `- 下方提供中文翻译对照\n` +
+                `- 注意：这些关键词主要用于内容优化，将被融入到产品描述中\n\n` +
+                `**4. 主题标签（俄文）**\n` +
+                `- 数量：25-28个标签\n` +
+                `- 格式：每个标签以#开头，只包含字母、数字、下划线\n` +
+                `- 长度：每个标签最大28个字符\n` +
+                `- 内容：涵盖风格、生活方式、使用场景、流行趋势等\n` +
+                `- 禁止：品牌名称、政策、军事、违禁品相关词汇\n` +
+                `- 分隔：标签之间用空格分隔\n` +
+                `- 格式：用文本编辑器方式展示俄文标签\n` +
+                `- 下方提供中文翻译对照\n\n` +
+                `**5. 输出格式要求**\n` +
+                `- 每个部分都要有清晰的标题分隔\n` +
+                `- 俄文内容用代码块格式展示（模拟文本编辑器）\n` +
+                `- 每个俄文部分下方都要有对应的中文翻译\n` +
+                `- 确保所有内容符合OZON平台规范和俄罗斯市场习惯\n` +
+                `- 重点：产品描述要充分融入关键词内容，使其自然流畅且信息丰富`;
+
+            // 显示结果区域并添加动画效果
+             const resultArea = document.getElementById('resultArea');
+             const aiPrompt = document.getElementById('aiPrompt');
+             
+             // 移除生成按钮的分析动画
+             generateBtn.classList.remove('analyzing');
+             
+             // 直接显示完整内容
+             aiPrompt.textContent = prompt;
+             resultArea.style.display = 'block';
+             resultArea.classList.add('fade-in');
+             
+             showToast('✅ AI提问词生成完成！');
+        }
+
+        function showToast(message, duration = 2000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            
+            // 添加图标动画
+            if (message.includes('✅')) {
+                toast.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+                toast.style.animation = 'slideInRight 0.5s ease, pulse 0.3s ease 0.5s';
+            } else if (message.includes('❌')) {
+                toast.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
+                toast.style.animation = 'shake 0.5s ease, slideInRight 0.5s ease';
+            } else if (message.includes('🔍') || message.includes('🎭')) {
+                toast.style.background = 'linear-gradient(135deg, #2196F3, #1976D2)';
+                toast.style.animation = 'slideInRight 0.5s ease, pulse 2s infinite 1s';
+            } else {
+                toast.style.animation = 'slideInRight 0.5s ease';
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.5s ease';
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 500);
+            }, duration);
+        }
+        
+        function copyPrompt() {
+            const promptText = document.getElementById('aiPrompt').textContent;
+            navigator.clipboard.writeText(promptText)
+                .then(() => showToast('✅ AI提问词已复制到剪贴板'))
+                .catch(err => showToast('❌ 复制失败: ' + err));
+        }
+
+        function openTutorialVideo() {
+            // 创建模态弹窗
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            // 创建视频容器
+            const videoContainer = document.createElement('div');
+            videoContainer.style.cssText = `
+                position: relative;
+                max-width: 90%;
+                max-height: 90%;
+                background: white;
+                border-radius: 12px;
+                padding: 20px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                animation: slideIn 0.3s ease;
+            `;
+            
+            // 创建关闭按钮
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '✕';
+            closeBtn.style.cssText = `
+                position: absolute;
+                top: 10px;
+                right: 15px;
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: #666;
+                z-index: 1;
+            `;
+            
+            // 创建标题
+            const title = document.createElement('h3');
+            title.textContent = 'AI背景图提示词使用教程';
+            title.style.cssText = `
+                margin: 0 0 15px 0;
+                color: #333;
+                text-align: center;
+                font-size: 18px;
+            `;
+            
+            // 创建视频元素
+            const video = document.createElement('video');
+            video.src = '../videos/sp.mp4';
+            video.controls = true;
+            video.style.cssText = `
+                width: 100%;
+                max-width: 800px;
+                height: auto;
+                border-radius: 8px;
+            `;
+            
+            // 创建提示信息
+            const tip = document.createElement('p');
+            tip.textContent = '💡 提示：点击背景或按ESC键可关闭视频';
+            tip.style.cssText = `
+                margin: 15px 0 0 0;
+                text-align: center;
+                color: #666;
+                font-size: 14px;
+            `;
+            
+            // 组装元素
+            videoContainer.appendChild(closeBtn);
+            videoContainer.appendChild(title);
+            videoContainer.appendChild(video);
+            videoContainer.appendChild(tip);
+            modal.appendChild(videoContainer);
+            
+            // 添加样式
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes slideIn {
+                    from { transform: scale(0.8) translateY(-20px); opacity: 0; }
+                    to { transform: scale(1) translateY(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // 关闭函数
+            const closeModal = () => {
+                modal.style.animation = 'fadeIn 0.3s ease reverse';
+                setTimeout(() => {
+                    document.body.removeChild(modal);
+                    document.head.removeChild(style);
+                }, 300);
+            };
+            
+            // 绑定事件
+            closeBtn.onclick = closeModal;
+            modal.onclick = (e) => {
+                if (e.target === modal) closeModal();
+            };
+            
+            // ESC键关闭
+            const handleEsc = (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    document.removeEventListener('keydown', handleEsc);
+                }
+            };
+            document.addEventListener('keydown', handleEsc);
+            
+            // 添加到页面
+            document.body.appendChild(modal);
+            
+            // 显示成功提示
+            showToast('📹 视频教程已打开');
+        }
+
+        function goToDeepseek() {
+            window.open('https://chat.deepseek.com/', '_blank');
+        }
+        function goToDouBao(){
+            window.open('https://doubao.com/', '_blank');
+        }
+        
+        function showDemo() {
+            alert('视频演示功能正在开发中');
+        }
+
+        function showCustomerService() {
+            alert('联系我们：\n邮箱：zouqifeng@jiawae-commerce.com\n工作时间：周一至周五 9:00-18:00');
+        }
+
+        // 平台检测功能
+        function detectPlatform(url) {
+            if (!url) return 'unknown';
+            
+            const lowerUrl = url.toLowerCase();
+            
+            if (lowerUrl.includes('ozon.ru')) return 'ozon';
+            if (lowerUrl.includes('1688.com')) return '1688';
+            if (lowerUrl.includes('yangkeduo.com') || lowerUrl.includes('pinduoduo.com')) return 'pdd';
+            if (lowerUrl.includes('taobao.com') || lowerUrl.includes('tmall.com')) return 'taobao';
+            
+            return 'unknown';
+        }
+
+        // 获取平台信息
+        function getPlatformInfo(platform) {
+            const platformData = {
+                'ozon': { name: 'OZON', icon: '🛒', color: '#007bff', description: '俄罗斯电商平台' },
+                '1688': { name: '1688', icon: '🏭', color: '#ff6900', description: '阿里巴巴批发网' },
+                'pdd': { name: '拼多多', icon: '🛍️', color: '#e02e24', description: '中国电商平台' },
+                'taobao': { name: '淘宝', icon: '📦', color: '#ff4500', description: '阿里巴巴零售平台' },
+                'unknown': { name: '未知平台', icon: '❓', color: '#6c757d', description: '无法识别的平台' }
+            };
+            return platformData[platform] || platformData['unknown'];
+        }
+
+        // 添加链接输入框
+        function addLinkInput() {
+            const container = document.getElementById('linkInputs');
+            const newInput = document.createElement('div');
+            newInput.className = 'link-input-container';
+            newInput.style.marginBottom = '10px';
+            
+            newInput.innerHTML = `
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <select class="platform-select" style="width: 120px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: white;">
+                        <option value="auto">自动识别</option>
+                        <option value="ozon">OZON</option>
+                        <option value="1688">1688</option>
+                        <option value="pdd">拼多多</option>
+                        <option value="taobao">淘宝</option>
+                    </select>
+                    <input type="text" class="competitor-link" placeholder="请输入竞品链接（支持OZON、1688、拼多多、淘宝等平台）" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <button class="remove-link-btn" onclick="removeLinkInput(this)" style="padding: 8px 12px; border: 1px solid #dc3545; border-radius: 4px; background: #dc3545; color: white; cursor: pointer;" title="删除此链接">🗑️</button>
+                </div>
+                <div class="platform-info" style="font-size: 12px; color: #666; margin-top: 5px; display: none;"></div>
+            `;
+            
+            container.appendChild(newInput);
+            
+            // 为新添加的输入框绑定事件
+            const linkInput = newInput.querySelector('.competitor-link');
+            const platformSelect = newInput.querySelector('.platform-select');
+            const platformInfo = newInput.querySelector('.platform-info');
+            
+            linkInput.addEventListener('input', function() {
+                updatePlatformInfo(this, platformSelect, platformInfo);
+            });
+            
+            platformSelect.addEventListener('change', function() {
+                updatePlatformInfo(linkInput, this, platformInfo);
+            });
+        }
+
+        // 删除链接输入框
+        function removeLinkInput(button) {
+            const container = document.getElementById('linkInputs');
+            if (container.children.length > 1) {
+                button.closest('.link-input-container').remove();
+            } else {
+                showToast('至少需要保留一个链接输入框');
+            }
+        }
+
+        // 更新平台信息显示
+        function updatePlatformInfo(linkInput, platformSelect, platformInfo) {
+            const url = linkInput.value.trim();
+            let platform = platformSelect.value;
+            
+            if (platform === 'auto' && url) {
+                platform = detectPlatform(url);
+            }
+            
+            if (url && platform !== 'unknown') {
+                const info = getPlatformInfo(platform);
+                platformInfo.innerHTML = `${info.icon} 检测到：<strong style="color: ${info.color};">${info.name}</strong> - ${info.description}`;
+                platformInfo.style.display = 'block';
+                linkInput.style.borderColor = info.color;
+            } else if (url && platform === 'unknown') {
+                platformInfo.innerHTML = '❓ 无法识别平台，请手动选择或检查链接格式';
+                platformInfo.style.display = 'block';
+                linkInput.style.borderColor = '#dc3545';
+            } else {
+                platformInfo.style.display = 'none';
+                linkInput.style.borderColor = '#ddd';
+            }
+        }
+
+        // 收集所有链接
+        function collectAllLinks() {
+            const containers = document.querySelectorAll('.link-input-container');
+            const links = [];
+            
+            containers.forEach(container => {
+                const linkInput = container.querySelector('.competitor-link');
+                const platformSelect = container.querySelector('.platform-select');
+                const url = linkInput.value.trim();
+                
+                if (url) {
+                    let platform = platformSelect.value;
+                    if (platform === 'auto') {
+                        platform = detectPlatform(url);
+                    }
+                    
+                    links.push({
+                        url: url,
+                        platform: platform,
+                        platformInfo: getPlatformInfo(platform)
+                    });
+                }
+            });
+            
+            return links;
+        }
+
+        async function analyzeCompetitor() {
+            const links = collectAllLinks();
+            
+            if (links.length === 0) {
+                alert('请先输入至少一个竞品链接');
+                return;
+            }
+
+            // 支持多平台分析
+            await analyzeMultiPlatformCompetitor(links);
+        }
+        
+        async function analyzeMultiPlatformCompetitor(links) {
+            // 显示加载动画
+            showLoadingAnimation();
+            
+            try {
+                // 调用DeepSeek API分析多平台竞品
+                const analysisResult = await callMultiPlatformDeepSeekAPI(links);
+                
+                // 隐藏加载动画
+                hideLoadingAnimation();
+                
+                // 显示结果并添加动画效果
+                const resultElement = document.getElementById('competitorResult');
+                resultElement.innerHTML = analysisResult;
+                resultElement.classList.add('fade-in');
+                const analysisSection = document.getElementById('competitorAnalysis');
+                analysisSection.style.display = 'block';
+                setTimeout(() => {
+                    analysisSection.classList.add('show');
+                }, 100);
+                
+                // 自动填充分析出的特征到商品特征中
+                autoFillFeaturesFromAI(analysisResult);
+                
+                showToast(`✅ 成功分析了${links.length}个产品的卖点信息！`);
+            } catch (error) {
+                hideLoadingAnimation();
+                showToast('❌ 产品分析失败: ' + error.message + '\n💡 建议：重新购买API');
+                console.error('产品分析API调用失败:', error);
+            }
+        }
+        
+        async function analyzeDeepSeekCompetitor(competitorLink) {
+            // 兼容旧版本的单链接分析
+            const links = [{
+                url: competitorLink,
+                platform: detectPlatform(competitorLink),
+                platformInfo: getPlatformInfo(detectPlatform(competitorLink))
+            }];
+            
+            await analyzeMultiPlatformCompetitor(links);
+        }
+        
+
+         
+         // 多平台API调用函数
+         async function callMultiPlatformDeepSeekAPI(links) {
+             // DeepSeek API 配置
+             const API_KEY = document.getElementById('deepseekApiKey')?.value?.trim() || '';
+             
+             if (!API_KEY || API_KEY === 'sk-your-deepseek-api-key') {
+                 throw new Error('请先在页面顶部设置您的DeepSeek API密钥');
+             }
+             const API_URL = 'https://api.deepseek.com/v1/chat/completions';
+             
+             // 构建产品卖点分析提示词
+             let prompt = '请分析以下产品链接，重点关注产品本身的特点和卖点：\n\n';
+             
+             // 检查是否有OZON链接
+             const ozonLinks = links.filter(link => link.platform === 'ozon');
+             const otherLinks = links.filter(link => link.platform !== 'ozon');
+             
+             // 优先显示OZON链接
+             if (ozonLinks.length > 0) {
+                 prompt += '🎯 主要参考产品（OZON）：\n';
+                 ozonLinks.forEach((link, index) => {
+                     prompt += `${index + 1}. ${link.url}\n`;
+                 });
+             }
+             
+             if (otherLinks.length > 0) {
+                 prompt += ozonLinks.length > 0 ? '\n📋 补充参考产品：\n' : '';
+                 otherLinks.forEach((link, index) => {
+                     const startIndex = ozonLinks.length > 0 ? ozonLinks.length + 1 : 1;
+                     prompt += `${startIndex + index}. ${link.url}\n`;
+                 });
+             }
+             
+             prompt += `\n分析要求：\n${ozonLinks.length > 0 ? '- 请以OZON产品特征为主要分析对象\n- 其他平台产品作为补充参考和对比\n' : ''}请提供以下信息：\n1. 产品的核心功能和特点${ozonLinks.length > 0 ? '（以OZON为准）' : ''}\n2. 主要卖点和优势\n3. 产品材质、工艺或技术特色\n4. 适用场景和目标用户\n5. 关键词建议（包含产品特征词）\n6. 如果有多个产品，请综合分析共同特点和差异\n\n请用简洁明了的中文回答，重点突出产品的核心卖点。`;
+             
+             const requestBody = {
+                 model: "deepseek-chat",
+                 messages: [
+                     {
+                         role: "system",
+                         content: "你是一个专业的产品分析师，擅长分析电商产品的核心特点、卖点和优势。当分析多个平台的产品时，请以OZON平台的产品特征为主要参考标准，其他平台产品作为补充信息。专注于产品本身的特征分析，而不是平台特色分析。"
+                     },
+                     {
+                         role: "user",
+                         content: prompt
+                     }
+                 ],
+                 temperature: 0.7,
+                 max_tokens: 1500
+             };
+             
+             try {
+                 const response = await fetch(API_URL, {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'Authorization': `Bearer ${API_KEY}`
+                     },
+                     body: JSON.stringify(requestBody)
+                 });
+                 
+                 if (!response.ok) {
+                     const errorData = await response.json();
+                     throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+                 }
+                 
+                 const data = await response.json();
+                 const analysis = data.choices[0].message.content;
+                 
+                 // 格式化显示结果
+                 let resultHtml = `<h4 class="result-item typewriter">🤖 AI产品卖点分析结果：</h4>`;
+                 
+                 // 显示分析的产品信息
+                 if (links.length > 1) {
+                     const ozonCount = links.filter(link => link.platform === 'ozon').length;
+                     const otherCount = links.length - ozonCount;
+                     
+                     resultHtml += `<div class="result-item" style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #007bff;">`;
+                     resultHtml += `<h5 style="margin: 0 0 10px 0; color: #007bff;">📊 分析产品概览</h5>`;
+                     resultHtml += `<p style="margin: 5px 0;">共分析 <strong>${links.length}</strong> 个产品链接`;
+                     if (ozonCount > 0) {
+                         resultHtml += `，其中OZON产品 <strong>${ozonCount}</strong> 个（主要参考）`;
+                         if (otherCount > 0) {
+                             resultHtml += `，其他平台 <strong>${otherCount}</strong> 个（补充参考）`;
+                         }
+                     } else {
+                         resultHtml += `，来自不同平台`;
+                     }
+                     resultHtml += `</p>`;
+                     resultHtml += `</div>`;
+                 }
+                 
+                 // 显示AI分析结果
+                 resultHtml += `<div class="result-item" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #28a745;">`;
+                 resultHtml += `<div style="white-space: pre-wrap;">${analysis}</div>`;
+                 resultHtml += `</div>`;
+                 
+                 resultHtml += `<hr class="result-item">`;
+                 resultHtml += `<p class="result-item"><strong>💡 提示：</strong>AI分析结果已自动填充到商品特征中，您可以根据实际产品情况进行调整。</p>`;
+                 
+                 return resultHtml;
+                 
+             } catch (error) {
+                 console.error('API调用失败:', error);
+                 throw error;
+             }
+         }
+
+         // 多平台模拟分析函数
+         async function generateMultiPlatformMockAnalysis(links) {
+             // 基于链接内容智能生成模拟分析结果
+             const mockAnalysisTemplates = {
+                 electronics: {
+                     keywords: ['наушники', 'bluetooth', 'беспроводные', 'зарядка', 'смартфон', '蓝牙耳机', '无线充电'],
+                     features: ['无线连接', '蓝牙技术', '快速充电', '长续航', '高音质', '降噪功能'],
+                     title: 'Беспроводные наушники с активным шумоподавлением',
+                     description: '高品质无线耳机，采用先进的蓝牙技术和主动降噪功能，为用户提供卓越的音质体验和舒适的佩戴感受。'
+                 },
+                 fashion: {
+                     keywords: ['одежда', 'мода', 'стиль', 'качество', 'комфорт', '时尚', '服装'],
+                     features: ['时尚设计', '舒适面料', '多色可选', '百搭款式', '优质做工', '透气性好'],
+                     title: 'Стильная одежда высокого качества',
+                     description: '时尚服装，采用优质面料制作，设计简约大方，适合多种场合穿着，展现个人品味和风格。'
+                 },
+                 home: {
+                     keywords: ['дом', 'кухня', 'удобство', 'практичность', 'качество', '家居', '厨房'],
+                     features: ['实用设计', '耐用材质', '易于清洁', '节省空间', '多功能', '安全可靠'],
+                     title: 'Практичные товары для дома',
+                     description: '实用的家居用品，设计人性化，材质安全耐用，能够有效提升生活品质和便利性。'
+                 },
+                 beauty: {
+                     keywords: ['красота', 'уход', 'косметика', 'здоровье', 'натуральный', '美容', '护肤'],
+                     features: ['天然成分', '温和配方', '深层滋养', '快速吸收', '持久效果', '适合敏感肌'],
+                     title: 'Натуральная косметика для ухода',
+                     description: '天然护肤产品，采用温和配方，富含营养成分，能够深层滋养肌肤，带来健康美丽的肌肤状态。'
+                 },
+                 sports: {
+                     keywords: ['спорт', 'фитнес', 'тренировка', 'здоровье', 'активность', '运动', '健身'],
+                     features: ['专业设计', '耐磨耐用', '透气排汗', '舒适贴合', '运动保护', '时尚外观'],
+                     title: 'Спортивные товары для активного образа жизни',
+                     description: '专业运动用品，采用先进材料和人体工学设计，为运动爱好者提供最佳的运动体验和保护。'
+                 }
+             };
+             
+             // 分析所有链接，选择最合适的模板
+             let selectedTemplate = mockAnalysisTemplates.electronics; // 默认
+             let templateScore = { electronics: 0, fashion: 0, home: 0, beauty: 0, sports: 0 };
+             
+             links.forEach(link => {
+                 const linkLower = link.url.toLowerCase();
+                 
+                 if (linkLower.includes('одежда') || linkLower.includes('мода') || linkLower.includes('fashion') || linkLower.includes('服装')) {
+                     templateScore.fashion++;
+                 } else if (linkLower.includes('дом') || linkLower.includes('кухня') || linkLower.includes('home') || linkLower.includes('家居')) {
+                     templateScore.home++;
+                 } else if (linkLower.includes('красота') || linkLower.includes('косметика') || linkLower.includes('beauty') || linkLower.includes('美容')) {
+                     templateScore.beauty++;
+                 } else if (linkLower.includes('спорт') || linkLower.includes('фитнес') || linkLower.includes('sport') || linkLower.includes('运动')) {
+                     templateScore.sports++;
+                 } else {
+                     templateScore.electronics++;
+                 }
+             });
+             
+             // 选择得分最高的模板
+             const maxScore = Math.max(...Object.values(templateScore));
+             const bestTemplate = Object.keys(templateScore).find(key => templateScore[key] === maxScore);
+             selectedTemplate = mockAnalysisTemplates[bestTemplate];
+             
+             // 构建结果HTML
+             let resultHtml = `<h4 class="result-item typewriter">🎭 产品卖点模拟分析结果：</h4>`;
+             
+             // 显示分析的产品信息
+             if (links.length > 1) {
+                 const ozonCount = links.filter(link => link.platform === 'ozon').length;
+                 const otherCount = links.length - ozonCount;
+                 
+                 resultHtml += `<div class="result-item" style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #007bff;">`;
+                 resultHtml += `<h5 style="margin: 0 0 10px 0; color: #007bff;">📊 分析产品概览</h5>`;
+                 resultHtml += `<p style="margin: 5px 0;">共分析 <strong>${links.length}</strong> 个产品链接`;
+                 if (ozonCount > 0) {
+                     resultHtml += `，其中OZON产品 <strong>${ozonCount}</strong> 个（主要参考）`;
+                     if (otherCount > 0) {
+                         resultHtml += `，其他平台 <strong>${otherCount}</strong> 个（补充参考）`;
+                     }
+                 }
+                 resultHtml += `</p>`;
+                 resultHtml += `</div>`;
+             }
+             
+             // 显示模拟分析结果
+             resultHtml += `<div class="result-item" style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #ffc107;">`;
+             resultHtml += `<p><strong>📝 综合产品标题：</strong>${selectedTemplate.title}</p>`;
+             resultHtml += `<p><strong>🎯 主要卖点：</strong>${selectedTemplate.features.join('、')}</p>`;
+             resultHtml += `<p><strong>📋 产品描述：</strong>${selectedTemplate.description}</p>`;
+             resultHtml += `<p><strong>🔍 关键词建议：</strong>${selectedTemplate.keywords.join(', ')}</p>`;
+             
+             // 产品应用场景分析
+             if (links.length > 1) {
+                 resultHtml += `<hr style="margin: 15px 0;">`;
+                 resultHtml += `<h6 style="color: #ffc107; margin: 10px 0;">🎯 产品应用建议：</h6>`;
+                 resultHtml += `<p style="margin: 5px 0; font-size: 14px;">• <strong>核心卖点：</strong>${selectedTemplate.features.slice(0, 3).join('、')}</p>`;
+                 resultHtml += `<p style="margin: 5px 0; font-size: 14px;">• <strong>适用场景：</strong>日常使用、礼品赠送、专业需求</p>`;
+                 resultHtml += `<p style="margin: 5px 0; font-size: 14px;">• <strong>目标用户：</strong>注重品质和实用性的消费者</p>`;
+             }
+             
+             resultHtml += `</div>`;
+             
+             resultHtml += `<div class="result-item" style="background: #d1ecf1; padding: 10px; border-radius: 6px; margin: 10px 0; font-size: 12px;">`;
+             resultHtml += `<p><strong>ℹ️ 说明：</strong>这是基于${links.length}个产品链接的模拟分析结果，专注于产品卖点分析。建议配置DeepSeek API密钥以获得更准确的分析。</p>`;
+             resultHtml += `</div>`;
+             
+             resultHtml += `<hr class="result-item">`;
+             resultHtml += `<p class="result-item"><strong>💡 提示：</strong>产品卖点分析结果已自动填充到商品特征中，您可以根据实际产品情况进行调整。</p>`;
+             
+             return resultHtml;
+         }
+
+         async function generateMockAnalysis(competitorLink) {
+             // 兼容旧版本的单链接模拟分析
+             const links = [{
+                 url: competitorLink,
+                 platform: detectPlatform(competitorLink),
+                 platformInfo: getPlatformInfo(detectPlatform(competitorLink))
+             }];
+             
+             return await generateMultiPlatformMockAnalysis(links);
+         }
+        
+        async function callDeepSeekAPI(competitorLink) {
+            // DeepSeek API 配置
+            // 从页面获取用户输入的API密钥
+            const API_KEY = document.getElementById('deepseekApiKey')?.value?.trim() || '';
+            
+            if (!API_KEY || API_KEY === 'sk-your-deepseek-api-key') {
+                throw new Error('请先在页面顶部设置您的DeepSeek API密钥');
+            }
+            const API_URL = 'https://api.deepseek.com/v1/chat/completions';
+            
+            // 构建分析提示词
+            const prompt = `请分析这个OZON商品链接：${competitorLink}
+
+请提供以下信息：
+1. 商品标题（俄文）
+2. 主要卖点和特征（中文，用于后续生成）
+3. 产品描述要点
+4. 关键词建议
+
+请以结构化的方式返回分析结果。`;
+            
+            const requestBody = {
+                model: "deepseek-chat",
+                messages: [
+                    {
+                        role: "system",
+                        content: "你是一个专业的OZON电商平台产品分析师，擅长分析竞品并提取关键信息。"
+                    },
+                    {
+                        role: "user",
+                        content: prompt
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 2000
+            };
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status} ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                const aiResponse = data.choices[0].message.content;
+                
+                // 格式化AI响应为HTML
+                return formatAIResponse(aiResponse);
+                
+            } catch (error) {
+                 console.error('DeepSeek API调用详细错误:', error);
+                 
+                 let errorMessage = 'DeepSeek API调用失败。';
+                 
+                 if (error.message.includes('402')) {
+                     errorMessage += '\n❌ 错误原因：账户余额不足或需要付费\n\n💡 解决方案：\n1. 登录 DeepSeek 平台充值账户\n2. 检查API使用配额\n3. 或者使用下方的"模拟卖点分析"功能';
+                 } else if (error.message.includes('401')) {
+                     errorMessage += '\n❌ 错误原因：API密钥无效\n\n💡 解决方案：\n1. 检查API密钥是否正确\n2. 确认密钥是否已激活\n3. 重新生成新的API密钥';
+                 } else if (error.message.includes('403')) {
+                     errorMessage += '\n❌ 错误原因：访问被拒绝\n\n💡 解决方案：\n1. 检查API密钥权限\n2. 确认账户状态正常';
+                 } else if (error.message.includes('429')) {
+                     errorMessage += '\n❌ 错误原因：请求频率过高\n\n💡 解决方案：\n1. 稍等片刻后重试\n2. 降低请求频率';
+                 } else {
+                     errorMessage += '\n\n💡 常见解决方案：\n1. 检查网络连接\n2. 验证API密钥正确性\n3. 确认账户余额充足\n4. 或使用模拟卖点分析功能';
+                 }
+                 
+                 throw new Error(errorMessage);
+             }
+        }
+        
+        function formatAIResponse(aiResponse) {
+            let formattedResponse;
+            
+            try {
+                // 检查是否为JSON格式
+                if (aiResponse.trim().startsWith('{') || aiResponse.trim().startsWith('[')) {
+                    const jsonData = JSON.parse(aiResponse);
+                    
+                    // 如果是JSON对象，尝试提取有用信息并格式化
+                    if (typeof jsonData === 'object') {
+                        formattedResponse = formatJSONToReadable(jsonData);
+                    } else {
+                        formattedResponse = aiResponse;
+                    }
+                } else {
+                    // 普通文本格式化
+                    formattedResponse = aiResponse
+                        .replace(/\n/g, '<br>')
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>');
+                }
+            } catch (error) {
+                // JSON解析失败，按普通文本处理
+                formattedResponse = aiResponse
+                    .replace(/\n/g, '<br>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>');
+            }
+            
+            return `
+                <h4 class="result-item typewriter">🤖 DeepSeek AI 分析结果：</h4>
+                <div class="result-item" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    ${formattedResponse}
+                </div>
+                <hr class="result-item">
+                <p class="result-item"><strong>💡 提示：</strong>AI分析结果已自动填充到商品特征中，您可以根据需要进行调整。</p>
+            `;
+        }
+        
+        function formatJSONToReadable(jsonData) {
+            let formatted = '';
+            
+            // 如果JSON包含常见的分析字段，进行结构化显示
+            if (jsonData.title || jsonData.商品标题) {
+                formatted += `<p><strong>📋 商品标题：</strong>${jsonData.title || jsonData.商品标题}</p>`;
+            }
+            
+            if (jsonData.features || jsonData.特征 || jsonData.卖点) {
+                const features = jsonData.features || jsonData.特征 || jsonData.卖点;
+                if (Array.isArray(features)) {
+                    formatted += `<p><strong>✨ 主要特征：</strong>${features.join('、')}</p>`;
+                } else {
+                    formatted += `<p><strong>✨ 主要特征：</strong>${features}</p>`;
+                }
+            }
+            
+            if (jsonData.description || jsonData.描述) {
+                formatted += `<p><strong>📝 产品描述：</strong>${jsonData.description || jsonData.描述}</p>`;
+            }
+            
+            if (jsonData.keywords || jsonData.关键词) {
+                const keywords = jsonData.keywords || jsonData.关键词;
+                if (Array.isArray(keywords)) {
+                    formatted += `<p><strong>🔍 关键词：</strong>${keywords.join('、')}</p>`;
+                } else {
+                    formatted += `<p><strong>🔍 关键词：</strong>${keywords}</p>`;
+                }
+            }
+            
+            // 如果没有识别到标准字段，尝试遍历所有字段
+            if (!formatted) {
+                for (const [key, value] of Object.entries(jsonData)) {
+                    if (typeof value === 'string' || typeof value === 'number') {
+                        formatted += `<p><strong>${key}：</strong>${value}</p>`;
+                    } else if (Array.isArray(value)) {
+                        formatted += `<p><strong>${key}：</strong>${value.join('、')}</p>`;
+                    } else if (typeof value === 'object') {
+                        formatted += `<p><strong>${key}：</strong>${JSON.stringify(value, null, 2).replace(/\n/g, '<br>')}</p>`;
+                    }
+                }
+            }
+            
+            // 如果仍然没有内容，显示原始JSON（格式化）
+            if (!formatted) {
+                formatted = `<pre style="background: #f1f1f1; padding: 10px; border-radius: 4px; white-space: pre-wrap;">${JSON.stringify(jsonData, null, 2)}</pre>`;
+            }
+            
+            return formatted;
+        }
+        
+        function autoFillFeaturesFromAI(analysisResult) {
+            // 从AI分析结果中智能提取特征
+            let features = [];
+            
+            try {
+                // 尝试从AI响应中提取特征信息
+                // 这里使用简单的文本解析，实际应用中可能需要更复杂的解析逻辑
+                const text = analysisResult.replace(/<[^>]*>/g, ''); // 移除HTML标签
+                
+                // 查找可能的特征关键词
+                const featureKeywords = [
+                    '无线', '蓝牙', '防水', '快充', '长续航', '轻便', '便携', '智能',
+                    '高清', '降噪', '舒适', '耐用', '多功能', '节能', '安全', '时尚',
+                    '专业', '高效', '稳定', '精准', '创新', '优质', '实用', '经济'
+                ];
+                
+                // 从文本中匹配特征
+                featureKeywords.forEach(keyword => {
+                    if (text.includes(keyword) && features.length < 6) {
+                        features.push(keyword);
+                    }
+                });
+                
+                // 如果没有找到足够的特征，添加一些通用特征
+                if (features.length < 3) {
+                    features = features.concat(['高品质', '用户友好', '性价比高'].slice(0, 3 - features.length));
+                }
+                
+            } catch (error) {
+                console.error('特征提取失败:', error);
+                // 使用默认特征
+                features = ['高品质', '创新设计', '用户友好', '性价比高'];
+            }
+            
+            // 清空现有特征并填充新特征
+            const featuresDiv = document.getElementById('features');
+            featuresDiv.innerHTML = '';
+            
+            features.forEach((feature, index) => {
+                const featureContainer = document.createElement('div');
+                featureContainer.className = 'feature-container';
+                featureContainer.innerHTML = `
+                    <input type="text" class="feature-input" value="${feature}" placeholder="请输入商品特征描述（中文）：如"可折叠"、"轻便"">
+                    ${index === 0 ? 
+                        '<button class="add-btn" onclick="addFeature()">+</button>' : 
+                        '<button class="remove-btn" onclick="removeFeature(this)">-</button><button class="add-btn" onclick="addFeature()">+</button>'
+                    }
+                `;
+                featuresDiv.appendChild(featureContainer);
+            });
+        }
+        
+        function clearForm() {
+            // 添加清除动画效果
+            const elements = [
+                document.getElementById('productName'),
+                document.getElementById('competitorLink'),
+                document.getElementById('features'),
+                document.getElementById('resultArea'),
+                document.getElementById('competitorAnalysis'),
+                document.getElementById('sceneResultArea'),
+                document.getElementById('season')
+            ];
+            
+            // 为每个元素添加淡出动画
+            elements.forEach((element, index) => {
+                if (element) {
+                    element.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    element.style.opacity = '0';
+                    element.style.transform = 'translateY(-10px)';
+                    
+                    setTimeout(() => {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.value = '';
+                        } else if (element.tagName === 'SELECT') {
+                            // 重置选择框到默认值
+                            if (element.id === 'season') {
+                                element.value = '通用';
+                            }
+                        } else if (element.id === 'features') {
+                            // 清除特征，只保留一个空输入框
+                            element.innerHTML = `
+                                <div class="feature-container">
+                                    <input type="text" class="feature-input" placeholder="请输入商品特征描述（中文）：如"可折叠"、"轻便"">
+                                    <button class="add-btn" onclick="addFeature()">+</button>
+                                </div>
+                            `;
+                        } else {
+                            element.style.display = 'none';
+                            if (element.id === 'competitorAnalysis') {
+                                element.classList.remove('show');
+                            }
+                            // 清空场景图结果内容
+                            if (element.id === 'sceneResultArea') {
+                                const scenePromptDiv = document.getElementById('scenePrompt');
+                                if (scenePromptDiv) {
+                                    scenePromptDiv.textContent = '';
+                                }
+                            }
+                        }
+                        
+                        // 恢复元素
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    }, 150 + index * 50);
+                }
+            });
+            
+            showToast('🧹 表单已清空');
+        }
+        
+        // API密钥管理功能
+        function toggleApiKeyVisibility() {
+            const apiKeyInput = document.getElementById('deepseekApiKey');
+            const button = event.target;
+            
+            if (apiKeyInput.type === 'password') {
+                apiKeyInput.type = 'text';
+                button.textContent = '🙈';
+                button.title = '隐藏密钥';
+            } else {
+                apiKeyInput.type = 'password';
+                button.textContent = '👁️';
+                button.title = '显示密钥';
+            }
+        }
+        
+        function saveApiKey() {
+            const apiKey = document.getElementById('deepseekApiKey').value.trim();
+            if (!apiKey) {
+                showToast('❌ 请先输入API密钥');
+                return;
+            }
+            
+            if (!apiKey.startsWith('sk-')) {
+                showToast('❌ API密钥格式不正确，应以 sk- 开头');
+                return;
+            }
+            
+            try {
+                localStorage.setItem('deepseek_api_key', apiKey);
+                showToast('✅ API密钥已保存到本地');
+            } catch (error) {
+                showToast('❌ 保存失败: ' + error.message);
+            }
+        }
+        
+        function loadApiKey() {
+            try {
+                const savedApiKey = localStorage.getItem('deepseek_api_key');
+                if (savedApiKey) {
+                    document.getElementById('deepseekApiKey').value = savedApiKey;
+                    // 移除持续显示的API密钥加载提示
+                    // showToast('✅ 已加载保存的API密钥');
+                }
+            } catch (error) {
+                console.error('加载API密钥失败:', error);
+            }
+        }
+        
+        // 加载动画控制函数
+        function showLoadingAnimation(isMock = false) {
+            const loadingContainer = document.getElementById('loadingContainer');
+            const loadingText = document.getElementById('loadingText');
+            const progressFill = document.getElementById('progressFill');
+            
+            // 设置加载文本
+            loadingText.textContent = isMock ? '🎭 正在进行模拟卖点分析...' : '🔍 正在调用DeepSeek分析产品卖点...';
+            
+            // 显示加载容器
+            loadingContainer.style.display = 'block';
+            loadingContainer.classList.add('fade-in');
+            
+            // 重置进度条
+            progressFill.style.width = '0%';
+            
+            // 重置步骤状态
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // 模拟进度更新
+            simulateProgress();
+        }
+        
+        function hideLoadingAnimation() {
+            const loadingContainer = document.getElementById('loadingContainer');
+            loadingContainer.style.display = 'none';
+            loadingContainer.classList.remove('fade-in');
+        }
+        
+        // 场景词生成加载动画控制函数
+        function showSceneLoadingAnimation() {
+            const loadingContainer = document.getElementById('sceneLoadingContainer');
+            const loadingText = document.getElementById('sceneLoadingText');
+            const progressFill = document.getElementById('sceneProgressFill');
+            
+            // 设置加载文本
+            loadingText.textContent = '🎨 正在生成场景词...';
+            
+            // 显示加载容器
+            loadingContainer.style.display = 'block';
+            loadingContainer.classList.add('fade-in');
+            
+            // 重置进度条
+            progressFill.style.width = '0%';
+            
+            // 重置步骤状态
+            document.querySelectorAll('#sceneLoadingContainer .step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // 模拟场景词生成进度更新
+            simulateSceneProgress();
+        }
+        
+        function hideSceneLoadingAnimation() {
+            const loadingContainer = document.getElementById('sceneLoadingContainer');
+            loadingContainer.style.display = 'none';
+            loadingContainer.classList.remove('fade-in');
+        }
+        
+        function simulateProgress() {
+            const steps = ['step1', 'step2', 'step3', 'step4'];
+            const progressFill = document.getElementById('progressFill');
+            let currentStep = 0;
+            
+            const updateProgress = () => {
+                if (currentStep < steps.length) {
+                    // 激活当前步骤
+                    document.getElementById(steps[currentStep]).classList.add('active');
+                    
+                    // 更新进度条
+                    const progress = ((currentStep + 1) / steps.length) * 100;
+                    progressFill.style.width = progress + '%';
+                    
+                    currentStep++;
+                    
+                    // 随机延迟，模拟真实的处理时间
+                    const delay = Math.random() * 800 + 400; // 400-1200ms
+                    setTimeout(updateProgress, delay);
+                }
+            };
+            
+            updateProgress();
+        }
+        
+        // 场景词生成进度模拟函数
+        function simulateSceneProgress() {
+            const steps = ['sceneStep1', 'sceneStep2', 'sceneStep3', 'sceneStep4'];
+            const progressFill = document.getElementById('sceneProgressFill');
+            let currentStep = 0;
+            
+            const updateProgress = () => {
+                if (currentStep < steps.length) {
+                    // 激活当前步骤
+                    document.getElementById(steps[currentStep]).classList.add('active');
+                    
+                    // 更新进度条
+                    const progress = ((currentStep + 1) / steps.length) * 100;
+                    progressFill.style.width = progress + '%';
+                    
+                    currentStep++;
+                    
+                    // 随机延迟，模拟真实的处理时间
+                    const delay = Math.random() * 600 + 300; // 300-900ms
+                    setTimeout(updateProgress, delay);
+                }
+            };
+            
+            updateProgress();
+        }
+        
+        // 场景图提示词生成函数
+        async function generateScenePrompt() {
+            const productName = document.getElementById('productName').value.trim();
+            
+            if (!productName) {
+                showToast('❌ 请先输入产品中文名称');
+                return;
+            }
+            
+            // 获取用户选择的图片数量
+            const imageCountRadio = document.querySelector('input[name="imageCount"]:checked');
+            const imageCount = imageCountRadio ? imageCountRadio.value : '4';
+            
+            try {
+                // 显示场景词生成加载动画
+                showSceneLoadingAnimation();
+                
+                // 调用DeepSeek API生成场景词
+                const sceneWords = await callDeepSeekForSceneWords(productName, imageCount);
+                
+                // 隐藏场景词生成加载动画
+                hideSceneLoadingAnimation();
+                
+                // 将生成的场景词填入到场景描述输入框中
+                fillSceneWords(sceneWords);
+                
+                showToast('✅ 场景词生成完成！请选择背景和尺寸选项后点击"确定"生成最终提示词');
+                
+            } catch (error) {
+                hideSceneLoadingAnimation();
+                console.error('场景词生成失败:', error);
+                showToast('❌ 场景词生成失败: ' + error.message);
+            }
+        }
+        
+        // 调用DeepSeek API生成场景词
+        async function callDeepSeekForSceneWords(productName, imageCount) {
+            const API_KEY = document.getElementById('deepseekApiKey')?.value?.trim() || '';
+            
+            if (!API_KEY || API_KEY === 'sk-your-deepseek-api-key') {
+                throw new Error('请先在页面顶部设置您的DeepSeek API密钥');
+            }
+            
+            const API_URL = 'https://api.deepseek.com/v1/chat/completions';
+            
+            const prompt = `我是一名跨境电商美工，现在需要为我的产品确定背景，产品为${productName}，我想让你帮我生成${imageCount}个场景词（不要提示词，仅场景词）`;
+            
+            const requestBody = {
+                model: "deepseek-chat",
+                messages: [
+                    {
+                        role: "system",
+                        content: "你是一个专业的电商美工助手，擅长为产品生成合适的场景词。请只返回场景词，每个场景词用逗号分隔，不要其他解释。"
+                    },
+                    {
+                        role: "user",
+                        content: prompt
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 500
+            };
+            
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${API_KEY}`
+                },
+                body: JSON.stringify(requestBody)
+            });
+            
+            if (!response.ok) {
+                if (response.status === 402) {
+                    throw new Error('账户余额不足，请前往DeepSeek平台充值');
+                } else if (response.status === 401) {
+                    throw new Error('API密钥无效，请检查密钥是否正确');
+                } else {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+            }
+            
+            const data = await response.json();
+            const aiResponse = data.choices[0].message.content;
+            
+            return aiResponse.trim();
+        }
+        
+        // 将生成的场景词填入到输入框中
+        function fillSceneWords(sceneWords) {
+            // 清空现有的场景输入框
+            const existingInputs = document.querySelectorAll('.scene-input');
+            existingInputs.forEach(input => input.parentElement.remove());
+            
+            // 解析场景词（按逗号分隔）
+            const scenes = sceneWords.split(/[，,]/).map(s => s.trim()).filter(s => s);
+            
+            // 创建场景输入框容器
+            const sceneContainer = document.getElementById('sceneContainer') || createSceneContainer();
+            
+            // 为每个场景词创建输入框
+            scenes.forEach((scene, index) => {
+                const sceneDiv = document.createElement('div');
+                sceneDiv.className = 'feature-container';
+                sceneDiv.innerHTML = `
+                    <input type="text" class="feature-input scene-input" placeholder="场景描述词${index + 1}" value="${scene}">
+                    <button class="remove-btn" onclick="removeSceneInput(this)">-</button>
+                `;
+                sceneContainer.appendChild(sceneDiv);
+            });
+            
+            // 显示场景容器
+            sceneContainer.style.display = 'block';
+        }
+        
+        // 创建场景输入容器
+        function createSceneContainer() {
+            const container = document.createElement('div');
+            container.id = 'sceneContainer';
+            container.style.marginBottom = '15px';
+            container.innerHTML = `
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">场景描述词：</label>
+            `;
+            
+            // 插入到图片数量选择之后
+            const imageCountDiv = document.querySelector('input[name="imageCount"]').closest('div').parentElement;
+            imageCountDiv.parentElement.insertBefore(container, imageCountDiv.nextSibling);
+            
+            return container;
+        }
+        
+        // 移除场景输入框
+        function removeSceneInput(button) {
+            button.parentElement.remove();
+        }
+        
+        // AI作图功能相关函数
+        function addSellPoint() {
+            const container = document.getElementById('sellPointsContainer');
+            const newInputGroup = document.createElement('div');
+            newInputGroup.className = 'input-group';
+            newInputGroup.innerHTML = `
+                <input type="text" placeholder="例如：防冲击镜片" class="sell-point-input">
+                <button type="button" onclick="removeSellPoint(this)" class="remove-btn">-</button>
+            `;
+            container.appendChild(newInputGroup);
+        }
+        
+        function removeSellPoint(button) {
+            button.parentElement.remove();
+        }
+        
+        function generateImagePrompt() {
+            const productName = document.getElementById('productName').value.trim();
+            
+            if (!productName) {
+                showToast('❌ 请先输入产品中文名称');
+                return;
+            }
+            
+            // 获取核心卖点
+            const sellPointInputs = document.querySelectorAll('.sell-point-input');
+            const sellPoints = [];
+            sellPointInputs.forEach(input => {
+                const value = input.value.trim();
+                if (value) {
+                    sellPoints.push(value);
+                }
+            });
+            
+            // 获取规格信息
+            const length = document.getElementById('length').value.trim();
+            const width = document.getElementById('width').value.trim();
+            const height = document.getElementById('height').value.trim();
+            const weight = document.getElementById('weight').value.trim();
+            const color = document.getElementById('color').value.trim();
+            const quantity = document.getElementById('quantity').value.trim();
+            const imageRatio = document.getElementById('imageRatio').value;
+            
+            // 获取强调内容设置
+            const largeTitle = document.getElementById('largeTitle').checked;
+            const titleShadow = document.getElementById('titleShadow').checked;
+            
+            // 构建AI作图提示词
+            let imagePrompt = `你是一名专业的跨境电商平面设计师，擅长制作高转化率的商品图片。请根据以下要求为我设计图片。\n\n**核心任务：**\n保持图片中**产品主体绝对不变**，将产品的核心卖点以文字形式巧妙地设计在图片上。文字语言必须为**俄语**，要求醒目、吸引人且符合俄罗斯消费者的阅读习惯和审美。\n\n**产品信息：**\n- **产品标题：** ${productName}\n`;
+            
+            if (sellPoints.length > 0) {
+                imagePrompt += `- **核心卖点（俄语）：**\n`;
+                sellPoints.forEach((point, index) => {
+                    imagePrompt += `    ${index + 1}. ${point}\n`;
+                });
+            }
+            
+            // 添加规格信息（如果有填写）
+            const specs = [];
+            if (length) specs.push(`长度Длина: ${length}厘米см`);
+            if (width) specs.push(`宽度Ширина: ${width}厘米см`);
+            if (height) specs.push(`高度Высота: ${height}厘米см`);
+            if (weight) specs.push(`重量Вес: ${weight}克г`);
+            if (color) specs.push(`颜色Цвет: ${color}`);
+            if (quantity) specs.push(`数量Количество: ${quantity}`);
+            
+            if (specs.length > 0) {
+                imagePrompt += `- **关键规格：** ${specs.join(', ')}\n`;
+            }
+            
+            // 添加强调内容
+            if (emphasizeItems.length > 0) {
+                imagePrompt += `- **重点强调：** ${emphasizeItems.map(item => item.content).join('、')}\n`;
+            }
+            
+            imagePrompt += `\n**设计风格与要求：**\n- **布局：** 文字应巧妙排列在产品周围（例如上下方）布局合理且符合商业化审美，绝对不遮挡产品。\n`;
+            
+            // 标题样式要求
+            let titleStyle = '使用现代、粗壮的无衬线字体';
+            if (largeTitle) {
+                titleStyle += '，产品名称"' + productName + '"要使用**超大字体**显示，是整个图片中最大最显眼的文字';
+            }
+            if (titleShadow) {
+                titleStyle += '，为标题添加**深色阴影效果**，增强立体感和可读性';
+            }
+            imagePrompt += `- **字体样式：** ${titleStyle}。\n`;
+            
+            // 强调颜色要求
+            if (emphasizeItems.length > 0) {
+                emphasizeItems.forEach(item => {
+                    const colorName = getColorName(item.color);
+                    imagePrompt += `- **强调显示：** 将【${item.content}】用**${colorName}**（色值：${item.color}）进行突出显示，确保醒目吸引眼球。\n`;
+                });
+            } else if (sellPoints.length > 0) {
+                imagePrompt += `- **重点突出：** 将【${sellPoints[0]}】`;
+                if (weight) imagePrompt += `和【重量: ${weight}克г】`;
+                imagePrompt += `用醒目的颜色突出显示。\n`;
+            }
+            
+            // 关键规格突出强调
+            if (specs.length > 0) {
+                imagePrompt += `- **规格强调：** 将关键规格信息【${specs.join('】、【')}】中的数字部分用**醒目的橙色或蓝色**进行突出显示排版布局间距合理，确保规格信息清晰可见且吸引注意。\n`;
+            }
+            
+            imagePrompt += `- **配色方案：** 采用与产品相配的高端色调背景，营造专业、时尚的视觉效果。\n- **图标元素：** 可在重点信息旁添加相关图标（如🛡️盾牌、⚖️天平等），增强视觉表现力。\n- **整体氛围：** 专业、时尚、可靠，符合俄罗斯市场的审美偏好和使用场景。\n\n**输出格式：**\n图片比例：${imageRatio}，高清，摄影级别画质，适合电商平台展示。`;
+            
+            // 显示结果（对数字进行突出显示）
+            const highlightedPrompt = highlightNumbers(imagePrompt);
+            document.getElementById('imagePrompt').innerHTML = highlightedPrompt;
+            document.getElementById('imagePromptArea').style.display = 'block';
+            
+            showToast('✅ AI作图提示词生成完成！');
+        }
+        
+        // 获取颜色名称
+        function getColorName(colorValue) {
+            const colorMap = {
+                '#ff6b35': '醒目橙色',
+                '#1e88e5': '亮蓝色',
+                '#d32f2f': '鲜红色',
+                '#388e3c': '翠绿色',
+                '#7b1fa2': '紫色',
+                '#f57c00': '金黄色'
+            };
+            return colorMap[colorValue] || '自定义颜色';
+        }
+        
+        function copyImagePrompt() {
+            // 获取纯文本内容（去除HTML标签）
+            const promptElement = document.getElementById('imagePrompt');
+            const promptText = promptElement.textContent || promptElement.innerText;
+            navigator.clipboard.writeText(promptText).then(() => {
+                showToast('✅ 作图提示词已复制到剪贴板');
+            }).catch(err => {
+                console.error('复制失败:', err);
+                showToast('❌ 复制失败，请手动复制');
+            });
+        }
+        
+        function goToLMArena() {
+            window.open('https://lmarena.ai/?mode=direct&chat-modality=image', '_blank');
+        }
+        
+        function goToNanoBanana() {
+            window.open('https://nanobananafree.ai/', '_blank');
+        }
+        
+        function clearImageForm() {
+            // 清空核心卖点输入框（保留第一个）
+            const container = document.getElementById('sellPointsContainer');
+            const inputGroups = container.querySelectorAll('.input-group');
+            for (let i = 1; i < inputGroups.length; i++) {
+                inputGroups[i].remove();
+            }
+            // 清空第一个输入框的值
+            const firstInput = container.querySelector('.sell-point-input');
+            if (firstInput) firstInput.value = '';
+            
+            // 清空规格输入框
+            document.getElementById('length').value = '';
+            document.getElementById('width').value = '';
+            document.getElementById('height').value = '';
+            document.getElementById('weight').value = '';
+            document.getElementById('color').value = '';
+            document.getElementById('quantity').value = '';
+            
+            // 清空强调设置
+            emphasizeItems = [];
+            updateEmphasizeList();
+            document.getElementById('newEmphasizeContent').value = '';
+            document.getElementById('newEmphasizeColor').value = '#ff6b35';
+            document.getElementById('largeTitle').checked = true;
+            document.getElementById('titleShadow').checked = true;
+            
+            // 重置图片比例选择
+            document.getElementById('imageRatio').value = '3:4';
+            
+            // 隐藏结果区域
+            document.getElementById('imagePromptArea').style.display = 'none';
+            
+            showToast('✅ 表单已清空');
+        }
+        
+        // 生成最终AI提示词
+        function generateFinalPrompt() {
+            const productName = document.getElementById('productName').value.trim();
+            
+            if (!productName) {
+                showToast('❌ 请先输入产品中文名称');
+                return;
+            }
+            
+            // 获取场景词
+            const sceneInputs = document.querySelectorAll('.scene-input');
+            const scenes = [];
+            sceneInputs.forEach(input => {
+                const value = input.value.trim();
+                if (value) {
+                    scenes.push(value);
+                }
+            });
+            
+            if (scenes.length === 0) {
+                showToast('❌ 请先生成场景词');
+                return;
+            }
+            
+            // 获取用户选择
+            const hasChineseText = document.querySelector('input[name="hasChineseText"]:checked')?.value === 'yes';
+            const aspectRatio = document.querySelector('input[name="aspectRatio"]:checked')?.value || '3:4';
+            const imageCount = document.querySelector('input[name="imageCount"]:checked')?.value || '4';
+            
+            // 构建最终提示词
+            let finalPrompt;
+            
+            if (hasChineseText) {
+                // 图片中有中文的情况
+                finalPrompt = `我是跨境电商平台负责修图的美工，请帮我清除图片背景中的中文，并替换图片主体"${productName}"之外的背景，保持产品主体不变，背景中要体现"${scenes.join('、')}"等场景元素，请生成${imageCount}张新的产品图，图片的尺寸比例为[${aspectRatio}]。`;
+            } else {
+                // 图片中没有中文的情况
+                finalPrompt = `我是跨境电商平台负责修图的美工，请帮我为产品"${productName}"设计背景，保持产品主体不变，背景中要体现"${scenes.join('、')}"等场景元素，请生成${imageCount}张新的产品图，图片的尺寸比例为[${aspectRatio}]。`;
+            }
+            
+            // 显示结果
+            const sceneResultArea = document.getElementById('sceneResultArea');
+            const scenePromptDiv = document.getElementById('scenePrompt');
+            
+            scenePromptDiv.textContent = finalPrompt;
+            sceneResultArea.style.display = 'block';
+            sceneResultArea.classList.add('fade-in');
+            
+            showToast('🎨 AI提示词生成完成！');
+        }
+        
+        // 复制场景图提示词
+        function copyScenePrompt() {
+            const promptText = document.getElementById('scenePrompt').textContent;
+            navigator.clipboard.writeText(promptText)
+                .then(() => showToast('✅ 场景图提示词已复制到剪贴板'))
+                .catch(err => showToast('❌ 复制失败: ' + err));
+        }
+        
+        // 跳转到豆包
+        function goToDouBao() {
+            window.open('https://www.doubao.com/', '_blank');
+        }
+        
+        // 跳转到百度AI去除水印
+        function goToBaiduAI() {
+            window.open('https://chat.baidu.com/search?enter_type=a_60674&imgFrom=image_search&sa=re_dl_60674&word=-1&wsData=%7B%22fr%22%3A%22alawise_60674%22%2C%22toolType%22%3A%22-1%22%7D&wsName=image', '_blank');
+        }
+        
+        // AI模型选择处理函数
+        function onAiModelChange() {
+            const aiModel = document.getElementById('aiModel').value;
+            
+            // 获取DeepSeek配置区域
+            const deepseekConfig = document.getElementById('deepseekConfig');
+            const deepseekHelp = document.getElementById('deepseekHelp');
+            
+            // 隐藏配置区域
+            if (deepseekConfig) deepseekConfig.style.display = 'none';
+            deepseekHelp.style.display = 'none';
+            
+            // 显示DeepSeek配置区域
+            if (aiModel === 'deepseek') {
+                if (deepseekConfig) deepseekConfig.style.display = 'block';
+                deepseekHelp.style.display = 'block';
+            }
+        }
+        
+
+        
+
+        
+
+        
+
+        
+        // 强调内容管理
+        let emphasizeItems = [];
+
+        
+        // 添加强调内容项
+        function addEmphasizeItem() {
+            const content = document.getElementById('newEmphasizeContent').value.trim();
+            const color = document.getElementById('newEmphasizeColor').value;
+            
+            if (!content) {
+                showToast('❌ 请输入强调内容');
+                return;
+            }
+            
+            // 检查是否已存在相同内容
+            if (emphasizeItems.some(item => item.content === content)) {
+                showToast('❌ 该强调内容已存在');
+                return;
+            }
+            
+            // 添加到数组
+            const item = { content, color, id: Date.now() };
+            emphasizeItems.push(item);
+            
+            // 更新显示
+            updateEmphasizeList();
+            
+            // 清空输入框
+            document.getElementById('newEmphasizeContent').value = '';
+            document.getElementById('newEmphasizeColor').value = '#ff6b35';
+            
+            showToast('✅ 强调内容已添加');
+        }
+        
+        // 删除强调内容项
+        function removeEmphasizeItem(id) {
+            emphasizeItems = emphasizeItems.filter(item => item.id !== id);
+            updateEmphasizeList();
+            showToast('✅ 强调内容已删除');
+        }
+        
+        // 更新强调内容列表显示
+        function updateEmphasizeList() {
+            const container = document.getElementById('emphasizeList');
+            
+            if (emphasizeItems.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            const html = emphasizeItems.map(item => `
+                <div class="emphasize-item" style="border-left-color: ${item.color};">
+                    <div class="emphasize-color-dot" style="background-color: ${item.color};"></div>
+                    <div class="emphasize-content">${highlightNumbers(item.content)}</div>
+                    <button class="emphasize-remove" onclick="removeEmphasizeItem(${item.id})">删除</button>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+        }
+        
+        // 数字突出显示函数
+        function highlightNumbers(text) {
+            return text.replace(/(\d+(?:\.\d+)?)/g, '<span class="highlight-number">$1</span>');
+        }
+        
+        // 页面加载时自动加载保存的API密钥
+        window.addEventListener('load', function() {
+            loadApiKey();
+            onAiModelChange(); // 初始化AI模型选择状态
+            
+            // 为输入框添加回车键监听
+            document.getElementById('newEmphasizeContent').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addEmphasizeItem();
+                }
+            });
+        })
+    </script>
+</body>
+</html>
